@@ -1,4 +1,4 @@
-import { Text,View,StyleSheet } from "react-native";
+import { Text,View,StyleSheet,Dimensions } from "react-native";
 export default function Cajas(){
 
     return(
@@ -12,29 +12,37 @@ export default function Cajas(){
         </View>
     );
 }
-
+let ancho = Dimensions.get("window").width;
+let altura = Dimensions.get("window").height;
 const styles = StyleSheet.create({
     contenedor:{
         backgroundColor:'#53F903',
         flex:1,
-        flexDirection:'column',
+        flexDirection:'row',
         justifyContent: 'center',
-        alignItems:'center'
+        alignItems:"center"
     },
     amarillo:{
         width:50,
         height:50,
-        backgroundColor:'yellow'
+        backgroundColor:'yellow',
+        borderColor:'red',
+        borderWidth:2,
+        top:-25
     },
     azul:{
         width:50,
         height:50,
         backgroundColor:'blue',
-        right:-50
+        borderColor:'red',
+        borderWidth:2   
     },
     rosa:{
         width:50,
         height:50,
-        backgroundColor:'pink'
+        backgroundColor:'pink',
+        borderColor:'red',
+        borderWidth:2,
+        top:-25 
     }
 });
