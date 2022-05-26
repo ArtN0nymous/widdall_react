@@ -9,7 +9,7 @@ export default function Icons(){
         </View>
     );
 }
-const styles = StyleSheet.crate({
+const styles = StyleSheet.create({
     contenedor:{
         backgroundColor:'#53F903',
         flex:1,
