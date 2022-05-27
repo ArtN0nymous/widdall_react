@@ -1,5 +1,6 @@
 import Cajas from "./src/Cajas";
 import Icons from "./src/Icons";
+import Imagenes from "./src/Imagenes";
 
 export default function App(){
 
@@ -7,7 +8,8 @@ export default function App(){
     <>
       {/* <HolaMundo/> */}
       {/*<Cajas/>*/}
-      <Icons/>
+      {/*<Icons/>*/}
+      <Imagenes/>
     </>
   );
 }
