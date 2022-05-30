@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 export default function Galeria(){
     var peliculas =[
         {
@@ -32,10 +32,18 @@ export default function Galeria(){
             src:'./img/minions.jpg'
         }
     ];
+    var galeria ='';
+    peliculas.forEach(element => {
+        galeria+=`<Text>${element.nombre}</Text>`;
+    });
     return(
         <>
-            <View>
-            
+            <View testID="Vista">
+                {peliculas.forEach(element => {
+                    return(
+                        <Text>{element.nombre}</Text>
+                    )
+                })}
             </View>
         </>
     );
