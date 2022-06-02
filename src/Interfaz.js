@@ -178,11 +178,6 @@ const styles =  StyleSheet.create({
     det_bat:{
         fontSize:10.5,
         width:170
-    },  
-    bateria:{
-        marginTop:8,
-        fontSize:16,
-        fontWeight:'bold'
     },
     det_ana:{
         fontSize:10.5,
