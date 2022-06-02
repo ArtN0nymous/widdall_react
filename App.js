@@ -2,6 +2,7 @@ import Cajas from "./src/Cajas";
 import Galeria from "./src/Galeria";
 import Icons from "./src/Icons";
 import Imagenes from "./src/Imagenes";
+import Interfaz from "./src/Interfaz";
 
 export default function App(){
 
@@ -11,7 +12,8 @@ export default function App(){
       {/*<Cajas/>*/}
       {/*<Icons/>*/}
       {/*<Imagenes/>*/}
-      <Galeria/>
+      {/* <Galeria/> */}
+      <Interfaz/>
     </>
   );
 }
