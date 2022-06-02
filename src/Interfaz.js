@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Dimensions } from "react-native-web";
 export default function Interfaz(){
 
     return(
