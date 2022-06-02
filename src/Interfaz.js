@@ -1,7 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 export default function Interfaz(){
-
     return(
         <>
             <View style={styles.contenedor}>
@@ -78,7 +77,7 @@ export default function Interfaz(){
                                 <View style={{flexDirection:'row'}}>
                                     <View style={styles.icon_target_b_cont_1}>
                                         <View style={styles.icon_target_b}>
-                                            <View style={{backgroundColor:'orange',width:23,height:23,borderRadius:100,justifyContent:'center', alignItems:'center',borderColor:'grey',borderWidth:1}}>
+                                            <View style={styles.fondo_icon_target_b}>
                                                 <FontAwesome5 size={13} name='brush' color='white'/>
                                             </View>
                                         </View>
@@ -95,7 +94,6 @@ export default function Interfaz(){
                                         </View>
                                     </View>
                                 </View>
-                                
                             </View>
                         </View>
                     </View>
@@ -104,6 +102,16 @@ export default function Interfaz(){
     );
 }
 const styles =  StyleSheet.create({
+    fondo_icon_target_b:{
+        backgroundColor:'orange',
+        width:23,
+        height:23,
+        borderRadius:100,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'grey',
+        borderWidth:1
+    },
     limpieza_b:{
         fontSize:15,
         fontWeight:'bold'
