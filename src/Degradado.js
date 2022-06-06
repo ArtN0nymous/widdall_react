@@ -1,14 +1,11 @@
-import { LinearGradient, StyleSheet } from "react-native";
-import { View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 export default function Degradado(){
     return(
-        <View>
-            hOLADIGUAHSDJKG
-        </View>
+        <LinearGradient colors={['#0CD8F9','#0DE194']} style={{flex:1}}>
+            <View>
+                <Text>Degradado</Text>
+            </View>
+        </LinearGradient>
     );
 }
-const styles = StyleSheet.create({
-    gradiente:{
-        flex:1
-    }
-});
