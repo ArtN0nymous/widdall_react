@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
+import { ScrollView } from "react-native";
 import Pelicula from "./Pelicula";
 export default function Galeria(){
     var peliculas =[
@@ -6,31 +7,31 @@ export default function Galeria(){
             nombre:'Detective Pikachu',
             desc:'LIUAHDUIGYASFUDY',
             url :'https://youtube.com',
-            src:'./img/detective-pikachu.jpg'
+            src:'detective-pikachu.jpg'
         },
         {
             nombre:'Avengers Infinity War',
             desc:'LIUAHDUIGYASFUDY',
             url :'https://youtube.com',
-            src:'./img/Avengers-Infinity-War.jpg'
+            src:'Avengers-Infinity-War.jpg'
         },
         {
             nombre:'Avengers Era de Ultron',
             desc:'LIUAHDUIGYASFUDY',
             url :'https://youtube.com',
-            src:'./img/Avengers-era-de-ultron.jpg'
+            src:'Avengers-era-de-ultron.jpg'
         },
         {
             nombre:'La era de hielo',
             desc:'LIUAHDUIGYASFUDY',
             url :'https://youtube.com',
-            src:'./img/la-era-de-hielo.jpg'
+            src:'la-era-de-hielo.jpg'
         },
         {
             nombre:'Minions',
             desc:'LIUAHDUIGYASFUDY',
             url :'https://youtube.com',
-            src:'./img/minions.jpg'
+            src:'minions.jpg'
         }
     ];
     // var galeria ='';
@@ -39,11 +40,13 @@ export default function Galeria(){
     // });
     return(
         <>
-            {peliculas.map((p)=>(
-                <Text>
-                    <Pelicula titulo={p.nombre} descrip={p.desc} image={p.src}/>
-                </Text>
-            ))}
+            <ScrollView>
+                {peliculas.map((p,i)=>(
+                    <Text>
+                        <Pelicula key={i} titulo={p.nombre} descrip={p.desc} image={p.src}/>
+                    </Text>
+                ))}
+            </ScrollView>
         </>
     );
 }
