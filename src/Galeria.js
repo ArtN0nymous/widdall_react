@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
+import Pelicula from "./Pelicula";
 export default function Galeria(){
     var peliculas =[
         {
@@ -32,19 +33,17 @@ export default function Galeria(){
             src:'./img/minions.jpg'
         }
     ];
-    var galeria ='';
-    peliculas.forEach(element => {
-        galeria+=`<Text>${element.nombre}</Text>`;
-    });
+    // var galeria ='';
+    // peliculas.forEach(element => {
+    //     galeria+=`<Text>${element.nombre}</Text>`;
+    // });
     return(
         <>
-            <View testID="Vista">
-                {peliculas.forEach(element => {
-                    return(
-                        <Text>{element.nombre}</Text>
-                    )
-                })}
-            </View>
+            {peliculas.map((p)=>(
+                <Text>
+                    <Pelicula titulo={p.nombre} descrip={p.desc} image={p.src}/>
+                </Text>
+            ))}
         </>
     );
 }

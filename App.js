@@ -13,9 +13,9 @@ export default function App(){
       {/*<Cajas/>*/}
       {/*<Icons/>*/}
       {/*<Imagenes/>*/}
-      {/* <Galeria/> */}
+      <Galeria/>
       {/* <Interfaz/> */}
-      <Degradado/>
+      {/* <Degradado/> */}
     </>
   );
 }
