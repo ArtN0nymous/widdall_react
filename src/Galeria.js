@@ -1,35 +1,36 @@
 import { View, StyleSheet, Text } from "react-native";
 import { ScrollView } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Pelicula from "./Pelicula";
 export default function Galeria(){
     var peliculas =[
         {
             nombre:'Detective Pikachu',
-            desc:'LIUAHDUIGYASFUDY',
+            desc:'una serie de imágenes fijas que, cuando se proyectan en una pantalla de forma consecutiva en rápida sucesión, crean la ilusión óptica de imágenes en movimiento.',
             url :'https://youtube.com',
             src:'detective-pikachu.jpg'
         },
         {
             nombre:'Avengers Infinity War',
-            desc:'LIUAHDUIGYASFUDY',
+            desc:'una serie de imágenes fijas que, cuando se proyectan en una pantalla de forma consecutiva en rápida sucesión, crean la ilusión óptica de imágenes en movimiento.',
             url :'https://youtube.com',
             src:'Avengers-Infinity-War.jpg'
         },
         {
             nombre:'Avengers Era de Ultron',
-            desc:'LIUAHDUIGYASFUDY',
+            desc:'una serie de imágenes fijas que, cuando se proyectan en una pantalla de forma consecutiva en rápida sucesión, crean la ilusión óptica de imágenes en movimiento.',
             url :'https://youtube.com',
             src:'Avengers-era-de-ultron.jpg'
         },
         {
             nombre:'La era de hielo',
-            desc:'LIUAHDUIGYASFUDY',
+            desc:'una serie de imágenes fijas que, cuando se proyectan en una pantalla de forma consecutiva en rápida sucesión, crean la ilusión óptica de imágenes en movimiento.',
             url :'https://youtube.com',
             src:'la-era-de-hielo.jpg'
         },
         {
             nombre:'Minions',
-            desc:'LIUAHDUIGYASFUDY',
+            desc:'una serie de imágenes fijas que, cuando se proyectan en una pantalla de forma consecutiva en rápida sucesión, crean la ilusión óptica de imágenes en movimiento.',
             url :'https://youtube.com',
             src:'minions.jpg'
         }
@@ -41,17 +42,17 @@ export default function Galeria(){
     return(
         <>
             <ScrollView>
-                {peliculas.map((p,i)=>(
-                    <Text>
-                        <Pelicula key={i} titulo={p.nombre} descrip={p.desc} image={p.src}/>
-                    </Text>
-                ))}
+                <LinearGradient colors={['#AA03F9','#005FFC','#15051D']} style={styles.contenedor}>
+                    {peliculas.map((p,i)=>(
+                        <Text>
+                            <Pelicula key={i} titulo={p.nombre} descrip={p.desc} image={p.src}/>
+                        </Text>
+                    ))}
+                </LinearGradient>
             </ScrollView>
         </>
     );
 }
 const styles = StyleSheet.create({
-    contenedor:{
-        flex:1
-    }
+    contenedor:{flex:1, flexDirection:'column', justifyContent:'center', alignItems:'center'}
 });
