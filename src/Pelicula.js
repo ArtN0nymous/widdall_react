@@ -1,5 +1,6 @@
 import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
-export default function Pelicula({titulo, descrip, image}){
+import * as Linking from 'expo-linking'
+export default function Pelicula({titulo, descrip, image, url}){
     var pelicula_imagen={
         'minions.jpg':require('./img/minions.jpg'),
         'la-era-de-hielo.jpg':require('./img/la-era-de-hielo.jpg'),
@@ -10,7 +11,7 @@ export default function Pelicula({titulo, descrip, image}){
     var url_imagen = pelicula_imagen[image];
     return(
         <>
-            <TouchableOpacity style={styles.contenedor} activeOpacity={0.6}>
+            <TouchableOpacity onPress={()=> Linking.openURL(url)} style={styles.contenedor} activeOpacity={0.6}>
                 <View style={styles.tarjeta}>
                     <View style={styles.desc}>
                         <Text style={{fontSize:25, color:'white', fontWeight:'bold'}}>{titulo}</Text>
