@@ -8,6 +8,7 @@ import HolaMundo from '../HolaMundo';
 import Galeria from '../Galeria';
 import Imagenes from '../Imagenes';
 import Interfaz from '../Interfaz';
+import infoPersona from '../InfoPersona';
 
 function HomeScreen() {
   return (
@@ -27,6 +28,7 @@ function StackNavigator() {
         <Stack.Screen name="galeria" component={Galeria} />
         <Stack.Screen name="interfaz" component={Interfaz} />
         <Stack.Screen name="imagenes" component={Imagenes} />
+        <Stack.Screen name='infopersona' component={infoPersona}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

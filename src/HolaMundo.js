@@ -1,10 +1,9 @@
 import react from "react"
 
-import { Text, View } from "react-native"
+import { Text, View, Button } from "react-native"
 
 
-export default function HolaMundo(){
-
+export default function HolaMundo({navigation}){
   return(
     <View style={{
       backgroundColor:'black',
@@ -21,6 +20,15 @@ export default function HolaMundo(){
         textAlign:"center"
         
       }}>Hola mundo !</Text>
+      <Button title='ir a la galeria' color='tomato' onPress={()=>navigation.push('galeria')}/>
+      <Button title='Persona 1' color='tomato' onPress={()=>navigation.push('infopersona',{
+        Nombre:'Jesus',
+        Bebida:'Agua'
+      })}/>
+      <Button title='Persona 2' color='tomato' onPress={()=>navigation.push('infopersona',{
+        Nombre:'Ramon',
+        Bebida:'Café'
+      })}/>
     </View>
   );
 }

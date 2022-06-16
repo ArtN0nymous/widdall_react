@@ -1,8 +1,8 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Button } from "react-native";
 import { ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Pelicula from "./Pelicula";
-export default function Galeria(){
+export default function Galeria({navigation}){
     var peliculas =[
         {
             nombre:'Detective Pikachu',
@@ -48,6 +48,7 @@ export default function Galeria(){
                             <Pelicula key={i} titulo={p.nombre} descrip={p.desc} image={p.src} url={p.url}/>
                         </Text>
                     ))}
+                    <Button title="Regresar" color='yellow' onPress={() => navigation.goBack()} />
                 </LinearGradient>
             </ScrollView>
         </>
