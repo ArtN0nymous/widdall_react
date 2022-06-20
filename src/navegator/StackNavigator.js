@@ -22,9 +22,19 @@ const Stack = createNativeStackNavigator();
 
 function StackNavigator() {
   return (
-    <NavigationContainer>
+    <NavigationContainer screenOptions={{
+      headerShown:true,
+      headerTitleAlign:'center',
+      headerStyle:{
+        backgroundColor:'tomato'
+      },
+      headerTitleStyle:{
+        color:'white',
+        fontWeight:'bold'
+      }
+    }}>
       <Stack.Navigator>
-        <Stack.Screen name="holamundo" component={HolaMundo} />
+        <Stack.Screen options={{tittle:'inicio'}} name="holamundo" component={HolaMundo} />
         <Stack.Screen name="galeria" component={Galeria} />
         <Stack.Screen name="interfaz" component={Interfaz} />
         <Stack.Screen name="imagenes" component={Imagenes} />
