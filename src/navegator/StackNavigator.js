@@ -4,6 +4,8 @@ import * as React from 'react';
 import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+//import {NavigationContainer} from 'react-navigation'; 
+//import {createStackNavigator} from 'react-navigation-stack';
 import HolaMundo from '../HolaMundo';
 import Galeria from '../Galeria';
 import Imagenes from '../Imagenes';
@@ -35,7 +37,7 @@ function StackNavigator() {
     }}>
       <Stack.Navigator>
         <Stack.Screen options={{tittle:'inicio'}} name="holamundo" component={HolaMundo} />
-        <Stack.Screen name="galeria" component={Galeria} />
+        <Stack.Screen options={{tittle:'galeria'}} name="galeria" component={Galeria} />
         <Stack.Screen name="interfaz" component={Interfaz} />
         <Stack.Screen name="imagenes" component={Imagenes} />
         <Stack.Screen name='infopersona' component={infoPersona}/>
