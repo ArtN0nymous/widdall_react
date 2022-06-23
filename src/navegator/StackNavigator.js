@@ -10,7 +10,8 @@ import HolaMundo from '../HolaMundo';
 import Galeria from '../Galeria';
 import Imagenes from '../Imagenes';
 import Interfaz from '../Interfaz';
-import infoPersona from '../InfoPersona';
+import InfoPersona from '../InfoPersona';
+import Formularios from '../Formularios';
 
 function HomeScreen() {
   return (
@@ -40,7 +41,8 @@ function StackNavigator() {
         <Stack.Screen options={{tittle:'galeria'}} name="galeria" component={Galeria} />
         <Stack.Screen name="interfaz" component={Interfaz} />
         <Stack.Screen name="imagenes" component={Imagenes} />
-        <Stack.Screen name='infopersona' component={infoPersona}/>
+        <Stack.Screen name='infopersona' component={InfoPersona}/>
+        <Stack.Screen name='formularios' component={Formularios}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

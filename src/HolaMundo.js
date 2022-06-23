@@ -1,6 +1,6 @@
 import react from "react"
 
-import { Text, View, Button } from "react-native"
+import { Text, View, Button, TextInput } from "react-native"
 
 
 export default function HolaMundo({navigation}){
@@ -29,6 +29,13 @@ export default function HolaMundo({navigation}){
         Nombre:'Ramon',
         Bebida:'Café'
       })}/>
+      <Button title='Formulario' color='tomato' onPress={()=>navigation.push('formularios')}/>
+      <TextInput
+        style={{fontSize:30, color:'blue',backgroundColor:'white',height:40,width:300}}
+        value={{}}
+        placeholder="useless placeholder"
+        keyboardType="default"
+      />
     </View>
   );
 }
