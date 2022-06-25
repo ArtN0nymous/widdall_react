@@ -12,6 +12,7 @@ import Imagenes from '../Imagenes';
 import Interfaz from '../Interfaz';
 import InfoPersona from '../InfoPersona';
 import Formularios from '../Formularios';
+import Estado from '../Estado';
 
 function HomeScreen() {
   return (
@@ -43,6 +44,7 @@ function StackNavigator() {
         <Stack.Screen name="imagenes" component={Imagenes} />
         <Stack.Screen name='infopersona' component={InfoPersona}/>
         <Stack.Screen name='formularios' component={Formularios}/>
+        <Stack.Screen name='Estado' component={Estado}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -36,6 +36,7 @@ export default function HolaMundo({navigation}){
         placeholder="useless placeholder"
         keyboardType="default"
       />
+      <Button title='Estado' color='tomato' onPress={()=>navigation.push('Estado')}/>
     </View>
   );
 }
