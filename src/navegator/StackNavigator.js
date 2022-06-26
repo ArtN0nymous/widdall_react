@@ -13,6 +13,7 @@ import Interfaz from '../Interfaz';
 import InfoPersona from '../InfoPersona';
 import Formularios from '../Formularios';
 import Estado from '../Estado';
+import Login from '../Login';
 
 function HomeScreen() {
   return (
@@ -40,11 +41,12 @@ function StackNavigator() {
       <Stack.Navigator>
         <Stack.Screen options={{tittle:'inicio'}} name="holamundo" component={HolaMundo} />
         <Stack.Screen options={{tittle:'galeria'}} name="galeria" component={Galeria} />
-        <Stack.Screen name="interfaz" component={Interfaz} />
+        <Stack.Screen name="Interfaz" component={Interfaz} />
         <Stack.Screen name="imagenes" component={Imagenes} />
         <Stack.Screen name='infopersona' component={InfoPersona}/>
         <Stack.Screen name='formularios' component={Formularios}/>
         <Stack.Screen name='Estado' component={Estado}/>
+        <Stack.Screen name='Login' component={Login}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
