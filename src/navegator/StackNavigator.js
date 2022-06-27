@@ -14,6 +14,7 @@ import InfoPersona from '../InfoPersona';
 import Formularios from '../Formularios';
 import Estado from '../Estado';
 import Login from '../Login';
+import Registro from '../Registro';
 
 function HomeScreen() {
   return (
@@ -47,6 +48,7 @@ function StackNavigator() {
         <Stack.Screen name='formularios' component={Formularios}/>
         <Stack.Screen name='Estado' component={Estado}/>
         <Stack.Screen name='Login' component={Login}/>
+        <Stack.Screen name='Registro' component={Registro}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

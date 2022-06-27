@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, Text, Image } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { ImageBackground } from "react-native";
 
-export default function Login(){
+export default function Login({navigation}){
     var img  = require('./img/sebas.jpg');
     var fondo = require('./img/fondo.jpg')
     return(
@@ -23,6 +23,7 @@ export default function Login(){
                         </View>
                     </View>
                 </TouchableOpacity>
+                <Text style={{color:'white',fontSize:15,marginBottom:10}} onPress={()=>navigation.push('Registro')}>Registrarme ?</Text>
             </LinearGradient>
         </ImageBackground>
         </>
