@@ -1,6 +1,7 @@
 import { View, StyleSheet, TextInput, Text } from "react-native";
 
 export default function Formularios(){
+
     return(
         <>
         <View style={style.contenedor}>

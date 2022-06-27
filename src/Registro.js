@@ -2,6 +2,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, Button, TextInput, Image, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
 export default function({navigation}){
+    function getdata(){
+        /**
+         * TRAER DATOS CONVERTIR A JSON
+         */
+        fetch('http://192.168.18.229/react-native-php/datos.php').then(res => res.json())
+        /**LEER DATOS */
+        .then(function(result){
+            console.log(result);
+            console.log(result.mensaje);
+        });
+    }
+    function sentdata(){
+
+    }
     var img = require('./img/default_profile.jpg');
     return(
         <>
@@ -12,7 +26,7 @@ export default function({navigation}){
             <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs}/>
             <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs}/>
             <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs}/>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity activeOpacity={0.6} onPress={getdata}>
                 <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn}>
                     <Text style={styles.texts}>Registrarme</Text>
                 </LinearGradient>
