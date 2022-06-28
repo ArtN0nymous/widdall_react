@@ -20,19 +20,18 @@ export default function HolaMundo({navigation}){
         textAlign:"center"
         
       }}>Hola mundo !</Text>
-      <Button title='ir a la galeria' color='tomato' onPress={()=>navigation.push('galeria')}/>
-      <Button title='Persona 1' color='tomato' onPress={()=>navigation.push('infopersona',{
+      <Button title='ir a la galeria' color='tomato' onPress={()=>navigation.push('Galeria')}/>
+      <Button title='Persona 1' color='tomato' onPress={()=>navigation.push('Infopersona',{
         Nombre:'Jesus',
         Bebida:'Agua'
       })}/>
-      <Button title='Persona 2' color='tomato' onPress={()=>navigation.push('infopersona',{
+      <Button title='Persona 2' color='tomato' onPress={()=>navigation.push('Infopersona',{
         Nombre:'Ramon',
         Bebida:'Café'
       })}/>
-      <Button title='Formulario' color='tomato' onPress={()=>navigation.push('formularios')}/>
+      <Button title='Formulario' color='tomato' onPress={()=>navigation.push('Formularios')}/>
       <TextInput
         style={{fontSize:30, color:'blue',backgroundColor:'white',height:40,width:300}}
-        value={{}}
         placeholder="useless placeholder"
         keyboardType="default"
       />

@@ -2,10 +2,47 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, StyleSheet, TextInput, Text, Image } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { ImageBackground } from "react-native";
-
+import firebase from '../src/database/firebase';
+import { useState } from "react";
+import { Alert } from "react-native";
+import { async } from "@firebase/util";
+const db  = firebase.db;
+const auth = firebase.auth;
 export default function Login({navigation}){
     var img  = require('./img/sebas.jpg');
-    var fondo = require('./img/fondo.jpg')
+    var fondo = require('./img/fondo.jpg');
+    const [state,setState]= useState({
+        email:'',
+        password:''
+    });
+    const handleChangeText=(name,value)=>{
+        setState({...state,[name]:value});
+    }
+    function checkUser(){
+        if(state.email!=""){
+            if(state.password!=""){
+                loginIn();
+            }else{
+                Alert.alert('Atención','Debes ingresar tu contraseña');
+            }
+        }else{
+            Alert.alert('Atención','Debes ingresar un correo');
+        }
+    }
+    const loginIn = async ()=>{
+        await auth.signInWithEmailAndPassword(state.email,state.password)
+        .then((result)=>{
+            Alert.alert('Bienvenido',result.user.email, [
+                {
+                  text: "Aceptar",
+                  onPress: () => navigation.push('galeria'),
+                }
+              ]);
+        })
+        .catch((error)=>{
+            Alert.alert(error.code,error.message);
+        });
+    }
     return(
         <>
         <ImageBackground style={styles.contenerdor} source={fondo}>
@@ -14,9 +51,9 @@ export default function Login({navigation}){
             style={styles.border_image}>
                 <Image source={img} style={styles.imagen}/>
             </LinearGradient>
-                <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} style={styles.inputs}/>
-                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs} secureTextEntry={true}/>
-                <TouchableOpacity activeOpacity={0.6}>
+                <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} keyboardType='email-address' style={styles.inputs} onChangeText={(value)=>handleChangeText('email',value)}/>
+                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs} secureTextEntry={true} onChangeText={(value)=>handleChangeText('password',value)}/>
+                <TouchableOpacity activeOpacity={0.6} onPress={checkUser}>
                     <View  style={styles.boton}>
                         <View style={{justifyContent:'center', alignItems:'center', height:40}}>
                             <Text style={{fontSize:20,fontWeight:'bold',color:'#4DD6F8'}}>Login</Text>

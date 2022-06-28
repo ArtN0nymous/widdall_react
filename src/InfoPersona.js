@@ -1,6 +1,6 @@
 import { View, Text, Button } from "react-native";
 
-export default function infoPersona({route,navigation}){
+export default function InfoPersona({route,navigation}){
     const { Nombre, Bebida } = route.params;
     navigation.setOptions({ title:Nombre })
     return(

@@ -6,7 +6,6 @@ import firebase from "../src/database/firebase";
 export default function({navigation}){
     const db = firebase.db;
     const auth = firebase.auth;
-    const get_auth = firebase.get_auth;
     function getdata(){
         /**
          * TRAER DATOS CONVERTIR A JSON
@@ -51,12 +50,12 @@ export default function({navigation}){
         }
     }
     const guardar= async () =>{
-        console.log(state);
         await db.collection('users').add({
             usuario:state.name,
             password:state.password
         }).then((result)=>{
-            Alert.alert('Exito','Usuario guardado');
+            //Alert.alert('Exito','Usuario guardado');
+            navigation.push('Login');
         }).catch((err)=>{
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
@@ -64,16 +63,13 @@ export default function({navigation}){
     const saveUser=async()=>{
         await auth.createUserWithEmailAndPassword(state.name, state.password)
         .then((userCredential) => {
-          // Signed in
           const user = userCredential.user;
-          // ...
-          Alert.alert('Atención','Usuario guardado');
+          navigation.push('Login');
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           Alert.alert(errorCode,errorMessage);
-          // ..
         });
     }
     var img = require('./img/default_profile.jpg');

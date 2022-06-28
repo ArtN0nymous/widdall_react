@@ -40,12 +40,12 @@ function StackNavigator() {
       }
     }}>
       <Stack.Navigator>
-        <Stack.Screen options={{tittle:'inicio'}} name="holamundo" component={HolaMundo} />
-        <Stack.Screen options={{tittle:'galeria'}} name="galeria" component={Galeria} />
+        <Stack.Screen options={{tittle:'Inicio'}} name="holamundo" component={HolaMundo} />
+        <Stack.Screen options={{tittle:'Galeria'}} name="galeria" component={Galeria} />
         <Stack.Screen name="Interfaz" component={Interfaz} />
-        <Stack.Screen name="imagenes" component={Imagenes} />
-        <Stack.Screen name='infopersona' component={InfoPersona}/>
-        <Stack.Screen name='formularios' component={Formularios}/>
+        <Stack.Screen name="Imagenes" component={Imagenes} />
+        <Stack.Screen name='Infopersona' component={InfoPersona}/>
+        <Stack.Screen name='Formularios' component={Formularios}/>
         <Stack.Screen name='Estado' component={Estado}/>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='Registro' component={Registro}/>
