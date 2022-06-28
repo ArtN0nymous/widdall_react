@@ -62,7 +62,7 @@ export default function({navigation}){
         });
     }
     const saveUser=async()=>{
-        await auth.createUserWithEmailAndPassword(get_auth, state.name, state.password)
+        await auth.createUserWithEmailAndPassword(state.name, state.password)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
@@ -72,7 +72,7 @@ export default function({navigation}){
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          Alert.alert('Error',errorMessage);
+          Alert.alert(errorCode,errorMessage);
           // ..
         });
     }
