@@ -43,9 +43,10 @@ export default function Galeria({navigation}){
         <>
             <ScrollView>
                 <LinearGradient colors={['#AA03F9','#005FFC','#15051D']} style={styles.contenedor}>
-                    {peliculas.map((p,i)=>(
+                    {peliculas.map((p)=>(
                         <Text>
-                            <Pelicula key={i} titulo={p.nombre} descrip={p.desc} image={p.src} url={p.url}/>
+                            {/* id en key */}
+                            <Pelicula key={p.nombre} titulo={p.nombre} descrip={p.desc} image={p.src} url={p.url}/>
                         </Text>
                     ))}
                     <Button title="Regresar" color='yellow' onPress={() => navigation.goBack()} />
