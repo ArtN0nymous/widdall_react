@@ -5,6 +5,8 @@ import { TouchableOpacity } from "react-native";
 import firebase from "../src/database/firebase";
 export default function({navigation}){
     const db = firebase.db;
+    const auth = firebase.auth;
+    const get_auth = firebase.get_auth;
     function getdata(){
         /**
          * TRAER DATOS CONVERTIR A JSON
@@ -34,7 +36,7 @@ export default function({navigation}){
             if(state.password!=""){
                 if(state.password2!=""){
                     if(state.password == state.password2){
-                        saveUser;
+                        saveUser();
                     }else{
                         Alert.alert('Atención','Su contraseña no coincide');
                     }
@@ -48,7 +50,8 @@ export default function({navigation}){
             Alert.alert('Atención','El usuario no puede estar vacío');
         }
     }
-    const saveUser= async () =>{
+    const guardar= async () =>{
+        console.log(state);
         await db.collection('users').add({
             usuario:state.name,
             password:state.password
@@ -58,6 +61,21 @@ export default function({navigation}){
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
     }
+    const saveUser=async()=>{
+        await auth.createUserWithEmailAndPassword(get_auth, state.name, state.password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          // ...
+          Alert.alert('Atención','Usuario guardado');
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          Alert.alert('Error',errorMessage);
+          // ..
+        });
+    }
     var img = require('./img/default_profile.jpg');
     return(
         <>
@@ -65,7 +83,7 @@ export default function({navigation}){
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image}>
                 <Image source={img} style={styles.img}/>
             </LinearGradient>
-            <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('name',value)}/>
             <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password',value)}/>
             <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <TouchableOpacity activeOpacity={0.6} onPress={newUser}>
