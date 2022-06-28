@@ -1,7 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Button, TextInput, Image, StyleSheet } from "react-native";
+import { View, Text, Button, TextInput, Image, StyleSheet,Alert } from "react-native";
+import { useState } from "react";
 import { TouchableOpacity } from "react-native";
+import firebase from "../src/database/firebase";
 export default function({navigation}){
+    const db = firebase.db;
     function getdata(){
         /**
          * TRAER DATOS CONVERTIR A JSON
@@ -16,6 +19,45 @@ export default function({navigation}){
     function sentdata(){
 
     }
+    const [state,setState] = useState({
+        name:'',
+        password:'',
+        password2:''
+    });
+
+    const handleChangeText = (name,value)=>{
+        setState({...state,[name]:value})
+    }
+
+    function newUser(){
+        if(state.name!=""){
+            if(state.password!=""){
+                if(state.password2!=""){
+                    if(state.password == state.password2){
+                        saveUser;
+                    }else{
+                        Alert.alert('Atención','Su contraseña no coincide');
+                    }
+                }else{
+                    Alert.alert('Atención','Debe confirmar su contraseña');
+                }
+            }else{
+                Alert.alert('Atención', 'Debe ingresar una contraseña');
+            }
+        }else{
+            Alert.alert('Atención','El usuario no puede estar vacío');
+        }
+    }
+    const saveUser= async () =>{
+        await db.collection('users').add({
+            usuario:state.name,
+            password:state.password
+        }).then((result)=>{
+            Alert.alert('Exito','Usuario guardado');
+        }).catch((err)=>{
+            Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
+        });
+    }
     var img = require('./img/default_profile.jpg');
     return(
         <>
@@ -23,10 +65,10 @@ export default function({navigation}){
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image}>
                 <Image source={img} style={styles.img}/>
             </LinearGradient>
-            <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs}/>
-            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs}/>
-            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs}/>
-            <TouchableOpacity activeOpacity={0.6} onPress={getdata}>
+            <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <TouchableOpacity activeOpacity={0.6} onPress={newUser}>
                 <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn}>
                     <Text style={styles.texts}>Registrarme</Text>
                 </LinearGradient>
