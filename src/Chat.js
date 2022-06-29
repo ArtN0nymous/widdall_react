@@ -92,5 +92,8 @@ const styles = StyleSheet.create({
     },
     icon_target:{
         marginLeft:80
+    },
+    cont2:{
+        backgroundColor:'red'
     }
 });
