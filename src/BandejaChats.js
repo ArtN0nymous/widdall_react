@@ -1,6 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import Chat from "./Chat";
 export default function BandejaChats(navigation){
     const img = require('./img/default_profile.jpg');
