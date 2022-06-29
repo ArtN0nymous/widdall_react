@@ -5,7 +5,6 @@ import { ImageBackground } from "react-native";
 import firebase from '../src/database/firebase';
 import { useState } from "react";
 import { Alert } from "react-native";
-import { async } from "@firebase/util";
 const db  = firebase.db;
 const auth = firebase.auth;
 export default function Login({navigation}){
