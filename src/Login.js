@@ -10,7 +10,7 @@ const db  = firebase.db;
 const auth = firebase.auth;
 export default function Login({navigation}){
     var img  = require('./img/sebas.jpg');
-    var fondo = require('./img/fondo.jpg');
+    var fondo = require('./img/fondo.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
         email:'',

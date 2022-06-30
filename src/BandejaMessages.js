@@ -1,8 +1,9 @@
-import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView } from "react-native";
+import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity } from "react-native";
 import CSS from './Styles';
 import Messages from "./Message";
 export default function BandejaMessages({navigation}){
     var styles = CSS.styles;
+    var fondo = require('./img/fondo.png');
     var messages =[
         {
             user:'Usuario ejemplo',
@@ -13,7 +14,7 @@ export default function BandejaMessages({navigation}){
     ];
     return(
         <>
-        <View style={styles.contenedor}>
+        <ImageBackground style={styles.contenedor_messages} source={fondo}>
                 <ScrollView>
                     { 
                         messages.map((p)=>(
@@ -23,17 +24,8 @@ export default function BandejaMessages({navigation}){
                         ))
                     }
                 </ScrollView>
-                <TextInput placeholder="Escribe un mensaje..."/>
-            </View>
+                <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages}/>
+            </ImageBackground>
         </>
     );
 }
-const styles=StyleSheet.create({
-    contenedor:{
-        flex:1,
-        alignItems:'center',
-        flexDirection:'column',
-        justifyContent:'flex-start',
-        backgroundColor:'blue'
-    }
-});

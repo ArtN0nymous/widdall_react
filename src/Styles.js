@@ -1,4 +1,13 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet,Dimensions } from "react-native";
+var ancho = Dimensions.get('screen').width;
+var alto = Dimensions.get('screen').height;
+function dimension(prop,porcent){
+    if(prop=='H'){
+        return alto = (alto*porcent)/100;
+    }else{
+        return ancho = (ancho*porcent)/100;
+    }
+}
 const styles = StyleSheet.create({
     /*--Chat.js BEGIN--*/
     fondo_icon_target_b:{
@@ -169,8 +178,21 @@ const styles = StyleSheet.create({
     /*--BandejaMessages.js BEGIN--*/
     contenedor_messages:{
         flex:1,
+        alignItems:'center',
         flexDirection:'column',
-        alignItems:'stretch'
+        justifyContent:'flex-start',
+    },
+    input_messages:{
+        borderColor:'blue',
+        borderWidth:2,
+        borderRadius:10,
+        textAlign:'center',
+        width:dimension('W',90),
+        marginTop:10,
+        backgroundColor:'#0689EE',
+        color:'#532FF1',
+        fontWeight:'bold',
+        fontSize:17
     }
     /*--BandejaMessages.js END--*/
 });
