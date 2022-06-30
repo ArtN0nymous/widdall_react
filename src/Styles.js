@@ -180,7 +180,10 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems:'center',
         flexDirection:'column',
-        justifyContent:'flex-start',
+        justifyContent:'flex-start'
+    },
+    scroll_messages:{
+        width:dimension('W',100)
     },
     input_messages:{
         borderColor:'blue',
@@ -203,8 +206,8 @@ const styles = StyleSheet.create({
     },
     fondo_icon_target_message:{
         backgroundColor:'#349DF8',
-        width:23,
-        height:23,
+        width:30,
+        height:30,
         borderRadius:5,
         justifyContent:'center',
         alignItems:'center',
@@ -222,9 +225,49 @@ const styles = StyleSheet.create({
         borderColor:'blue',
         borderWidth:1,
         marginLeft:3
-    }
+    },
     /*--BandejaMessages.js END--*/
+    /*--Message.js BEGIN--*/
+    contenedor_message:{
+        justifyContent:'center',
+        marginTop:6,
+    },
+    texto_message:{
+        fontSize:15,
+        textAlign:'justify',
+        margin:8,
+        color:'white'
+    },
+    triangle_left_message: {
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+        borderTopColor: "transparent",
+        borderTopWidth: 17,
+        borderRightWidth: 30,
+        borderRightColor: "blue",
+        borderBottomWidth: 9,
+        borderBottomColor: "transparent"
+    },
+    triangle_right_message:{
+        position: "absolute",
+        top: 6,
+        right:0,
+        width: 0,
+        height: 0,
+        borderTopColor: "transparent",
+        borderTopWidth: 5,
+        borderRightWidth: 15,
+        borderRightColor: "purple",
+        borderBottomWidth: 9,
+        borderBottomColor: "transparent",
+        transform:[{rotate:"180deg"}],
+        alignSelf:'flex-end'
+    }
+    /*Message.js END--*/
 });
 export default{
-    styles
+    styles,
 };

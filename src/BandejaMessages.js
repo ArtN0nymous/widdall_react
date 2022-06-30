@@ -7,20 +7,38 @@ export default function BandejaMessages({navigation}){
     var fondo = require('./img/fondo.png');
     var messages =[
         {
-            user:'Usuario ejemplo',
-            message:'Mensaje de ejemplo',
+            user:'Usuario1',
+            message:'Mensaje saasassadsdas',
             hora:'10:20',
-            tipo:1
+            tipo:'1'
+        },
+        {
+            user:'usuario1',
+            message:'Hola',
+            hora:'10:20',
+            tipo:'1'
+        },
+        {
+            user:'Usuario2',
+            message:'Mensaje saasassadsdas',
+            hora:'10:20',
+            tipo:'2'
+        },
+        {
+            user:'usuario1',
+            message:'Hola',
+            hora:'10:20',
+            tipo:'2'
         }
     ];
     return(
         <>
             <View style={styles.contenedor_messages}>
-                <ScrollView>
+                <ScrollView style={styles.scroll_messages}>
                     { 
                         messages.map((p)=>(
                             <TouchableOpacity activeOpacity={0.6}>
-                                <Messages key={p.user} user={p.user} mensaje={p.mensaje}/>
+                                <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.tipo}/>
                             </TouchableOpacity>
                         ))
                     }
