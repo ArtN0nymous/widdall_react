@@ -89,9 +89,9 @@ export default function({navigation}){
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
                 <Image source={img} style={styles.img_regist}/>
             </LinearGradient>
-            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
-            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
-            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <TouchableOpacity activeOpacity={0.6} onPress={newUser}>
                 <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>

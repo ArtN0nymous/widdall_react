@@ -4,9 +4,9 @@ import {useState} from 'react';
 import { Dimensions } from 'react-native';
 export default function Message({user,mensaje,tipo}){
     var styles = CSS.styles;
-    var color = 'blue';
+    var color = 'rgba(9,69,220,0.98)';
     if(tipo!='1'){
-        color = 'purple';
+        color = 'rgba(68,31,161,0.98)';
     }
     var stilo = {
         backgroundColor:color,

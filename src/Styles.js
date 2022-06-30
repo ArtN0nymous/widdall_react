@@ -76,7 +76,8 @@ const styles = StyleSheet.create({
         flex:1,
         flexDirection:'column',
         alignItems:'center',
-        justifyContent:'flex-start'
+        justifyContent:'flex-start',
+        backgroundColor:'#0B2379'
     },
     imagen_login:{
         borderRadius:50,
@@ -94,19 +95,19 @@ const styles = StyleSheet.create({
         height:40,
         backgroundColor:'white',
         textAlign:'center',
-        borderColor:'#61DAF9',
+        borderColor:'#0B2379',
         borderRadius:10,
         marginTop:10,
         marginRight:40,
         marginLeft:40,
         borderWidth:2,
-        color:'blue'
+        color:'blue',
     },
     boton_login:{
-        width:90,
+        width:136,
         height:40,
-        backgroundColor:'black',
-        borderColor:'#4DD6F8',
+        backgroundColor:'#3C05A2',
+        borderColor:'white',
         borderWidth:2,
         borderRadius:10,
         marginTop:10,
@@ -151,9 +152,9 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     inputs_regist:{
-        borderColor:'blue',
+        borderColor:'#0B2379',
         borderWidth:2,
-        borderRadius:20,
+        borderRadius:10,
         textAlign:'center',
         width:200,
         marginTop:10,
@@ -162,17 +163,19 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     texts_regist:{
-        fontSize:10,
+        fontSize:15,
         color:'white',
         fontWeight:'bold'
     },
     login_btn_regist:{
-        width:70,
-        height:35,
-        borderRadius:10,
+        width:100,
+        height:40,
+        borderRadius:5,
         marginTop:50,
         justifyContent:'center',
         alignItems:'center',
+        borderColor:'#0B2379',
+        borderWidth:2
     },
     /*--Registro.js END--*/
     /*--BandejaMessages.js BEGIN--*/
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
         borderTopColor: "transparent",
         borderTopWidth: 17,
         borderRightWidth: 30,
-        borderRightColor: "blue",
+        borderRightColor: "rgba(9,69,220,0.91)",
         borderBottomWidth: 9,
         borderBottomColor: "transparent"
     },
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
         borderTopColor: "transparent",
         borderTopWidth: 5,
         borderRightWidth: 15,
-        borderRightColor: "purple",
+        borderRightColor: "rgba(68,31,161,0.91)",
         borderBottomWidth: 9,
         borderBottomColor: "transparent",
         transform:[{rotate:"180deg"}],

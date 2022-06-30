@@ -48,6 +48,6 @@ const styles=StyleSheet.create({
         alignItems:'center',
         flexDirection:'column',
         justifyContent:'flex-start',
-        backgroundColor:'blue'
+        backgroundColor:'#0B2379'
     }
 });
