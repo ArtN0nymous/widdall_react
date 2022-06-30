@@ -3,7 +3,7 @@ import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity } from "rea
 import Chat from "./Chat";
 import {useState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
-export default function BandejaChats(navigation){
+export default function BandejaChats({navigation}){
     const img = require('./img/default_profile.jpg');
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
@@ -24,7 +24,9 @@ export default function BandejaChats(navigation){
                 <ScrollView>
                     { 
                         chats.map((p)=>(
-                            <Chat key={p.usuario} usuario={p.usuario} mensaje={p.mensaje}/>
+                            <TouchableOpacity onPress={()=>navigation.push('Messages')} activeOpacity={0.6}>
+                                <Chat key={p.usuario} usuario={p.usuario} mensaje={p.mensaje}/>
+                            </TouchableOpacity>
                         ))
                     }
                 </ScrollView>

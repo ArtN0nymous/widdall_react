@@ -164,8 +164,15 @@ const styles = StyleSheet.create({
         marginTop:50,
         justifyContent:'center',
         alignItems:'center',
+    },
+    /*--Registro.js END--*/
+    /*--BandejaMessages.js BEGIN--*/
+    contenedor_messages:{
+        flex:1,
+        flexDirection:'column',
+        alignItems:'stretch'
     }
-    /*Registro.js END--*/
+    /*--BandejaMessages.js END--*/
 });
 export default{
     styles
