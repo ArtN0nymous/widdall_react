@@ -187,12 +187,41 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderRadius:10,
         textAlign:'center',
-        width:dimension('W',90),
+        width:dimension('W',60),
         marginTop:10,
-        backgroundColor:'#0689EE',
+        backgroundColor:'#94CAF9',
         color:'#532FF1',
         fontWeight:'bold',
-        fontSize:17
+        fontSize:17,
+        marginBottom:10
+    },
+    contenedor_input_messa:{
+        flexDirection:'row',
+        backgroundColor:'rgba(0,0,0,0.1)',
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10
+    },
+    fondo_icon_target_message:{
+        backgroundColor:'#349DF8',
+        width:23,
+        height:23,
+        borderRadius:5,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'blue',
+        borderWidth:1,
+        margin:5
+    },
+    send_btn_message:{
+        backgroundColor:'white',
+        width:28,
+        height:28,
+        borderRadius:100,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'blue',
+        borderWidth:1,
+        marginLeft:3
     }
     /*--BandejaMessages.js END--*/
 });

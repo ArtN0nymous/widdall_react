@@ -12,7 +12,15 @@ export default function({navigation}){
         /**
          * TRAER DATOS CONVERTIR A JSON
          */
-        fetch('http://192.168.18.229/react-native-php/datos.php').then(res => res.json())
+        console.log(`Contenido de las variables: Nombre: ${state.name}, Password: ${state.password}, Confirm password: ${state.password2}`);
+        var datos = new FormData();
+        datos.append('nombre',state.name);
+        datos.append('password',state.password);
+        datos.append('password2',state.password2);
+        fetch('http://192.168.18.229/react-native-php/datos.php',{
+            method:'post',
+            body:datos
+        }).then(res => res.json())
         /**LEER DATOS */
         .then(function(result){
             console.log(result);
