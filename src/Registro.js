@@ -3,9 +3,11 @@ import { View, Text, Button, TextInput, Image, StyleSheet,Alert } from "react-na
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import firebase from "../src/database/firebase";
+import CSS from './Styles'
 export default function({navigation}){
     const db = firebase.db;
     const auth = firebase.auth;
+    var styles = CSS.styles;
     function getdata(){
         /**
          * TRAER DATOS CONVERTIR A JSON
@@ -75,64 +77,19 @@ export default function({navigation}){
     var img = require('./img/default_profile.jpg');
     return(
         <>
-        <LinearGradient style={styles.contenedor} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
-            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image}>
-                <Image source={img} style={styles.img}/>
+        <LinearGradient style={styles.contenedor_regist} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
+            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
+                <Image source={img} style={styles.img_regist}/>
             </LinearGradient>
-            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('name',value)}/>
-            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password',value)}/>
-            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'blue'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <TouchableOpacity activeOpacity={0.6} onPress={newUser}>
-                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn}>
-                    <Text style={styles.texts}>Registrarme</Text>
+                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
+                    <Text style={styles.texts_regist}>Registrarme</Text>
                 </LinearGradient>
             </TouchableOpacity>
         </LinearGradient>
         </>
     );
 }
-const styles=StyleSheet.create({
-    contenedor:{
-        flex:1,
-        alignItems:'center'
-    },
-    img:{
-        width:70,
-        height:70,
-        borderRadius:90
-    },
-    border_image:{
-        marginTop:10,
-        width: 103,
-        height: 103,
-        borderRadius: 40,
-        padding: 0,
-        overflow: 'hidden',
-        justifyContent:'center',
-        alignItems:'center'
-    },
-    inputs:{
-        borderColor:'blue',
-        borderWidth:2,
-        borderRadius:20,
-        textAlign:'center',
-        width:200,
-        marginTop:10,
-        backgroundColor:'rgba(0,0,0,0.15)',
-        color:'#532FF1',
-        fontWeight:'bold'
-    },
-    texts:{
-        fontSize:10,
-        color:'white',
-        fontWeight:'bold'
-    },
-    login_btn:{
-        width:70,
-        height:35,
-        borderRadius:10,
-        marginTop:50,
-        justifyContent:'center',
-        alignItems:'center',
-    }
-});

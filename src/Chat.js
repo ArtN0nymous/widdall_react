@@ -1,8 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View,Image, Text, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import CSS from "./Styles";
 export default function Chat({usuario,mensaje}) {
     var img = require('./img/default_profile.jpg');
+    var styles = CSS.styles;
     return(
         <>
         <View style={styles.cont_target_b}>
@@ -13,7 +15,7 @@ export default function Chat({usuario,mensaje}) {
                             <View style={styles.icon_target_b}>
                                 <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}
                                 style={styles.fondo_icon_target_b}>
-                                    <Image source={img} style={styles.image}/>
+                                    <Image source={img} style={styles.image_target_b}/>
                                 </LinearGradient>
                             </View>
                         </View>
@@ -35,65 +37,3 @@ export default function Chat({usuario,mensaje}) {
         </>
     );
 }
-const styles = StyleSheet.create({
-    fondo_icon_target_b:{
-        width:60,
-        height:60,
-        borderRadius:100,
-        justifyContent:'center',
-        alignItems:'center',
-        borderColor:'grey'
-    },
-    title_b:{
-        fontSize:15,
-        fontWeight:'bold'
-    },
-    icon_target_b_cont_1:{
-        flexDirection:'column',
-        justifyContent:'center'
-    },
-    icon_target_b_cont_2:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
-        marginLeft:30,
-        width:110
-    },
-    det_atg_b:{
-        flexDirection:'column',
-        alignItems:'stretch'
-    },
-    row_b:{
-        flexDirection:'row',
-        marginTop:5,
-        marginLeft:20
-    },
-    target_cont_b:{
-        marginLeft:10
-    },  
-    target_b:{
-        width:370,
-        height:70,
-        backgroundColor: 'white',
-        flexDirection:'column',
-        justifyContent:'center',
-        borderRadius:10
-    },
-    cont_target_b:{
-        flex:0.1,
-        justifyContent:'center',
-        alignItems:'center',
-        marginTop:10
-    },
-    image:{
-        width:50,
-        height:50,
-        borderRadius:90
-    },
-    icon_target:{
-        marginLeft:80
-    },
-    cont2:{
-        backgroundColor:'red'
-    }
-});
