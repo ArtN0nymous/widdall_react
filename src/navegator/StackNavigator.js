@@ -17,6 +17,7 @@ import Login from '../Login';
 import Registro from '../Registro';
 import BandejaChats from '../BandejaChats';
 import BandejaMessages from '../BandejaMessages';
+import Usuarios from '../Usuarios';
 
 function HomeScreen() {
   return (
@@ -53,6 +54,7 @@ function StackNavigator() {
         <Stack.Screen name='Registro' component={Registro}/>
         <Stack.Screen name='Chats' component={BandejaChats}/>
         <Stack.Screen name='Messages' component={BandejaMessages}/>
+        <Stack.Screen name='Usuario' component={Usuarios}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

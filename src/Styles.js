@@ -323,64 +323,11 @@ const styles = StyleSheet.create({
         backgroundColor:'#EEF1F3',
         marginTop:10
     },
-    det_limp_usu:{
-        fontSize:10.5,
-        width:170,
-        color:'#F27717'
-    },  
-    limpieza_usu:{
-        marginTop:8,
-        fontSize:16,
-        fontWeight:'bold',
-        color:'#F27717'
-    },
-    det_droid_usu:{
-        fontSize:10.5,
-        width:170
-    },  
-    android_usu:{
-        marginTop:8,
-        fontSize:16,
-        fontWeight:'bold',
-        width:170
-    },
-    det_vel_usu:{
-        fontSize:10.5,
-        width:170
-    },  
-    bateria_usu:{
-        marginTop:8,
-        fontSize:16,
-        fontWeight:'bold'
-    },
-    det_bat_usu:{
-        fontSize:10.5,
-        width:170
-    },
-    det_ana_usu:{
-        fontSize:10.5,
-        width:170,
-        color:'#F27717'
-    },  
-    analisis_usu:{
-        marginTop:8,
-        fontSize:16,
-        fontWeight:'bold',
-        color:'#F27717'
-    },
-    caja2_usu:{
-       width:173,
-       height:100,
-       marginLeft:15,
-       backgroundColor:'white',
-       borderRadius:15,
-       justifyContent:'center' 
-    },
     det_lim_usu:{
         fontSize:10.5,
         width:170
     },  
-    contenido_caja:{
+    contenido_caja_usu:{
         marginLeft:10
     },
     limpiador_usu:{
@@ -394,14 +341,8 @@ const styles = StyleSheet.create({
        marginLeft:15,
        backgroundColor:'white',
        borderRadius:15,
-       justifyContent:'center' 
-    },
-    target_cont_usu:{
-        flex:0.45
-    },
-    contenedor_usu:{
-        flex: 1,
-        backgroundColor:'#EEF1F3'
+       justifyContent:'center',
+       marginTop:5
     },
     circle_cont_usu:{
         flex:0.50,
@@ -416,15 +357,20 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginTop:25,
         borderColor:'#40DDF3',
-        borderWidth:3
+        borderWidth:3,
+        overflow:'hidden'
     },
     text_1_usu:{
-        fontSize:60,
+        fontSize:20,
         fontWeight:'bold',
-        marginTop:30
+        marginTop:30,
+        backgroundColor:'rgba(255,255,255,0.2)',
+        borderRadius:10
     },
     text_small_usu:{
-        fontSize:12
+        fontSize:12,
+        backgroundColor:'rgba(255,255,255,0.2)',
+        borderRadius:10
     },
     button_opt_usu:{
         backgroundColor:'#EEF1F3',
@@ -439,10 +385,6 @@ const styles = StyleSheet.create({
         color:'#10A1DC',
         fontSize:17,
         fontWeight:'bold'
-    },
-    fila_usu:{
-        flexDirection:'row',
-        marginTop:10
     }
     /*Usuarios.js END */
 });

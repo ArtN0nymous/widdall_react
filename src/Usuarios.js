@@ -1,79 +1,45 @@
-import { View, Text,ScrollView } from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 export default function Interfaz(){
     const styles = CSS.styles;
+    var perfil = require('./img/default_profile.jpg');
+    const data = [
+        {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
+    ];
+    const formatData=(data,numColums)=>{
+        const n_filas = Math.floor(data.length/numColums);
+
+        let n_element_lastrow = data.length - (n_filas);
+        
+        return data;
+    }
+    const numColums = 2;
+    const renderItem = ({item,index})=>{
+        return(
+            <View style={styles.caja1_usu}>
+            <View style={styles.contenido_caja_usu}>
+                <FontAwesome5 style={styles.icon_usu} name='circle' color='red' size={25}/>
+                <Text style={styles.limpiador_usu}>Limpiador</Text>
+                <Text style={styles.det_lim_usu}>94% de espacio de almacenami...</Text>
+            </View>
+        </View>
+        );
+    }
     return(
         <>
             <View style={styles.contenedor_usu}>
                 <ScrollView>
                     <View style={styles.circle_cont_usu}>
-                        <View style={styles.circle_usu}>
-                            <Text style={styles.text_1_usu}>82</Text>
-                            <Text style={styles.text_small_usu}>Algunos elementos pueden optimiza...</Text>
+                        <ImageBackground style={styles.circle_usu} source={perfil}>
+                            <Text style={styles.text_1_usu}>Nombre usuario</Text>
+                            <Text style={styles.text_small_usu}>usuariosejemplo@gmail.com</Text>
                             <View style={styles.button_opt_usu}>
-                                <Text style={styles.optimizar_usu}>Editar</Text>
+                                <Text style={styles.optimizar_usu}>Cambiar foto</Text>
                             </View>
-                        </View>
+                        </ImageBackground>
                     </View>
-                    <View style={styles.target_cont_usu}>
-                        <View style={styles.fila_usu}>
-                            <View style={styles.caja1_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <FontAwesome5 style={styles.icon_usu} name='trash' color='red' size={25}/>
-                                    <Text style={styles.limpiador_usu}>Limpiador</Text>
-                                    <Text style={styles.det_lim_usu}>94% de espacio de almacenami...</Text>
-                                </View>
-                            </View>
-                            <View style={styles.caja2_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <View style={{flexDirection:'row'}}>
-                                        <FontAwesome5 style={styles.icon_usu} name='circle' color='green' size={25}/>
-                                        <View style={{height:4,width:4,borderRadius:100,backgroundColor:'red'}}></View>
-                                    </View>
-                                    <Text style={styles.analisis_usu}>Análisis de seguridad</Text>
-                                    <Text style={styles.det_ana_usu}>No ha analizado el dispositivo p...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.fila_usu}>
-                            <View style={styles.caja1_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <FontAwesome5 style={styles.icon_usu} name='battery-three-quarters' color='green' size={25}/>
-                                    <Text style={styles.bateria_usu}>Batería y rendimiento</Text>
-                                    <Text style={styles.det_bat}>47 min hasta carga completa</Text>
-                                </View>
-                            </View>
-                            <View style={styles.caja2_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <View style={{flexDirection:'row'}}>
-                                        <FontAwesome5 style={styles.icon_usu} name='rocket' color='#64D1D1' size={25}/>
-                                    </View>
-                                    <Text style={styles.velocidad_usu}>Aumentar velocidad</Text>
-                                    <Text style={styles.det_vel_usu}>Limpiar memoria</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.fila_usu}>
-                            <View style={styles.caja1_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <FontAwesome5 style={styles.icon_usu} name='android' color='#04B5D1' size={25}/>
-                                    <Text style={styles.android_usu}>Administrar aplica...</Text>
-                                    <Text style={styles.det_droid_usu}>Actualizar y desintalar aplicaci...</Text>
-                                </View>
-                            </View>
-                            <View style={styles.caja2_usu}>
-                                <View style={styles.contenido_caja_usu}>
-                                    <View style={{flexDirection:'row'}}>
-                                        <FontAwesome5 style={styles.icon_usu} name='brush' color='orange' size={25}/>
-                                        <View style={{height:4,width:4,borderRadius:100,backgroundColor:'red', marginLeft:3}}></View>
-                                    </View>
-                                    <Text style={styles.limpieza_usu}>Limpieza profunda</Text>
-                                    <Text style={styles.det_limp_usu}>60.4 GB/64 GB ocupado</Text>
-                                </View>
-                            </View>
-                        </View>                    
-                    </View>
+                    <FlatList style={{flex:1, flexDirection:'row',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
                     <View style={styles.cont_target_b_usu}>
                         <View style={styles.target_b}>
                             <View style={styles.target_cont_b_usu}>
