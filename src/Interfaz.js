@@ -1,10 +1,11 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text,ScrollView } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 export default function Interfaz(){
     return(
         <>
             <View style={styles.contenedor}>
-                    <View style={styles.circle_cont}>
+                <ScrollView>
+                <View style={styles.circle_cont}>
                         <View style={styles.circle}>
                             <Text style={styles.text_1}>82</Text>
                             <Text style={styles.text_small}>Algunos elementos pueden optimiza...</Text>
@@ -97,6 +98,7 @@ export default function Interfaz(){
                             </View>
                         </View>
                     </View>
+                </ScrollView>
             </View>
         </>
     );
