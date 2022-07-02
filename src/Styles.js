@@ -156,11 +156,12 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderRadius:10,
         textAlign:'center',
-        width:200,
+        width:dimension('W',70),
         marginTop:10,
         backgroundColor:'rgba(0,0,0,0.15)',
         color:'#532FF1',
-        fontWeight:'bold'
+        fontWeight:'bold',
+        height:36
     },
     texts_regist:{
         fontSize:15,

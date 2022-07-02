@@ -3,11 +3,13 @@ import { View, Text, Button, TextInput, Image, StyleSheet,Alert } from "react-na
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import firebase from "../src/database/firebase";
-import CSS from './Styles'
+import CSS from './Styles';
+import Funciones from "./Funciones";
 export default function({navigation}){
     const db = firebase.db;
     const auth = firebase.auth;
     var styles = CSS.styles;
+    const App = Funciones.App;
     function getdata(){
         /**
          * TRAER DATOS CONVERTIR A JSON
@@ -27,10 +29,8 @@ export default function({navigation}){
             console.log(result.mensaje);
         });
     }
-    function sentdata(){
-
-    }
     const [state,setState] = useState({
+        email:'',
         name:'',
         password:'',
         password2:''
@@ -39,47 +39,43 @@ export default function({navigation}){
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
     }
-
-    function newUser(){
-        if(state.name!=""){
-            if(state.password!=""){
-                if(state.password2!=""){
-                    if(state.password == state.password2){
-                        saveUser();
-                    }else{
-                        Alert.alert('Atención','Su contraseña no coincide');
-                    }
-                }else{
-                    Alert.alert('Atención','Debe confirmar su contraseña');
-                }
-            }else{
-                Alert.alert('Atención', 'Debe ingresar una contraseña');
-            }
+    function checarDatos(){
+        var result = App.newUser(state.email,state.name,state.password,state.password2);
+        if(result.estado!=false){
+            saveUser();
         }else{
-            Alert.alert('Atención','El usuario no puede estar vacío');
+            Alert.alert(result.dato,result.message);
         }
     }
     const guardar= async () =>{
         await db.collection('users').add({
+            email:state.email,
             usuario:state.name,
-            password:state.password
+            url_photo:''
         }).then((result)=>{
-            //Alert.alert('Exito','Usuario guardado');
             navigation.push('Login');
         }).catch((err)=>{
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
     }
     const saveUser=async()=>{
-        await auth.createUserWithEmailAndPassword(state.name, state.password)
+        await auth.createUserWithEmailAndPassword(state.email, state.password)
         .then((userCredential) => {
           const user = userCredential.user;
-          navigation.push('Login');
+          guardar();
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          Alert.alert(errorCode,errorMessage);
+          console.log(errorCode+' '+errorMessage);
+          switch(errorCode){
+            case 'auth/email-already-in-use':
+                Alert.alert('Ups!','Parece que este usuario ya está registrado intenta iniciar sesión.');
+                break;
+            case 'auth/too-many-requests':
+                Alert.alert('Atención','El acceso a esta cuenta ha sido bloqueado temporalmente por demasiados intentos fallidos, puedes intentar reestablecer tu contraseña.');
+                break;
+        }
         });
     }
     var img = require('./img/default_profile.jpg');
@@ -89,10 +85,11 @@ export default function({navigation}){
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
                 <Image source={img} style={styles.img_regist}/>
             </LinearGradient>
-            <TextInput keyboardType="email-address" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
+            <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
             <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
             <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
-            <TouchableOpacity activeOpacity={0.6} onPress={newUser}>
+            <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                 <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>
                 </LinearGradient>

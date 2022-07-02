@@ -45,6 +45,54 @@ class App{
             return datos;
         }
     }
+    static newUser(email,name,pass,pass2){
+        if(email!=""){
+            let e = App.validarEmail(email);
+            if(e!=false){
+                if(name!=""){
+                    if(pass!=""){
+                        if(pass2!=""){
+                            let p = App.validadPass(pass,pass2);
+                            if(p!=false){
+                                return datos;
+                            }else{
+                                console.log(pass+' '+pass2);
+                                datos.dato='Verifique su contraseña';
+                                datos.estado=false;
+                                datos.message='Sus contraseñas no coincicen o no tienen más de 10 caracteres.'
+                                return datos;
+                            }
+                        }else{
+                            datos.dato='Contraseña';
+                            datos.estado=false;
+                            datos.message='Debe verificar su contraseña.';
+                            return datos;
+                        }
+                    }else{
+                        datos.dato='Contraseña';
+                        datos.estado=false;
+                        datos.message='Su contraseña no puede estar vacía.';
+                        return datos;
+                    }
+                }else{
+                    datos.dato='Atención';
+                    datos.estado=false;
+                    datos.message='Debe ingresar un nombre de usuario.';
+                    return datos;
+                }
+            }else{
+                datos.dato='Atención';
+                datos.estado=false;
+                datos.message='Ingrese una dirección de correo valida.';
+                return datos;
+            }
+        }else{
+            datos.dato='Atención';
+            datos.estado=false;
+            datos.message='Su correo no puede estar vacío.';
+            return datos;
+        }
+    }
 }
 export default{
     App
