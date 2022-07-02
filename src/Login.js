@@ -1,7 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, StyleSheet, TextInput, Text, Image } from "react-native";
+import { View, TextInput, Text, Image } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { ImageBackground } from "react-native";
 import firebase from '../src/database/firebase';
 import { useState } from "react";
 import { Alert } from "react-native";
@@ -11,6 +10,7 @@ export default function Login({navigation}){
     const db  = firebase.db;
     const auth = firebase.auth;
     const App = Funciones.App;
+    const Fire = Funciones.Firebase;
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
@@ -25,27 +25,22 @@ export default function Login({navigation}){
         if(result.estado!=true){
             Alert.alert('Atención', result.message);
         }else{
-            loginIn();
-        }
-    }
-    const loginIn = async ()=>{
-        await auth.signInWithEmailAndPassword(state.email,state.password)
-        .then((result)=>{
-            Alert.alert('Bienvenido',result.user.email, [
-                {
-                  text: "Aceptar",
-                  onPress: navigation.push('Galeria'),
-                }
-              ]);
-        })
-        .catch((error)=>{
-            console.log(error.code,error.message);
-            switch(error.code){
-                case 'auth/user-not-found':
-                    Alert.alert('Ups','Parece que este usuario no existe !');
-                    break;
+            let login_res = Fire.loginIn(state.email,state.password);
+            console.log(login_res);
+            if(login_res.estado!=true){
+                Alert.alert('Bienvenido',login_res.dato, [
+                    {
+                      text: "Aceptar",
+                      onPress: navigation.push('Chats'),
+                    }
+                ]);
+            }else{
+                // switch(login_res.dato){
+                //     case ''
+                // }
+                console.log(result.dato);
             }
-        });
+        }
     }
     return(
         <>
