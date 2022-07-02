@@ -272,5 +272,5 @@ const styles = StyleSheet.create({
     /*Message.js END--*/
 });
 export default{
-    styles,
+    styles
 };

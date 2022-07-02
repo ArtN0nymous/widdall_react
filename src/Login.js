@@ -6,9 +6,11 @@ import firebase from '../src/database/firebase';
 import { useState } from "react";
 import { Alert } from "react-native";
 import CSS from './Styles'
-const db  = firebase.db;
-const auth = firebase.auth;
+import Funciones from './Funciones';
 export default function Login({navigation}){
+    const db  = firebase.db;
+    const auth = firebase.auth;
+    const App = Funciones.App;
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
@@ -18,15 +20,12 @@ export default function Login({navigation}){
     const handleChangeText=(name,value)=>{
         setState({...state,[name]:value});
     }
-    function checkUser(){
-        if(state.email!=""){
-            if(state.password!=""){
-                loginIn();
-            }else{
-                Alert.alert('Atención','Debes ingresar tu contraseña');
-            }
+    function checarDatos(){
+        var result = App.checkUser(state.email,state.password);
+        if(result.estado!=true){
+            Alert.alert('Atención', result.message);
         }else{
-            Alert.alert('Atención','Debes ingresar un correo');
+            loginIn();
         }
     }
     const loginIn = async ()=>{
@@ -35,12 +34,17 @@ export default function Login({navigation}){
             Alert.alert('Bienvenido',result.user.email, [
                 {
                   text: "Aceptar",
-                  onPress: () => navigation.push('galeria'),
+                  onPress: navigation.push('Galeria'),
                 }
               ]);
         })
         .catch((error)=>{
-            Alert.alert(error.code,error.message);
+            console.log(error.code,error.message);
+            switch(error.code){
+                case 'auth/user-not-found':
+                    Alert.alert('Ups','Parece que este usuario no existe !');
+                    break;
+            }
         });
     }
     return(
@@ -53,7 +57,7 @@ export default function Login({navigation}){
                 </LinearGradient>
                 <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} keyboardType='email-address' style={styles.inputs_login} onChangeText={(value)=>handleChangeText('email',value)}/>
                 <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs_login} secureTextEntry={true} onChangeText={(value)=>handleChangeText('password',value)}/>
-                <TouchableOpacity activeOpacity={0.6} onPress={checkUser}>
+                <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                     <View  style={styles.boton_login}>
                         <View style={{justifyContent:'center', alignItems:'center', height:40}}>
                             <Text style={{fontSize:20,fontWeight:'bold',color:'white'}}>Iniciar sesión</Text>
