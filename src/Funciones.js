@@ -20,6 +20,7 @@ class App{
         }
     }
     static checkUser(email,password){
+        console.log(password);
         if(email!=""){
             if(password!=""){
                 var valido = App.validarEmail(email);
@@ -44,29 +45,7 @@ class App{
             return datos;
         }
     }
-    static return_status(){
-
-    }
-}
-class Firebase{
-    static async loginIn(){
-        await auth.signInWithEmailAndPassword(email,password)
-        .then((result)=>{
-            datos.dato=result.user.email;
-        })
-        .catch((error)=>{
-            switch(error.code){
-                case 'auth/user-not-found':
-                    datos.dato=error.code;
-                    datos.estado=false,
-                    datos.message='Parece que este usuario no existe!.';
-                    break;
-            }
-        });
-        return datos;
-    }
 }
 export default{
-    App,
-    Firebase
+    App
 }

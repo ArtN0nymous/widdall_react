@@ -10,7 +10,6 @@ export default function Login({navigation}){
     const db  = firebase.db;
     const auth = firebase.auth;
     const App = Funciones.App;
-    const Fire = Funciones.Firebase;
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
@@ -25,22 +24,33 @@ export default function Login({navigation}){
         if(result.estado!=true){
             Alert.alert('Atención', result.message);
         }else{
-            let login_res = Fire.loginIn(state.email,state.password);
-            console.log(login_res);
-            if(login_res.estado!=true){
-                Alert.alert('Bienvenido',login_res.dato, [
-                    {
-                      text: "Aceptar",
-                      onPress: navigation.push('Chats'),
-                    }
-                ]);
-            }else{
-                // switch(login_res.dato){
-                //     case ''
-                // }
-                console.log(result.dato);
-            }
+            loginIn(state.email,state.password);
         }
+    }
+    const loginIn= async (email,password)=>{
+        await auth.signInWithEmailAndPassword(email,password)
+        .then((result)=>{
+            Alert.alert('Bienvenido',result.user.uid, [
+                {
+                  text: "Aceptar",
+                  onPress: navigation.push('Chats'),
+                }
+            ]);
+        })
+        .catch((error)=>{
+            switch(error.code){
+                case 'auth/user-not-found':
+                    Alert.alert('Atención','Parece que este usuario no existe!');
+                    break;
+                case 'auth/wrong-password':
+                    Alert.alert('Atención', 'Usuario o contraseña incorrecta.');
+                    break;
+                case 'auth/too-many-requests':
+                    Alert.alert('Atención','El acceso a esta cuenta ha sido bloqueado temporalmente por demasiados intentos fallidos, puedes intentar reestablecer tu contraseña.');
+                    break;
+            }
+            console.log(error.code +' '+error.message);
+        });
     }
     return(
         <>
