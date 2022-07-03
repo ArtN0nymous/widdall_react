@@ -1,8 +1,9 @@
-import { View, Text,ScrollView, ImageBackground, FlatList } from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 export default function Interfaz(){
     const styles = CSS.styles;
+    const portada = require('./img/sebas.jpg');
     var perfil = require('./img/default_profile.jpg');
     const data = [
         {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
@@ -30,7 +31,7 @@ export default function Interfaz(){
         <>
             <View style={styles.contenedor_usu}>
                 <ScrollView>
-                    <View style={styles.circle_cont_usu}>
+                    <ImageBackground style={styles.circle_cont_usu} source={portada}>
                         <ImageBackground style={styles.circle_usu} source={perfil}>
                             <Text style={styles.text_1_usu}>Nombre usuario</Text>
                             <Text style={styles.text_small_usu}>usuariosejemplo@gmail.com</Text>
@@ -38,8 +39,9 @@ export default function Interfaz(){
                                 <Text style={styles.optimizar_usu}>Cambiar foto</Text>
                             </View>
                         </ImageBackground>
-                    </View>
-                    <FlatList style={{flex:1, flexDirection:'row',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
+                    </ImageBackground>
+                    <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'}/>
+                    <FlatList style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
                     <View style={styles.cont_target_b_usu}>
                         <View style={styles.target_b}>
                             <View style={styles.target_cont_b_usu}>

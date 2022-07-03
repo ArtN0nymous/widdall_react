@@ -355,7 +355,8 @@ const styles = StyleSheet.create({
         height:270,
         borderRadius:150,
         alignItems:'center',
-        marginTop:25,
+        marginTop:15,
+        marginBottom:10,
         borderColor:'#40DDF3',
         borderWidth:3,
         overflow:'hidden'
@@ -385,6 +386,16 @@ const styles = StyleSheet.create({
         color:'#10A1DC',
         fontSize:17,
         fontWeight:'bold'
+    },
+    input_buscar_usu:{
+        backgroundColor:'white',
+        fontSize:16,
+        flexDirection:'column',
+        margin:3,
+        borderColor:'#40DDF3',
+        borderWidth:1,
+        borderRadius:10,
+        textAlign:'center'
     }
     /*Usuarios.js END */
 });

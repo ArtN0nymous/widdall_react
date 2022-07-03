@@ -1,39 +1,23 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Button, TextInput, Image, StyleSheet,Alert } from "react-native";
+import { View, Text, Input_per, Image,Alert,TouchableOpacity,Animated,TextInput } from "react-native";
 import { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import * as Animatable from 'react-native-animatable';
 import firebase from "../src/database/firebase";
 import CSS from './Styles';
 import Funciones from "./Funciones";
 export default function({navigation}){
+    const Lineargra_per = Animatable.createAnimatableComponent(LinearGradient);
+    const Input_per = Animatable.createAnimatableComponent(TextInput);
     const db = firebase.db;
     const auth = firebase.auth;
     var styles = CSS.styles;
     const App = Funciones.App;
-    function getdata(){
-        /**
-         * TRAER DATOS CONVERTIR A JSON
-         */
-        console.log(`Contenido de las variables: Nombre: ${state.name}, Password: ${state.password}, Confirm password: ${state.password2}`);
-        var datos = new FormData();
-        datos.append('nombre',state.name);
-        datos.append('password',state.password);
-        datos.append('password2',state.password2);
-        fetch('http://192.168.18.229/react-native-php/datos.php',{
-            method:'post',
-            body:datos
-        }).then(res => res.json())
-        /**LEER DATOS */
-        .then(function(result){
-            console.log(result);
-            console.log(result.mensaje);
-        });
-    }
     const [state,setState] = useState({
         email:'',
         name:'',
         password:'',
-        password2:''
+        password2:'',
+        img : require('./img/default_profile.jpg')
     });
 
     const handleChangeText = (name,value)=>{
@@ -78,21 +62,27 @@ export default function({navigation}){
         }
         });
     }
-    var img = require('./img/default_profile.jpg');
+    function selectIMG(){
+        var img_1 = {uri:'https://i.pinimg.com/originals/9d/61/da/9d61da9411f8d03f35d658990daf021f.jpg'};
+        setState({...state,img:img_1});
+        console.log(state.img);
+    }
     return(
         <>
         <LinearGradient style={styles.contenedor_regist} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
-            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
-                <Image source={img} style={styles.img_regist}/>
-            </LinearGradient>
-            <TextInput keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
-            <TextInput keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
-            <TextInput keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
-            <TextInput keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <TouchableOpacity activeOpacity={0.6} onPress={selectIMG}>
+                <Lineargra_per animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
+                    <Image source={state.img} style={styles.img_regist}/>
+                </Lineargra_per>
+            </TouchableOpacity>
+            <Input_per animation='bounceInRight' keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
+            <Input_per animation='bounceInLeft' keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <Input_per animation='bounceInRight' keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <Input_per animation='bounceInLeft' keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
-                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
+                <Lineargra_per animation='bounceInUp' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>
-                </LinearGradient>
+                </Lineargra_per>
             </TouchableOpacity>
         </LinearGradient>
         </>
