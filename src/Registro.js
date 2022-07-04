@@ -54,7 +54,7 @@ export default function({navigation}){
             setState({...state,loading_display:{
                 display:'none'
             }});
-            navigation.push('Login');
+            navigation.goBack();
         }).catch((err)=>{
             setState({...state,loading_display:{
                 display:'none'
