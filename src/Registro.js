@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch } from "react-native";
+import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator } from "react-native";
 import { useState } from "react";
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,24 +20,28 @@ export default function({navigation}){
         password:'',
         password2:'',
         img : require('./img/default_profile.jpg'),
-        switch:false
+        loading:false,
+        loading_display:{
+            display:'none'
+        }
     });
 
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
     }
-    function handleChangeSwitch (value){
-        if(value!=true){
-            setState({...state,switch:true});
-        }else{
-            setState({...state,switch:false});
-        }
-    }
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     function checarDatos(){
         var result = App.newUser(state.email,state.name,state.password,state.password2);
+        setState({...state,loading_display:{
+            display:'flex'
+        }});
         if(result.estado!=false){
             saveUser();
         }else{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
             Alert.alert(result.dato,result.message);
         }
     }
@@ -47,8 +51,14 @@ export default function({navigation}){
             usuario:state.name,
             url_photo:''
         }).then((result)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
             navigation.push('Login');
         }).catch((err)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
     }
@@ -62,6 +72,9 @@ export default function({navigation}){
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode+' '+errorMessage);
+          setState({...state,loading_display:{
+            display:'none'
+            }});
           switch(errorCode){
             case 'auth/email-already-in-use':
                 Alert.alert('Ups!','Parece que este usuario ya está registrado intenta iniciar sesión.');
@@ -83,7 +96,7 @@ export default function({navigation}){
         let pickerResult = await ImagePicker.launchImageLibraryAsync();
         console.log(pickerResult);
         setState({...state,img:{uri:pickerResult.uri}});
-        saveImg();
+        //saveImg();
     }
     const saveImg = async ()=>{
         let storageRef = storage.ref('Perfiles');
@@ -107,15 +120,22 @@ export default function({navigation}){
             </TouchableOpacity>
             <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
             <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
-            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={state.switch} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
-            <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={state.switch} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
-            <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={state.switch ? "#f5dd4b" : "#f4f3f4"}
+            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <View style={styles.contenedor_switch}>
+                <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
+                <Switch
+                trackColor={{ false: "purple", true: "#81b0ff" }}
+                thumbColor={isEnabled ? "purple" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={(value)=>handleChangeSwitch(value)}
-                value={state.switch}
-            />
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+                />
+            </View>
+            <View style={[styles.loading_contenedor,state.loading_display]}>
+                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                <Text style={styles.loading_text}>Cargando</Text>
+            </View>
             <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                 <LinearGradient animation='bounceInUp' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>

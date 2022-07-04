@@ -132,6 +132,41 @@ const styles = StyleSheet.create({
     },
     /*--Login.js END--*/
     /*--Registro.js BEGIN--*/
+    loading_contenedor:{
+        width:dimension('W',100),
+        height:dimension('H',100),
+        position:'absolute',
+        backgroundColor:'rgba(0,0,0,0.60)',
+        zIndex:10,
+        alignItems:'center'
+    },
+    loading:{
+        backgroundColor:'white',
+        borderRadius:10,
+        width:100,
+        height:100,
+        position:'absolute',
+        top:dimension('H',20)
+    },
+    loading_text:{
+        fontSize:13,
+        color:'black',
+        top:dimension('H',145)
+    },
+    contenedor_switch:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'rgba(0,0,0,0.15)',
+        marginTop:10,
+        borderRadius:10
+    },
+    texto_switch:{
+        fontSize:17,
+        color:'white',
+        fontWeight:'bold',
+        marginLeft:3
+    },
     contenedor_regist:{
         flex:1,
         alignItems:'center'

@@ -21,6 +21,7 @@ export default{
     firebase,
     db,
     Storage,
-    get_auth
+    get_auth,
+    auth
 };
 

@@ -48,10 +48,12 @@ class App{
     static newUser(email,name,pass,pass2){
         if(email!=""){
             let e = App.validarEmail(email);
+            console.log(email);
             if(e!=false){
                 if(name!=""){
                     if(pass!=""){
                         if(pass2!=""){
+                            console.log(pass+pass2);
                             let p = App.validadPass(pass,pass2);
                             if(p!=false){
                                 return datos;
