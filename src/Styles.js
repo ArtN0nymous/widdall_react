@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopEndRadius:15,
         borderTopLeftRadius:15,
-        flexDirection:'column',
+        flexDirection:'row',
         justifyContent:'center'
     },
     cont_target_b_usu:{
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     input_buscar_usu:{
         backgroundColor:'white',
         fontSize:16,
-        flexDirection:'column',
+        flexDirection:'row',
         margin:3,
         borderColor:'#40DDF3',
         borderWidth:1,
