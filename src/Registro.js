@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image,Alert,TouchableOpacity,Animated,TextInput } from "react-native";
+import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch } from "react-native";
 import { useState } from "react";
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,11 +19,19 @@ export default function({navigation}){
         name:'',
         password:'',
         password2:'',
-        img : require('./img/default_profile.jpg')
+        img : require('./img/default_profile.jpg'),
+        switch:false
     });
 
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
+    }
+    function handleChangeSwitch (value){
+        if(value!=true){
+            setState({...state,switch:true});
+        }else{
+            setState({...state,switch:false});
+        }
     }
     function checarDatos(){
         var result = App.newUser(state.email,state.name,state.password,state.password2);
@@ -99,8 +107,15 @@ export default function({navigation}){
             </TouchableOpacity>
             <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
             <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
-            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
-            <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={state.switch} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={state.switch} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+            <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={state.switch ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(value)=>handleChangeSwitch(value)}
+                value={state.switch}
+            />
             <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                 <LinearGradient animation='bounceInUp' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>
