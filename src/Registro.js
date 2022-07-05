@@ -94,15 +94,18 @@ export default function({navigation}){
         }
     
         let pickerResult = await ImagePicker.launchImageLibraryAsync();
-        console.log(pickerResult);
         setState({...state,img:{uri:pickerResult.uri}});
-        //saveImg();
+        if(pickerResult.uri!=""){
+            saveImg(pickerResult.uri);
+        }
     }
-    const saveImg = async ()=>{
-        let storageRef = storage.ref('Perfiles');
-        await storageRef.child('Imagenes/'+'1').put(state.img).then(function(snapshot){
-            snapshot.ref.getDownloadURL().then(function(imgurl){
-                url = imgurl;
+    const saveImg = async (path)=>{
+        let file = await fetch(path).then(r => r.blob());
+        let array = path.split('/');
+        console.log(array[array.length-1]);
+        await firebase.firebase.storage().ref('Perfiles').child('Imagenes/'+file.name).put(file).then( async function(snapshot){
+             await snapshot.ref.getDownloadURL().then(function(imgurl){
+                var url = imgurl;
                 console.log(url);
             });
         }).catch((error)=>{
