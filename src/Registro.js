@@ -11,8 +11,8 @@ export default function({navigation}){
     // const Input_per = Animatable.createAnimatableComponent(TextInput);
     const db = firebase.db;
     const auth = firebase.auth;
-    const storage = firebase.Storage;
     var styles = CSS.styles;
+    const storage = firebase.firebase.storage();
     const App = Funciones.App;
     const [state,setState] = useState({
         email:'',
@@ -20,10 +20,12 @@ export default function({navigation}){
         password:'',
         password2:'',
         img : require('./img/default_profile.jpg'),
+        path:'',
         loading:false,
         loading_display:{
             display:'none'
-        }
+        },
+        url_photo:''
     });
 
     const handleChangeText = (name,value)=>{
@@ -45,11 +47,36 @@ export default function({navigation}){
             Alert.alert(result.dato,result.message);
         }
     }
-    const guardar= async () =>{
-        await db.collection('users').add({
-            email:state.email,
-            usuario:state.name,
-            url_photo:''
+    const addingUsu= async (uid) =>{
+        let usuario = "";
+        let existe = false;
+        await db.collection('users').doc('ids').get().then((doc)=>{
+            usuario= doc.data().users;
+        }).catch((error)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            alert(error.code+' '+error.message);
+        });
+        if(usuario!=""){
+            var array = usuario.split(',');
+            for(var i in array){
+                if(array[i]==uid){
+                    existe = true;
+                }
+            }
+            if(existe!=true){
+                usuario=usuario+uid+',';
+                guardar(usuario);
+            }
+        }else{
+            usuario= uid+',';
+            guardar(usuario);
+        }
+    }
+    const guardar= async(usuarios)=>{
+        await db.collection('users').doc('ids').set({
+            usuarios:usuarios
         }).then((result)=>{
             setState({...state,loading_display:{
                 display:'none'
@@ -62,11 +89,25 @@ export default function({navigation}){
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
     }
+    const updateProfile = async(user,url)=>{
+        await user.updateProfile({
+        displayName: state.name,
+        photoURL: url
+        }).then(() => {
+            addingUsu(user.uid);
+        }).catch((error) => {
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            Alert.alert('Atención','Ha ocurrido un error!: '+error.message);
+        }); 
+    }
     const saveUser=async()=>{
         await auth.createUserWithEmailAndPassword(state.email, state.password)
         .then((userCredential) => {
           const user = userCredential.user;
-          guardar();
+          saveImg(state.path,user);
+          //guardar();
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -94,22 +135,23 @@ export default function({navigation}){
         }
     
         let pickerResult = await ImagePicker.launchImageLibraryAsync();
-        setState({...state,img:{uri:pickerResult.uri}});
-        if(pickerResult.uri!=""){
-            saveImg(pickerResult.uri);
-        }
+        setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri});
     }
-    const saveImg = async (path)=>{
+    const saveImg = async (path,user)=>{
         let file = await fetch(path).then(r => r.blob());
         let array = path.split('/');
-        console.log(array[array.length-1]);
-        await firebase.firebase.storage().ref('Perfiles').child('Imagenes/'+file.name).put(file).then( async function(snapshot){
+        let name = array[array.length-1];
+        await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
              await snapshot.ref.getDownloadURL().then(function(imgurl){
                 var url = imgurl;
-                console.log(url);
+                setState({...state,url_photo:url});
+                updateProfile(user,url);
             });
         }).catch((error)=>{
             console.log(error.code+' '+error.message);
+            setState({...state,loading_display:{
+                display:'none'
+            }});
             alert("error: " + error.message);
         });
     }
