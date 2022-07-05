@@ -4,7 +4,6 @@ import Messages from "./Message";
 import { FontAwesome5 } from "@expo/vector-icons";
 export default function BandejaMessages({navigation}){
     var styles = CSS.styles;
-    var fondo = require('./img/fondo.png');
     var messages =[
         {
             user:'Usuario1',
