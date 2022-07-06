@@ -19,32 +19,6 @@ class App{
           return false;
         }
     }
-    static checkUser(email,password){
-        console.log(password);
-        if(email!=""){
-            if(password!=""){
-                var valido = App.validarEmail(email);
-                if(valido!=true){
-                    datos.estado=false;
-                    datos.dato='email';
-                    datos.message = 'Ingresa una dirección de correo valida.';
-                    return datos;
-                }else{
-                    return datos;
-                }
-            }else{
-                datos.estado=false;
-                datos.dato='password';
-                datos.message = 'Debes ingresar una contraseña.';
-                return datos;
-            }
-        }else{
-            datos.estado=false;
-            datos.dato='email';
-            datos.message = 'El campo de correo no puede estar vacío.';
-            return datos;
-        }
-    }
 }
 export default{
     App

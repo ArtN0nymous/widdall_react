@@ -20,11 +20,19 @@ export default function Login({navigation}){
         setState({...state,[name]:value});
     }
     function checarDatos(){
-        var result = App.checkUser(state.email,state.password);
-        if(result.estado!=true){
-            Alert.alert('Atención', result.message);
+        if(state.email!=""){
+            if(state.password!=""){
+                var valido = App.validarEmail(state.email);
+                if(valido!=false){
+                    loginIn(state.email,state.password);
+                }else{
+                    Alert.alert('Atención','Ingrese euna direccion de correo valida.');
+                }
+            }else{
+                Alert.alert('Atención','Debe ingresar una contraseña.');
+            }
         }else{
-            loginIn(state.email,state.password);
+            Alert.alert('Atención','El correo no puede estar vacío.');
         }
     }
     const loginIn= async (email,password)=>{
