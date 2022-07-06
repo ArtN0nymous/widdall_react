@@ -20,7 +20,7 @@ export default function({navigation}){
         password:'',
         password2:'',
         img : require('./img/default_profile.jpg'),
-        path:'',
+        path:null,
         loading:false,
         loading_display:{
             display:'none'
@@ -34,45 +34,67 @@ export default function({navigation}){
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     function checarDatos(){
-        var result = App.newUser(state.email,state.name,state.password,state.password2);
-        setState({...state,loading_display:{
-            display:'flex'
-        }});
-        if(result.estado!=false){
-            saveUser();
+        if(state.path!=''&&state.path!=null){
+            if(state.email!=""){
+                let e = App.validarEmail(state.email);
+                if(e!=false){
+                    if(state.name!=""){
+                        if(state.password!=""){
+                            if(state.password2!=""){
+                                let p = App.validadPass(state.password,state.password2);
+                                if(p!=false){
+                                    setState({...state,loading_display:{
+                                        display:'flex'
+                                    }});
+                                    saveUser();
+                                }else{
+                                    Alert.alert('Atención','Verifique su contraseña, debe ser mayor a 10 caracteres o no coincide.');
+                                }
+                            }else{
+                                Alert.alert('Atención','Verifique su contraseña.');
+                            }
+                        }else{
+                            Alert.alert('Atención','Su contraseña no puede estar vacía.');
+                        }
+                    }else{
+                        Alert.alert('Atención','Debe ingresar un nombre de usuario.');
+                    }
+                }else{
+                    Alert.alert('Atención','Ingrese una direccion de correo valida.');
+                }
+            }else{
+                Alert.alert('Atención','Su correo no puede estar vacío.');
+            }
         }else{
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            Alert.alert(result.dato,result.message);
+            Alert.alert('Atención', 'debe seleccioanr una imagen de perfil.');
         }
     }
     const addingUsu= async (uid) =>{
         let usuario = "";
         let existe = false;
         await db.collection('users').doc('ids').get().then((doc)=>{
-            usuario= doc.data().users;
+            usuario= doc.data().usuarios;
+            if(usuario!=""){
+                var array = usuario.split(',');
+                for(var i in array){
+                    if(array[i]==uid){
+                        existe = true;
+                    }
+                }
+                if(existe!=true){
+                    usuario=usuario+uid+',';
+                    guardar(usuario);
+                }
+            }else{
+                usuario= uid+',';
+                guardar(usuario);
+            }
         }).catch((error)=>{
             setState({...state,loading_display:{
                 display:'none'
             }});
             alert(error.code+' '+error.message);
         });
-        if(usuario!=""){
-            var array = usuario.split(',');
-            for(var i in array){
-                if(array[i]==uid){
-                    existe = true;
-                }
-            }
-            if(existe!=true){
-                usuario=usuario+uid+',';
-                guardar(usuario);
-            }
-        }else{
-            usuario= uid+',';
-            guardar(usuario);
-        }
     }
     const guardar= async(usuarios)=>{
         await db.collection('users').doc('ids').set({
