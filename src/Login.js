@@ -1,8 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, TextInput, Text, Image } from "react-native";
+import { View, TextInput, Text, Image,Switch } from "react-native";
 import { TouchableOpacity } from "react-native";
 import firebase from '../src/database/firebase';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 import CSS from './Styles'
 import Funciones from './Funciones';
@@ -16,8 +16,21 @@ export default function Login({navigation}){
         email:'',
         password:''
     });
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const handleChangeText=(name,value)=>{
         setState({...state,[name]:value});
+    }
+    useEffect(()=>{
+        verifyUserState();
+    });
+    const verifyUserState = ()=>{
+        const user = auth.currentUser;
+        if(user!=null){
+            navigation.push('Chats');
+        }else{
+            console.log('Ningun usuario logeado');
+        }
     }
     function checarDatos(){
         if(state.email!=""){
@@ -69,7 +82,17 @@ export default function Login({navigation}){
                     <Image source={img} style={styles.imagen_login}/>
                 </LinearGradient>
                 <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} keyboardType='email-address' style={styles.inputs_login} onChangeText={(value)=>handleChangeText('email',value)}/>
-                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs_login} secureTextEntry={true} onChangeText={(value)=>handleChangeText('password',value)}/>
+                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs_login} secureTextEntry={isEnabled?false:true} onChangeText={(value)=>handleChangeText('password',value)}/>
+                <View style={styles.contenedor_switch}>
+                    <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
+                    <Switch
+                    trackColor={{ false: "purple", true: "#81b0ff" }}
+                    thumbColor={isEnabled ? "purple" : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleSwitch}
+                    value={isEnabled}
+                    />
+                </View>
                 <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                     <View  style={styles.boton_login}>
                         <View style={{justifyContent:'center', alignItems:'center', height:40}}>
