@@ -14,7 +14,10 @@ export default function Login({navigation}){
     var styles = CSS.styles;
     const [state,setState]= useState({
         email:'',
-        password:''
+        password:'',
+        loading_display:{
+            display:'none'
+        }
     });
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -25,6 +28,9 @@ export default function Login({navigation}){
         verifyUserState();
     });
     const verifyUserState = ()=>{
+        setState({...state,loading_display:{
+            display:'flex'
+        }});
         const user = auth.currentUser;
         if(user!=null){
             navigation.push('Chats');
@@ -92,6 +98,10 @@ export default function Login({navigation}){
                     onValueChange={toggleSwitch}
                     value={isEnabled}
                     />
+                </View>
+                <View style={[styles.loading_contenedor,state.loading_display]}>
+                    <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                    <Text style={styles.loading_text}>Cargando</Text>
                 </View>
                 <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                     <View  style={styles.boton_login}>
