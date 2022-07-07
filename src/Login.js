@@ -2,7 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, TextInput, Text, Image,Switch } from "react-native";
 import { TouchableOpacity } from "react-native";
 import firebase from '../src/database/firebase';
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { Alert } from "react-native";
 import CSS from './Styles'
 import Funciones from './Funciones';
@@ -14,29 +14,12 @@ export default function Login({navigation}){
     var styles = CSS.styles;
     const [state,setState]= useState({
         email:'',
-        password:'',
-        loading_display:{
-            display:'none'
-        }
+        password:''
     });
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const handleChangeText=(name,value)=>{
         setState({...state,[name]:value});
-    }
-    useEffect(()=>{
-        verifyUserState();
-    });
-    const verifyUserState = ()=>{
-        setState({...state,loading_display:{
-            display:'flex'
-        }});
-        const user = auth.currentUser;
-        if(user!=null){
-            navigation.push('Chats');
-        }else{
-            console.log('Ningun usuario logeado');
-        }
     }
     function checarDatos(){
         if(state.email!=""){
@@ -98,10 +81,6 @@ export default function Login({navigation}){
                     onValueChange={toggleSwitch}
                     value={isEnabled}
                     />
-                </View>
-                <View style={[styles.loading_contenedor,state.loading_display]}>
-                    <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
-                    <Text style={styles.loading_text}>Cargando</Text>
                 </View>
                 <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
                     <View  style={styles.boton_login}>
