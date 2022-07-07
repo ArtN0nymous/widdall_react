@@ -3,7 +3,6 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import {getAuth} from 'firebase/auth';
-import Storage from 'firebase/storage';
 const firebaseConfig = {
   apiKey: "AIzaSyC-n4fR96D2J5GaTLiICHmNIvV7mCCCcMY",
   authDomain: "widdall.firebaseapp.com",
@@ -20,7 +19,6 @@ const get_auth = getAuth();
 export default{
     firebase,
     db,
-    Storage,
     get_auth,
     auth
 };
