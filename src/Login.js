@@ -16,7 +16,7 @@ export default function Login({navigation}){
         email:'',
         password:'',
         loading_display:{
-            display:'flex'
+            display:'none'
         }
     });
     const [isEnabled, setIsEnabled] = useState(false);

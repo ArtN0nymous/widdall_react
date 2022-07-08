@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator } from "react-native";
+import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator, Button } from "react-native";
 import { useState } from "react";
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,7 +25,10 @@ export default function({navigation}){
         loading_display:{
             display:'none'
         },
-        url_photo:''
+        url_photo:'',
+        open_display:{
+            display:'none'
+        }
     });
 
     const handleChangeText = (name,value)=>{
@@ -148,16 +151,36 @@ export default function({navigation}){
         }
         });
     }
+    const uiPicker=()=>{
+        setState({...state,open_display:{display:'flex'}})
+    }
+    function cancel(){
+        setState({...state,open_display:{display:'none'}})
+    }
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
         if (permissionResult.granted === false) {
+            cancel();
           alert("Permission to access camera roll is required!");
           return;
+        }else{
+            let pickerResult = await ImagePicker.launchImageLibraryAsync();
+            setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
         }
-    
-        let pickerResult = await ImagePicker.launchImageLibraryAsync();
-        setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri});
+    }
+    let openCamera = async ()=>{
+        console.log('camera intent');
+        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if(permissionResult.granted === false){
+            cancel();
+            alert('Permisos para usar la cama´ra requeridos !');
+            return;
+        }else{
+            let pickerResult = await ImagePicker.launchCameraAsync();
+            console.log(pickerResult);
+            setState({...state,img:{uri:pickerResult.uir}, path:pickerResult.uri,open_display:{display:'none'}});
+        }
     }
     const saveImg = async (path,user)=>{
         let file = await fetch(path).then(r => r.blob());
@@ -180,7 +203,7 @@ export default function({navigation}){
     return(
         <>
         <LinearGradient style={styles.contenedor_regist} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
-            <TouchableOpacity activeOpacity={0.6} onPress={openImagePickerAsync}>
+            <TouchableOpacity activeOpacity={0.6} onPress={uiPicker}>
                 <LinearGradient animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
                     <Image source={state.img} style={styles.img_regist}/>
                 </LinearGradient>
@@ -203,8 +226,27 @@ export default function({navigation}){
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                 <Text style={styles.loading_text}>Cargando</Text>
             </View>
+            <View style={[styles.loading_contenedor,state.open_display,{zIndex:9}]}>
+                <View style={{ width:200,top:100, zIndex:10, justifyContent:'center', alignItems:'center', backgroundColor:'rgba(255,255,255,0.2)', borderRadius:10}}>
+                    <TouchableOpacity onPress={cancel}>
+                        <View style={styles.btn_cancel_regist}>
+                            <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={0.6} onPress={openCamera}>
+                        <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
+                            <Text style={styles.texts_regist}>Cámara</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={0.6} onPress={openImagePickerAsync}>
+                        <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
+                            <Text style={styles.texts_regist}>Galería</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+            </View>
             <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
-                <LinearGradient animation='bounceInUp' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
+                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
                     <Text style={styles.texts_regist}>Registrarme</Text>
                 </LinearGradient>
             </TouchableOpacity>

@@ -172,14 +172,14 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     img_regist:{
-        width:70,
-        height:70,
+        width:200,
+        height:200,
         borderRadius:90
     },
     border_image_regist:{
         marginTop:10,
-        width: 103,
-        height: 103,
+        width: 230,
+        height: 230,
         borderRadius: 40,
         padding: 0,
         overflow: 'hidden',
@@ -212,6 +212,26 @@ const styles = StyleSheet.create({
         alignItems:'center',
         borderColor:'#0B2379',
         borderWidth:2
+    },
+    open_btn_regist:{
+        width:100,
+        height:40,
+        borderRadius:5,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'#0B2379',
+        borderWidth:2,
+        marginBottom:10
+    },
+    btn_cancel_regist:{
+        width:30,
+        height:30, 
+        backgroundColor:'rgba(255,255,255,0.2)',
+        borderRadius:50,
+        justifyContent:'center',
+        alignItems:'center',
+        left:dimension('W',30),
+        margin:5
     },
     /*--Registro.js END--*/
     /*--BandejaMessages.js BEGIN--*/
