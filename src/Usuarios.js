@@ -29,7 +29,7 @@ export default function Interfaz(){
     }
     const leerUsuarios= async () =>{
         let usuarios = "";
-        db.collection("users").doc('ids')
+        /*db.collection("users").doc('ids')
         .onSnapshot((snapshot) => {
             // setState({...state,usuarios:snapshot.data().usuarios});
             users = snapshot.data().usuarios;
@@ -46,6 +46,18 @@ export default function Interfaz(){
             }
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
+        });*/
+        firebase.firebase.auth().getAuth().getUsers().then((getUsersResult) => {
+            console.log('Successfully fetched user data:');
+            getUsersResult.users.forEach((userRecord) => {
+                console.log(userRecord);
+            });
+            console.log('Unable to find users corresponding to these identifiers:');
+            getUsersResult.notFound.forEach((userIdentifier) => {
+                console.log(userIdentifier);
+            });
+        }).catch((error) => {
+            console.log('Error fetching user data:', error);
         });
     }
     const numColums = 2;
