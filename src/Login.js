@@ -1,8 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, TextInput, Text, Image,Switch } from "react-native";
+import { View, TextInput, Text, Image,Switch, ActivityIndicator } from "react-native";
 import { TouchableOpacity } from "react-native";
 import firebase from '../src/database/firebase';
-import { useState} from "react";
+import { useState, useEffect} from "react";
 import { Alert } from "react-native";
 import CSS from './Styles'
 import Funciones from './Funciones';
@@ -14,12 +14,27 @@ export default function Login({navigation}){
     var styles = CSS.styles;
     const [state,setState]= useState({
         email:'',
-        password:''
+        password:'',
+        loading_display:{
+            display:'flex'
+        }
     });
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const handleChangeText=(name,value)=>{
         setState({...state,[name]:value});
+    }
+    useEffect(
+        ()=>verify_user_logedIn()
+    );
+    function verify_user_logedIn(){
+        var user = auth.currentUser;
+        if(user!=null){
+            navigation.push('Chats');
+        }else{
+            console.log('Falta quitar loading :)');
+            return;
+        }
     }
     function checarDatos(){
         if(state.email!=""){
@@ -91,6 +106,10 @@ export default function Login({navigation}){
                 </TouchableOpacity>
                 <Text style={{color:'white',fontSize:15,marginBottom:10}} onPress={()=>navigation.push('Registro')}>Registrarme ?</Text>
             </LinearGradient>
+            <View style={[styles.loading_contenedor,state.loading_display]}>
+                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                <Text style={styles.loading_text}>Cargando</Text>
+            </View>
         </View>
         </>
     );

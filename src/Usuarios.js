@@ -1,19 +1,52 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput } from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
+import firebase from "./database/firebase";
+import { useEffect, useState } from "react";
 export default function Interfaz(){
     const styles = CSS.styles;
+    const db = firebase.db;
+    const storage = firebase.firebase.storage();
+    var users = null;
+    const auth = firebase.get_auth;
     const portada = require('./img/sebas.jpg');
     var perfil = require('./img/default_profile.jpg');
     const data = [
         {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
     ];
+    const [state,setState]=useState({
+        usuarios:''
+    });
+    useEffect(
+        ()=>{leerUsuarios()}
+    );
     const formatData=(data,numColums)=>{
         const n_filas = Math.floor(data.length/numColums);
 
         let n_element_lastrow = data.length - (n_filas);
         
         return data;
+    }
+    const leerUsuarios= async () =>{
+        let usuarios = "";
+        db.collection("users").doc('ids')
+        .onSnapshot((snapshot) => {
+            // setState({...state,usuarios:snapshot.data().usuarios});
+            users = snapshot.data().usuarios;
+            let array = users.split(',');
+            let perfiles = null;
+            for(var i in array){
+                auth.getUser(array[i]).then((userRecord) => {
+                    // See the UserRecord reference doc for the contents of userRecord.
+                    console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
+                })
+                .catch((error) => {
+                    console.log('Error fetching user data:', error);
+                });
+            }
+        }, (error) => {
+            Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
+        });
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
