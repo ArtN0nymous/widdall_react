@@ -13,6 +13,7 @@ const firebaseConfig = {
   measurementId: "G-GSNBHKGD3V"
 };
 var app = firebase.initializeApp(firebaseConfig);
+firebase.firestore().settings({ experimentalForceLongPolling: true, merge:true });
 const db = app.firestore();
 const auth = app.auth();
 const get_auth = getAuth();

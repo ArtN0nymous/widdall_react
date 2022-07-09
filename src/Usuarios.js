@@ -47,18 +47,6 @@ export default function Interfaz(){
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });*/
-        firebase.firebase.auth().getAuth().getUsers().then((getUsersResult) => {
-            console.log('Successfully fetched user data:');
-            getUsersResult.users.forEach((userRecord) => {
-                console.log(userRecord);
-            });
-            console.log('Unable to find users corresponding to these identifiers:');
-            getUsersResult.notFound.forEach((userIdentifier) => {
-                console.log(userIdentifier);
-            });
-        }).catch((error) => {
-            console.log('Error fetching user data:', error);
-        });
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
