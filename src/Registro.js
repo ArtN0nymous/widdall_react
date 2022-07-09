@@ -37,6 +37,7 @@ export default function({navigation}){
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     function checarDatos(){
+        /**PASO 1 REVISAR DATOS */
         if(state.path!=''&&state.path!=null){
             if(state.email!=""){
                 let e = App.validarEmail(state.email);
@@ -72,34 +73,8 @@ export default function({navigation}){
             Alert.alert('Atención', 'debe seleccioanr una imagen de perfil.');
         }
     }
-    const addingUsu= async (uid) =>{
-        let usuario = "";
-        let existe = false;
-        await db.collection('users').doc('ids').get().then((doc)=>{
-            usuario= doc.data().usuarios;
-            if(usuario!=""){
-                var array = usuario.split(',');
-                for(var i in array){
-                    if(array[i]==uid){
-                        existe = true;
-                    }
-                }
-                if(existe!=true){
-                    usuario=usuario+uid+',';
-                    guardar(usuario);
-                }
-            }else{
-                usuario= uid+',';
-                guardar(usuario);
-            }
-        }).catch((error)=>{
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            alert(error.code+' '+error.message);
-        });
-    }
-    const guardar= async(usuarios)=>{
+    /*const guardar= async(usuarios)=>{
+        /**PASO 6 GUARDAR USUARIO EN FIRESTORE
         await db.collection('users').doc('ids').set({
             usuarios:usuarios
         }).then((result)=>{
@@ -113,21 +88,9 @@ export default function({navigation}){
             }});
             Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
         });
-    }
-    const updateProfile = async(user,url)=>{
-        await user.updateProfile({
-        displayName: state.name,
-        photoURL: url
-        }).then(() => {
-            addingUsu(user.uid);
-        }).catch((error) => {
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            Alert.alert('Atención','Ha ocurrido un error!: '+error.message);
-        }); 
-    }
+    }*/
     const saveUser=async()=>{
+        /**PASO 2 REGISTRAR USUARIO */
         await auth.createUserWithEmailAndPassword(state.email, state.password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -149,6 +112,83 @@ export default function({navigation}){
                 Alert.alert('Atención','El acceso a esta cuenta ha sido bloqueado temporalmente por demasiados intentos fallidos, puedes intentar reestablecer tu contraseña.');
                 break;
         }
+        });
+    }
+    const saveImg = async (path,user)=>{
+        /**PASO 3 GUARDAR IMAGEN DEL USUARIO */
+        let file = await fetch(path).then(r => r.blob());
+        let array = path.split('/');
+        let name = array[array.length-1];
+        await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
+             await snapshot.ref.getDownloadURL().then(function(imgurl){
+                var url = imgurl;
+                setState({...state,url_photo:url});
+                updateProfile(user,url);
+            });
+        }).catch((error)=>{
+            console.log(error.code+' '+error.message);
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            alert("error: " + error.message);
+        });
+    }
+    const updateProfile = async(user,url)=>{
+        /**PASO 4 ACTUALIZAR PERFIL DEL USUARIO */
+        await user.updateProfile({
+        displayName: state.name,
+        photoURL: url
+        }).then(() => {
+            addingUsu(user.uid,url,state.name);
+        }).catch((error) => {
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            Alert.alert('Atención','Ha ocurrido un error!: '+error.message);
+        }); 
+    }
+    const addingUsu= async (uid,url,name) =>{
+        /**PASO 5 GUARDAR USUARIO EN FIRESTORE */
+        let usuario = "";
+        let existe = false;
+        /*await db.collection('users').doc('ids').get().then((doc)=>{
+            usuario= doc.data().usuarios;
+            if(usuario!=""){
+                var array = usuario.split(',');
+                for(var i in array){
+                    if(array[i]==uid){
+                        existe = true;
+                    }
+                }
+                if(existe!=true){
+                    usuario=usuario+uid+',';
+                    guardar(usuario);
+                }
+            }else{
+                usuario= uid+',';
+                guardar(usuario);
+            }
+        }).catch((error)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            alert(error.code+' '+error.message);
+        });*/
+        await db.collection('users').doc(uid).set({
+            url_photo:url,
+            url_portada:'',
+            chats:'',
+            displayName:name
+        }).then((result)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            navigation.goBack();
+        }).catch((error)=>{
+            setState({...state,loading_display:{
+                display:'none'
+            }});
+            alert(error.code+' '+error.message);
         });
     }
     const uiPicker=()=>{
@@ -181,24 +221,6 @@ export default function({navigation}){
             console.log(pickerResult);
             setState({...state,img:{uri:pickerResult.uir}, path:pickerResult.uri,open_display:{display:'none'}});
         }
-    }
-    const saveImg = async (path,user)=>{
-        let file = await fetch(path).then(r => r.blob());
-        let array = path.split('/');
-        let name = array[array.length-1];
-        await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
-             await snapshot.ref.getDownloadURL().then(function(imgurl){
-                var url = imgurl;
-                setState({...state,url_photo:url});
-                updateProfile(user,url);
-            });
-        }).catch((error)=>{
-            console.log(error.code+' '+error.message);
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            alert("error: " + error.message);
-        });
     }
     return(
         <>
