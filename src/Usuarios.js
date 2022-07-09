@@ -36,7 +36,8 @@ export default function Interfaz(){
                 let user = {
                     username:doc.data().displayName,
                     url_photo:doc.data().url_photo,
-                    url_portada:doc.data().url_portada
+                    url_portada:doc.data().url_portada,
+                    descripcion:doc.data().descripcion
                 }
                 usuarios.push(user);
             });
@@ -65,7 +66,7 @@ export default function Interfaz(){
             <View style={styles.contenido_caja_usu}>
                 <Image style={styles.icon_usu} source={{uri:item.url_photo}}/>
                 <Text style={styles.limpiador_usu}>{item.username}</Text>
-                <Text style={styles.det_lim_usu}>94% de espacio de almacenami...</Text>
+                <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
             </View>
         </View>
         );
@@ -99,7 +100,7 @@ export default function Interfaz(){
                             </View>
                             <View style={styles.row_b_usu}>
                                 <View style={styles.det_atg_b_usu}>
-                                    <Text style={styles.limpieza_b_usu}> Limpieza profunda</Text>
+                                    <Text style={styles.limpieza_b_usu}> Footer</Text>
                                     <Text style={styles.detalles_b_usu}>Realizar un análisis para liberar espacio de almacenamiento</Text>
                                 </View>                                  
                             </View>

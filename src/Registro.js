@@ -19,6 +19,7 @@ export default function({navigation}){
         name:'',
         password:'',
         password2:'',
+        descripcion:'',
         img : require('./img/default_profile.jpg'),
         path:null,
         loading:false,
@@ -45,14 +46,18 @@ export default function({navigation}){
                     if(state.name!=""){
                         if(state.password!=""){
                             if(state.password2!=""){
-                                let p = App.validadPass(state.password,state.password2);
-                                if(p!=false){
-                                    setState({...state,loading_display:{
-                                        display:'flex'
-                                    }});
-                                    saveUser();
+                                if(state.descripcion!=""){
+                                    let p = App.validadPass(state.password,state.password2);
+                                    if(p!=false){
+                                        setState({...state,loading_display:{
+                                            display:'flex'
+                                        }});
+                                        saveUser();
+                                    }else{
+                                        Alert.alert('Atención','Verifique su contraseña, debe ser mayor a 10 caracteres o no coincide.');
+                                    }
                                 }else{
-                                    Alert.alert('Atención','Verifique su contraseña, debe ser mayor a 10 caracteres o no coincide.');
+                                    Alert.alert('Atención','La descripción no puede estar vacía.');
                                 }
                             }else{
                                 Alert.alert('Atención','Verifique su contraseña.');
@@ -178,7 +183,8 @@ export default function({navigation}){
             url_photo:url,
             url_portada:'',
             chats:'',
-            displayName:name
+            displayName:name,
+            descripcion:state.descripcion
         }).then((result)=>{
             setState({...state,loading_display:{
                 display:'none'
@@ -232,6 +238,7 @@ export default function({navigation}){
             </TouchableOpacity>
             <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
             <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput  keyboardType="default" placeholder="Agrega una breve descripción de ti..." placeholderTextColor={'#0B2379'} style={[styles.inputs_regist,{height:50}]} onChangeText={(value)=>handleChangeText('descripcion',value)} multiline={true} maxLength={100}/>
             <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
             <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <View style={styles.contenedor_switch}>
