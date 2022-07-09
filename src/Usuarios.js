@@ -1,4 +1,4 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert } from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 import firebase from "./database/firebase";
@@ -15,7 +15,7 @@ export default function Interfaz(){
         {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
     ];
     const [state,setState]=useState({
-        usuarios:''
+        usuarios:[]
     });
     useEffect(
         ()=>{leerUsuarios()}
@@ -29,10 +29,20 @@ export default function Interfaz(){
     }
     const leerUsuarios= async () =>{
         let usuarios = "";
-        /*db.collection("users").doc('ids')
-        .onSnapshot((snapshot) => {
+        db.collection("users").onSnapshot((snapshot) => {
             // setState({...state,usuarios:snapshot.data().usuarios});
-            users = snapshot.data().usuarios;
+            let usuarios = [];
+            snapshot.forEach((doc)=>{
+                let user = {
+                    username:doc.data().displayName,
+                    url_photo:doc.data().url_photo,
+                    url_portada:doc.data().url_portada
+                }
+                usuarios.push(user);
+            });
+            setState({...state,usuarios:usuarios})
+            //console.log(data);
+            /*users = snapshot.data().usuarios;
             let array = users.split(',');
             let perfiles = null;
             for(var i in array){
@@ -43,18 +53,18 @@ export default function Interfaz(){
                 .catch((error) => {
                     console.log('Error fetching user data:', error);
                 });
-            }
+            }*/
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
-        });*/
+        });
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
             <View style={styles.caja1_usu}>
             <View style={styles.contenido_caja_usu}>
-                <FontAwesome5 style={styles.icon_usu} name='circle' color='red' size={25}/>
-                <Text style={styles.limpiador_usu}>Limpiador</Text>
+                <Image style={styles.icon_usu} source={{uri:item.url_photo}}/>
+                <Text style={styles.limpiador_usu}>{item.username}</Text>
                 <Text style={styles.det_lim_usu}>94% de espacio de almacenami...</Text>
             </View>
         </View>
@@ -106,7 +116,7 @@ export default function Interfaz(){
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
         </>
     );
 }

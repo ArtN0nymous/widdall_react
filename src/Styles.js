@@ -451,6 +451,13 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:10,
         textAlign:'center'
+    },
+    icon_usu:{
+        width:30,
+        height:30,
+        borderWidth:2,
+        borderColor:'red',
+        borderRadius:100
     }
     /*Usuarios.js END */
 });
