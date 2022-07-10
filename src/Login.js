@@ -73,12 +73,25 @@ export default function Login({navigation}){
     const loginIn= async (email,password)=>{
         await auth.signInWithEmailAndPassword(email,password)
         .then((result)=>{
-            Alert.alert('Bienvenido',result.user.uid, [
-                {
-                  text: "Aceptar",
-                  onPress: navigation.push('Chats'),
-                }
-            ]);
+            let uid = result.user.uid;
+            let name = result.user.displayName;
+            try{
+                localstorage.save({
+                    key:'loginState',
+                    data:{
+                        userName:name,
+                        userKey:uid
+                    }
+                });
+                Alert.alert('Bienvenido',result.user.uid, [
+                    {
+                      text: "Aceptar",
+                      onPress: navigation.push('Chats'),
+                    }
+                ]);
+            }catch(e){
+                alert(e);
+            }
         })
         .catch((error)=>{
             switch(error.code){

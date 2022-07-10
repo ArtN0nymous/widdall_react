@@ -58,15 +58,15 @@ export default function Usuarios({navigation}){
                     if(doc.data().url_portada!=''){
                         let user = {
                             username:doc.data().displayName,
-                            url_photo:doc.data().url_photo,
-                            url_portada:doc.data().url_portada,
+                            url_photo:{uri:doc.data().url_photo},
+                            url_portada:{uri:doc.data().url_portada},
                             descripcion:doc.data().descripcion
                         }
                         usuarios.push(user);
                     }else{
                         let user = {
                             username:doc.data().displayName,
-                            url_photo:doc.data().url_photo,
+                            url_photo:{uri:doc.data().url_photo},
                             url_portada:require('./img/sebas.jpg'),
                             descripcion:doc.data().descripcion
                         }
@@ -80,6 +80,7 @@ export default function Usuarios({navigation}){
         });
     }
     const loadProfile=async()=>{
+        console.log('1');
         let perfil = {};
         let uid = null; 
         localstorage.load({
@@ -87,6 +88,7 @@ export default function Usuarios({navigation}){
         }).then((result)=>{
             uid = result.userKey;
             leerUsuarios();
+            /**SI ESTO FUNCIONA NO CARGA LOS USUARIOS */
              async ()=>await db.collection('users').doc(uid).get().then((doc)=>{
                 if(doc.data().url_portada!=''){
                     perfil={
@@ -99,13 +101,14 @@ export default function Usuarios({navigation}){
                     setState({...state,profile:perfil});
                 }else{
                     perfil={
-                        url_photo:doc.data().url_photo,
+                        url_photo:{uri:doc.data().url_photo},
                         url_portada:require('./img/sebas.jpg'),
                         displayName:doc.data().displayName,
                         descripcion:doc.data().descripcion,
                         email:doc.data().email
                     }
                     setState({...state,profile:perfil});
+                    console.log(state.profile);
                 }
             }).catch((error)=>{
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
@@ -122,7 +125,7 @@ export default function Usuarios({navigation}){
         return(
             <View style={styles.caja1_usu}>
             <View style={styles.contenido_caja_usu}>
-                <Image style={styles.icon_usu} source={{uri:item.url_photo}}/>
+                <Image style={styles.icon_usu} source={item.url_photo}/>
                 <Text style={styles.limpiador_usu}>{item.username}</Text>
                 <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
             </View>
