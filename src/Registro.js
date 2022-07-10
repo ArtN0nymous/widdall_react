@@ -1,26 +1,18 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator, Button } from "react-native";
 import { useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import firebase from "../src/database/firebase";
 import CSS from './Styles';
-import Storage from 'react-native-storage';
 import Funciones from "./Funciones";
 export default function({navigation}){
     // const Lineargra_per = Animatable.createAnimatableComponent(LinearGradient);
     // const Input_per = Animatable.createAnimatableComponent(TextInput);
     const db = firebase.db;
     const auth = firebase.auth;
+    const localstorage = Funciones.localstorage;
     var styles = CSS.styles;
-    var localstorage = new Storage ({
-        size:1000,
-        storageBackend: AsyncStorage,
-        defaultExpires: null,
-        enableCache:true,
-    });
-    global.localStorage = localstorage;
     const storage = firebase.firebase.storage();
     const App = Funciones.App;
     const [state,setState] = useState({
@@ -161,7 +153,7 @@ export default function({navigation}){
                         userName:name,
                         userKey:uid
                     }
-                })
+                });
             }catch(e){
                 alert(e);
             }

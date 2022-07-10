@@ -10,6 +10,7 @@ export default function Login({navigation}){
     const db  = firebase.db;
     const auth = firebase.auth;
     const App = Funciones.App;
+    const localstorage = Funciones.localstorage;
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
@@ -24,11 +25,22 @@ export default function Login({navigation}){
     const handleChangeText=(name,value)=>{
         setState({...state,[name]:value});
     }
-    useEffect(
-        ()=>verify_user_logedIn()
-    );
+    useEffect(()=>{
+        verify_user_logedIn();
+    });
     function verify_user_logedIn(){
-        var user = auth.currentUser;
+        var user = '';
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            console.log(result.userKey);
+            user = result.userKey;
+            if(user!=''&& user != null){
+                navigation.push('Chats');
+            }
+        }).catch((err)=>{
+            Alert.alert('Atención','')
+        });
         if(user!=null){
             navigation.push('Chats');
         }else{

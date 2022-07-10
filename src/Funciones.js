@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
 var datos = {
     'estado':true,
     'dato':'',
@@ -20,6 +22,14 @@ class App{
         }
     }
 }
+var localstorage = new Storage ({
+  size:1000,
+  storageBackend: AsyncStorage,
+  defaultExpires: null,
+  enableCache:true,
+});
+global.localStorage = localstorage;
 export default{
-    App
+    App,
+    localstorage
 }
