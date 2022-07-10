@@ -3,11 +3,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 import firebase from "./database/firebase";
 import { useEffect, useState } from "react";
-export default function Interfaz(){
+import Funciones from "./Funciones";
+export default function Usuarios({navigation}){
     const styles = CSS.styles;
     const db = firebase.db;
     const storage = firebase.firebase.storage();
     var users = null;
+    const localstorage= Funciones.localstorage;
     const auth = firebase.get_auth;
     const portada = require('./img/sebas.jpg');
     var perfil = require('./img/default_profile.jpg');
@@ -18,7 +20,7 @@ export default function Interfaz(){
         usuarios:[],
         profile:{
             displayName:'',
-            emial:'',
+            email:'',
             url_photo:'',
             url_portada:''
         }
@@ -58,9 +60,29 @@ export default function Interfaz(){
         });
     }
     const loadProfile=async()=>{
-        let profile = {};
-        await db.collection('users').doc().get().then((doc)=>{
-
+        let perfil = {};
+        let uid = null; 
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            uid = result.userKey;
+        }).catch((error)=>{
+            Alert.alert('Atención','Ha ocurrido un error al verificar su usuario, será redirigido al login.',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
+        });
+        await db.collection('users').doc(uid).get().then((doc)=>{
+            perfil={
+                url_photo:doc.data().url_photo,
+                url_portada:doc.data().url_portada,
+                displayName:doc.data().displayName,
+                descripcion:doc.data().descripcion,
+                email:doc.data().email
+            }
+            setState({...state,profile:perfil});
+        }).catch((error)=>{
+            Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
         });
     }
     const numColums = 2;

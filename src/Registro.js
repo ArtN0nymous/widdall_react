@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import firebase from "../src/database/firebase";
 import CSS from './Styles';
 import Funciones from "./Funciones";
-export default function({navigation}){
+export default function Registro({navigation}){
     // const Lineargra_per = Animatable.createAnimatableComponent(LinearGradient);
     // const Input_per = Animatable.createAnimatableComponent(TextInput);
     const db = firebase.db;
