@@ -23,12 +23,12 @@ export default function Usuarios({navigation}){
             email:'',
             url_photo:'',
             url_portada:''
-        }
+        },
+        uid:''
     });
     useEffect(()=>{
         let abortController = new AbortController();
         loadProfile();
-        leerUsuarios();
         return ()=>{
             abortController.abort();
         }
@@ -46,13 +46,25 @@ export default function Usuarios({navigation}){
 
             let usuarios = [];
             snapshot.forEach((doc)=>{
-                let user = {
-                    username:doc.data().displayName,
-                    url_photo:doc.data().url_photo,
-                    url_portada:doc.data().url_portada,
-                    descripcion:doc.data().descripcion
+                if(state.uid!=doc.id){
+                    if(doc.data().url_portada!=''){
+                        let user = {
+                            username:doc.data().displayName,
+                            url_photo:doc.data().url_photo,
+                            url_portada:doc.data().url_portada,
+                            descripcion:doc.data().descripcion
+                        }
+                        usuarios.push(user);
+                    }else{
+                        let user = {
+                            username:doc.data().displayName,
+                            url_photo:doc.data().url_photo,
+                            url_portada:require('./img/sebas.jpg'),
+                            descripcion:doc.data().descripcion
+                        }
+                        usuarios.push(user);
+                    }
                 }
-                usuarios.push(user);
             });
             setState({...state,usuarios:usuarios})
         }, (error) => {
@@ -66,23 +78,35 @@ export default function Usuarios({navigation}){
             key:'loginState'
         }).then((result)=>{
             uid = result.userKey;
+            leerUsuarios();
+             async ()=>await db.collection('users').doc(uid).get().then((doc)=>{
+                if(doc.data().url_portada!=''){
+                    perfil={
+                        url_photo:doc.data().url_photo,
+                        url_portada:doc.data().url_portada,
+                        displayName:doc.data().displayName,
+                        descripcion:doc.data().descripcion,
+                        email:doc.data().email
+                    }
+                    setState({...state,profile:perfil});
+                }else{
+                    perfil={
+                        url_photo:doc.data().url_photo,
+                        url_portada:require('./img/sebas.jpg'),
+                        displayName:doc.data().displayName,
+                        descripcion:doc.data().descripcion,
+                        email:doc.data().email
+                    }
+                    setState({...state,profile:perfil});
+                }
+            }).catch((error)=>{
+                Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
+            });
         }).catch((error)=>{
             Alert.alert('Atención','Ha ocurrido un error al verificar su usuario, será redirigido al login.',[{
                 text:'Ok',
                 onPress:()=>{navigation.push('Login');}
             }]);
-        });
-        await db.collection('users').doc(uid).get().then((doc)=>{
-            perfil={
-                url_photo:doc.data().url_photo,
-                url_portada:doc.data().url_portada,
-                displayName:doc.data().displayName,
-                descripcion:doc.data().descripcion,
-                email:doc.data().email
-            }
-            setState({...state,profile:perfil});
-        }).catch((error)=>{
-            Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
         });
     }
     const numColums = 2;
@@ -99,10 +123,10 @@ export default function Usuarios({navigation}){
     }
     const header = (
         <>
-            <ImageBackground style={styles.circle_cont_usu} source={portada}>
-                <ImageBackground style={styles.circle_usu} source={perfil}>
-                    <Text style={styles.text_1_usu}>Nombre usuario</Text>
-                    <Text style={styles.text_small_usu}>usuariosejemplo@gmail.com</Text>
+            <ImageBackground style={styles.circle_cont_usu} source={state.profile.url_portada}>
+                <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
+                    <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
+                    <Text style={styles.text_small_usu}>{state.profile.email}</Text>
                     <View style={styles.button_opt_usu}>
                         <Text style={styles.optimizar_usu}>Cambiar foto</Text>
                     </View>

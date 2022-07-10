@@ -26,7 +26,11 @@ export default function Login({navigation}){
         setState({...state,[name]:value});
     }
     useEffect(()=>{
+        let abortController = new AbortController();
         verify_user_logedIn();
+        return ()=>{
+            abortController.abort();
+        }
     });
     function verify_user_logedIn(){
         var user = '';
@@ -39,13 +43,8 @@ export default function Login({navigation}){
                 navigation.push('Chats');
             }
         }).catch((err)=>{
-            Alert.alert('Atención','')
+            console.log(err.message);
         });
-        if(user!=null){
-            navigation.push('Chats');
-        }else{
-            return;
-        }
     }
     function checarDatos(){
         if(state.email!=""){
