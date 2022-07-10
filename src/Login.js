@@ -2,6 +2,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, TextInput, Text, Image,Switch, ActivityIndicator } from "react-native";
 import { TouchableOpacity } from "react-native";
 import firebase from '../src/database/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
 import { useState, useEffect} from "react";
 import { Alert } from "react-native";
 import CSS from './Styles'
@@ -10,7 +12,13 @@ export default function Login({navigation}){
     const db  = firebase.db;
     const auth = firebase.auth;
     const App = Funciones.App;
-    const localstorage = Funciones.localstorage;
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:true,
+    });
+    global.localStorage = localstorage;
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({

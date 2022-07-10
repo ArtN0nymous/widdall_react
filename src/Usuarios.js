@@ -2,6 +2,8 @@ import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Imag
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 import firebase from "./database/firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
 import { useEffect, useState } from "react";
 import Funciones from "./Funciones";
 export default function Usuarios({navigation}){
@@ -9,7 +11,13 @@ export default function Usuarios({navigation}){
     const db = firebase.db;
     const storage = firebase.firebase.storage();
     var users = null;
-    const localstorage= Funciones.localstorage;
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:true,
+    });
+    global.localStorage = localstorage;
     const auth = firebase.get_auth;
     const portada = require('./img/sebas.jpg');
     var perfil = require('./img/default_profile.jpg');
