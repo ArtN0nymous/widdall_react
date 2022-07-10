@@ -32,7 +32,6 @@ export default function Login({navigation}){
         if(user!=null){
             navigation.push('Chats');
         }else{
-            console.log('Falta quitar loading :)');
             return;
         }
     }

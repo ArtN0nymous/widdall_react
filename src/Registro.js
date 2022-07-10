@@ -1,10 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator, Button } from "react-native";
 import { useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import firebase from "../src/database/firebase";
 import CSS from './Styles';
+import Storage from 'react-native-storage';
 import Funciones from "./Funciones";
 export default function({navigation}){
     // const Lineargra_per = Animatable.createAnimatableComponent(LinearGradient);
@@ -12,6 +14,13 @@ export default function({navigation}){
     const db = firebase.db;
     const auth = firebase.auth;
     var styles = CSS.styles;
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:true,
+    });
+    global.localStorage = localstorage;
     const storage = firebase.firebase.storage();
     const App = Funciones.App;
     const [state,setState] = useState({
@@ -78,22 +87,6 @@ export default function({navigation}){
             Alert.alert('Atención', 'debe seleccioanr una imagen de perfil.');
         }
     }
-    /*const guardar= async(usuarios)=>{
-        /**PASO 6 GUARDAR USUARIO EN FIRESTORE
-        await db.collection('users').doc('ids').set({
-            usuarios:usuarios
-        }).then((result)=>{
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            navigation.goBack();
-        }).catch((err)=>{
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            Alert.alert('Atención','Ha ocurrido un error!: '+err.message);
-        });
-    }*/
     const saveUser=async()=>{
         /**PASO 2 REGISTRAR USUARIO */
         await auth.createUserWithEmailAndPassword(state.email, state.password)
@@ -154,31 +147,6 @@ export default function({navigation}){
     }
     const addingUsu= async (uid,url,name) =>{
         /**PASO 5 GUARDAR USUARIO EN FIRESTORE */
-        let usuario = "";
-        let existe = false;
-        /*await db.collection('users').doc('ids').get().then((doc)=>{
-            usuario= doc.data().usuarios;
-            if(usuario!=""){
-                var array = usuario.split(',');
-                for(var i in array){
-                    if(array[i]==uid){
-                        existe = true;
-                    }
-                }
-                if(existe!=true){
-                    usuario=usuario+uid+',';
-                    guardar(usuario);
-                }
-            }else{
-                usuario= uid+',';
-                guardar(usuario);
-            }
-        }).catch((error)=>{
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            alert(error.code+' '+error.message);
-        });*/
         await db.collection('users').doc(uid).set({
             url_photo:url,
             url_portada:'',
@@ -186,6 +154,17 @@ export default function({navigation}){
             displayName:name,
             descripcion:state.descripcion
         }).then((result)=>{
+            try{
+                localstorage.save({
+                    key:'loginState',
+                    data:{
+                        userName:name,
+                        userKey:uid
+                    }
+                })
+            }catch(e){
+                alert(e);
+            }
             setState({...state,loading_display:{
                 display:'none'
             }});

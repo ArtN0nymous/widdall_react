@@ -15,11 +15,22 @@ export default function Interfaz(){
         {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
     ];
     const [state,setState]=useState({
-        usuarios:[]
+        usuarios:[],
+        profile:{
+            displayName:'',
+            emial:'',
+            url_photo:'',
+            url_portada:''
+        }
     });
-    useEffect(
-        ()=>{leerUsuarios()}
-    );
+    useEffect(()=>{
+        let abortController = new AbortController();
+        loadProfile();
+        leerUsuarios();
+        return ()=>{
+            abortController.abort();
+        }
+    },[]);
     const formatData=(data,numColums)=>{
         const n_filas = Math.floor(data.length/numColums);
 
@@ -30,7 +41,7 @@ export default function Interfaz(){
     const leerUsuarios= async () =>{
         let usuarios = "";
         db.collection("users").onSnapshot((snapshot) => {
-            // setState({...state,usuarios:snapshot.data().usuarios});
+
             let usuarios = [];
             snapshot.forEach((doc)=>{
                 let user = {
@@ -42,21 +53,14 @@ export default function Interfaz(){
                 usuarios.push(user);
             });
             setState({...state,usuarios:usuarios})
-            //console.log(data);
-            /*users = snapshot.data().usuarios;
-            let array = users.split(',');
-            let perfiles = null;
-            for(var i in array){
-                auth.getUser(array[i]).then((userRecord) => {
-                    // See the UserRecord reference doc for the contents of userRecord.
-                    console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
-                })
-                .catch((error) => {
-                    console.log('Error fetching user data:', error);
-                });
-            }*/
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
+        });
+    }
+    const loadProfile=async()=>{
+        let profile = {};
+        await db.collection('users').doc().get().then((doc)=>{
+
         });
     }
     const numColums = 2;
