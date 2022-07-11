@@ -5,7 +5,6 @@ import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import { useEffect, useState } from "react";
-import Funciones from "./Funciones";
 export default function Usuarios({navigation}){
     const styles = CSS.styles;
     const db = firebase.db;
@@ -19,24 +18,16 @@ export default function Usuarios({navigation}){
     });
     global.localStorage = localstorage;
     const auth = firebase.get_auth;
-    const portada = require('./img/sebas.jpg');
-    var perfil = require('./img/default_profile.jpg');
     const data = [
         {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
     ];
     const [state,setState]=useState({
         usuarios:[],
-        profile:{
-            displayName:'',
-            email:'',
-            url_photo:'',
-            url_portada:''
-        },
         uid:''
     });
     useEffect(()=>{
         let abortController = new AbortController();
-        loadProfile();
+        leerUsuarios();
         return ()=>{
             abortController.abort();
         }
@@ -51,7 +42,6 @@ export default function Usuarios({navigation}){
     const leerUsuarios= async () =>{
         let usuarios = "";
         db.collection("users").onSnapshot((snapshot) => {
-
             let usuarios = [];
             snapshot.forEach((doc)=>{
                 if(state.uid!=doc.id){
@@ -79,71 +69,46 @@ export default function Usuarios({navigation}){
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });
     }
-    const loadProfile=async()=>{
-        console.log('1');
-        let perfil = {};
-        let uid = null; 
-        localstorage.load({
-            key:'loginState'
-        }).then((result)=>{
-            uid = result.userKey;
-            leerUsuarios();
-            /**SI ESTO FUNCIONA NO CARGA LOS USUARIOS */
-             async ()=>await db.collection('users').doc(uid).get().then((doc)=>{
-                if(doc.data().url_portada!=''){
-                    perfil={
-                        url_photo:doc.data().url_photo,
-                        url_portada:doc.data().url_portada,
-                        displayName:doc.data().displayName,
-                        descripcion:doc.data().descripcion,
-                        email:doc.data().email
-                    }
-                    setState({...state,profile:perfil});
-                }else{
-                    perfil={
-                        url_photo:{uri:doc.data().url_photo},
-                        url_portada:require('./img/sebas.jpg'),
-                        displayName:doc.data().displayName,
-                        descripcion:doc.data().descripcion,
-                        email:doc.data().email
-                    }
-                    setState({...state,profile:perfil});
-                    console.log(state.profile);
-                }
-            }).catch((error)=>{
-                Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
-            });
-        }).catch((error)=>{
-            Alert.alert('Atención','Ha ocurrido un error al verificar su usuario, será redirigido al login.',[{
-                text:'Ok',
-                onPress:()=>{navigation.push('Login');}
-            }]);
-        });
-    }
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
             <View style={styles.caja1_usu}>
-            <View style={styles.contenido_caja_usu}>
-                <Image style={styles.icon_usu} source={item.url_photo}/>
-                <Text style={styles.limpiador_usu}>{item.username}</Text>
-                <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
+                <View style={styles.contenido_caja_usu}>
+                    <Image style={styles.icon_usu} source={item.url_photo}/>
+                    <Text style={styles.limpiador_usu}>{item.username}</Text>
+                    <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
+                </View>
             </View>
-        </View>
         );
     }
     const header = (
         <>
-            <ImageBackground style={styles.circle_cont_usu} source={state.profile.url_portada}>
-                <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
-                    <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
-                    <Text style={styles.text_small_usu}>{state.profile.email}</Text>
-                    <View style={styles.button_opt_usu}>
-                        <Text style={styles.optimizar_usu}>Cambiar foto</Text>
+            <View style={styles.cont_target_b_usu}>
+                <View style={styles.target_b}>
+                    <View style={styles.target_cont_b_usu}>
+                        <View style={{flexDirection:'row'}}>
+                            <View style={styles.icon_target_b_cont_1_usu}>
+                                <View style={styles.icon_target_b_usu}>
+                                    <View style={styles.fondo_icon_target_b_usu}>
+                                        <FontAwesome5 size={13} name='brush' color='white'/>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.row_b_usu}>
+                                <View style={styles.det_atg_b_usu}>
+                                    <Text style={styles.limpieza_b_usu}> Footer</Text>
+                                    <Text style={styles.detalles_b_usu}>Realizar un análisis para liberar espacio de almacenamiento</Text>
+                                </View>                                  
+                            </View>
+                            <View style={styles.icon_target_b_cont_2_usu}>
+                                <View style={styles.icon_target_b_cont_1}>
+                                    <FontAwesome5 size={25} name='angle-right' color='grey'/>
+                                </View>
+                            </View>
+                        </View>
                     </View>
-                </ImageBackground>
-            </ImageBackground>
-            <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'}/>
+                </View>
+            </View>
         </>
     );
     const footer = (
@@ -178,7 +143,7 @@ export default function Usuarios({navigation}){
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
         </>
     );
 }

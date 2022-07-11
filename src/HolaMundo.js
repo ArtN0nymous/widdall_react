@@ -23,6 +23,7 @@ export default function HolaMundo({navigation}){
       <Button title="Login" color='blue' onPress={()=>navigation.push('Login')}/>
       <Button title="Chats" color='purple' onPress={()=>navigation.push('Chats')}/>
       <Button title="Usuario" color='blue' onPress={()=>navigation.push('Usuario')}/>
+      <Button title="Perfil" color='purple' onPress={()=>navigation.push('Perfil')}/>
     </View>
   );
 }
