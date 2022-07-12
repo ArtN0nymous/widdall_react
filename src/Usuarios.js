@@ -109,6 +109,7 @@ export default function Usuarios({navigation}){
                     </View>
                 </View>
             </View>
+            <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'}/>
         </>
     );
     const footer = (
