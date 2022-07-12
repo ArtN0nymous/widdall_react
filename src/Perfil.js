@@ -4,7 +4,7 @@ import Styles from "./Styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import { useState, useEffect } from "react";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 export default function Perfil({navigation}){
     const styles = Styles.styles;
     const db = firebase.db;
@@ -97,11 +97,14 @@ export default function Perfil({navigation}){
     const header = (
         <>
             <ImageBackground style={styles.circle_cont_usu} source={state.profile.url_portada}>
+                <View style={styles.edit_portada}>
+                    <FontAwesome size={25} name='pencil-square-o' color='white'/>
+                </View>
                 <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
                     <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
                     <Text style={styles.text_small_usu}>{state.profile.email}</Text>
                     <View style={styles.button_opt_usu}>
-                        <Text style={styles.optimizar_usu}>Cambiar foto</Text>
+                        <Text style={styles.editar_perfil}>Editar perfil</Text>
                     </View>
                 </ImageBackground>
             </ImageBackground>

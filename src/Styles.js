@@ -399,23 +399,6 @@ const styles = StyleSheet.create({
        justifyContent:'center',
        marginTop:5
     },
-    circle_cont_usu:{
-        flex:0.50,
-        justifyContent:'center',
-        alignItems:'center'
-    },
-    circle_usu:{
-        backgroundColor:'white',
-        width:270,
-        height:270,
-        borderRadius:150,
-        alignItems:'center',
-        marginTop:15,
-        marginBottom:10,
-        borderColor:'#40DDF3',
-        borderWidth:3,
-        overflow:'hidden'
-    },
     text_1_usu:{
         fontSize:20,
         fontWeight:'bold',
@@ -427,20 +410,6 @@ const styles = StyleSheet.create({
         fontSize:12,
         backgroundColor:'rgba(255,255,255,0.2)',
         borderRadius:10
-    },
-    button_opt_usu:{
-        backgroundColor:'#EEF1F3',
-        borderRadius:50,
-        width:145,
-        height:39,
-        alignItems:'center',
-        justifyContent:'center',
-        marginTop:25
-    },
-    optimizar_usu:{
-        color:'#10A1DC',
-        fontSize:17,
-        fontWeight:'bold'
     },
     input_buscar_usu:{
         backgroundColor:'white',
@@ -458,8 +427,50 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderColor:'red',
         borderRadius:100
+    },
+    /*--Usuarios.js END--*/
+    /*--Perfil.js BEGIN--*/
+    circle_cont_usu:{
+        flex:0.50,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    circle_usu:{
+        backgroundColor:'white',
+        width:270,
+        height:270,
+        borderRadius:150,
+        alignItems:'center',
+        marginTop:15,
+        marginBottom:10,
+        borderColor:'#40DDF3',
+        borderWidth:3,
+        overflow:'hidden'
+    },
+    edit_portada:{
+        backgroundColor:'rgba(255,255,255,0.15)',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:5,
+        alignSelf:'flex-end',
+        right:10,
+        top:10
+    },
+    editar_perfil:{
+        color:'#10A1DC',
+        fontSize:17,
+        fontWeight:'bold'
+    },
+    button_opt_usu:{
+        backgroundColor:'rgba(0,0,0,0.15)',
+        borderRadius:50,
+        width:145,
+        height:39,
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:25
     }
-    /*Usuarios.js END */
+    /*--Perfil.js END--*/
 });
 export default{
     styles
