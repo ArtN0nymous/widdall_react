@@ -96,7 +96,7 @@ export default function Usuarios({navigation}){
                             </View>
                             <View style={styles.row_b_usu}>
                                 <View style={styles.det_atg_b_usu}>
-                                    <Text style={styles.limpieza_b_usu}> Footer</Text>
+                                    <Text style={styles.limpieza_b_usu}>HEADER</Text>
                                     <Text style={styles.detalles_b_usu}>Realizar un análisis para liberar espacio de almacenamiento</Text>
                                 </View>                                  
                             </View>
@@ -143,7 +143,7 @@ export default function Usuarios({navigation}){
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
         </>
     );
 }
