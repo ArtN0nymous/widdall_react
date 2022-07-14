@@ -469,6 +469,30 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         marginTop:25
+    },
+    ventana_modal:{
+        width:300,
+        height:350,
+        backgroundColor:'white',
+        borderRadius:20,
+        top:30,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    btn_perfil_update:{
+        width:100,
+        height:40,
+        borderRadius:5,
+        marginTop:10,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'#0B2379',
+        borderWidth:2
+    },
+    buton_row_perfil:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center'
     }
     /*--Perfil.js END--*/
 });

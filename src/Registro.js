@@ -45,26 +45,30 @@ export default function Registro({navigation}){
                 let e = App.validarEmail(state.email);
                 if(e!=false){
                     if(state.name!=""){
-                        if(state.password!=""){
-                            if(state.password2!=""){
-                                if(state.descripcion!=""){
-                                    let p = App.validadPass(state.password,state.password2);
-                                    if(p!=false){
-                                        setState({...state,loading_display:{
-                                            display:'flex'
-                                        }});
-                                        saveUser();
+                        if(state.name.length>4){
+                            if(state.password!=""){
+                                if(state.password2!=""){
+                                    if(state.descripcion!=""){
+                                        let p = App.validadPass(state.password,state.password2);
+                                        if(p!=false){
+                                            setState({...state,loading_display:{
+                                                display:'flex'
+                                            }});
+                                            saveUser();
+                                        }else{
+                                            Alert.alert('Atención','Verifique su contraseña, debe ser mayor a 10 caracteres o no coincide.');
+                                        }
                                     }else{
-                                        Alert.alert('Atención','Verifique su contraseña, debe ser mayor a 10 caracteres o no coincide.');
+                                        Alert.alert('Atención','La descripción no puede estar vacía.');
                                     }
                                 }else{
-                                    Alert.alert('Atención','La descripción no puede estar vacía.');
+                                    Alert.alert('Atención','Verifique su contraseña.');
                                 }
                             }else{
-                                Alert.alert('Atención','Verifique su contraseña.');
+                                Alert.alert('Atención','Su contraseña no puede estar vacía.');
                             }
                         }else{
-                            Alert.alert('Atención','Su contraseña no puede estar vacía.');
+                            Alert.alert('Atención','El nombre debe tener al menos 4 ceracteres.');
                         }
                     }else{
                         Alert.alert('Atención','Debe ingresar un nombre de usuario.');
@@ -208,9 +212,9 @@ export default function Registro({navigation}){
                 </LinearGradient>
             </TouchableOpacity>
             <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
-            <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)}/>
+            <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={30}/>
             <TextInput  keyboardType="default" placeholder="Agrega una breve descripción de ti..." placeholderTextColor={'#0B2379'} style={[styles.inputs_regist,{height:50}]} onChangeText={(value)=>handleChangeText('descripcion',value)} multiline={true} maxLength={100}/>
-            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)}/>
+            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)} maxLength={30}/>
             <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
             <View style={styles.contenedor_switch}>
                 <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
