@@ -11,6 +11,7 @@ export default function Perfil({navigation}){
     const styles = Styles.styles;
     const db = firebase.db;
     const auth = firebase.auth;
+    const storage = firebase.firebase.storage();
     var localstorage = new Storage ({
         size:1000,
         storageBackend: AsyncStorage,
@@ -38,7 +39,8 @@ export default function Perfil({navigation}){
         link_image_profile:'',
         loading_state:{display:'none'},
         path:'',
-        oper_display:''
+        oper_display:'',
+        cargando:{display:'none'}
     });
     const uiPicker=(oper)=>{
         switch(oper){
@@ -150,7 +152,7 @@ export default function Perfil({navigation}){
         var name = state.name;
         if(name!=''&&name!=null){
             if(name.length>4){
-
+                updateUser();
             }else{
                 Alert.alert('Atención','El nombre debe tener al menos 4 caracteres.');
             }
@@ -158,6 +160,104 @@ export default function Perfil({navigation}){
             Alert.alert('Atención','Los campos no pueden estar vacios');
         }
     }
+    /**--FIREBASE FUNCTION BEGIN--*/
+    const updateUser = async()=>{
+        /**PASO 1 TRAER USUARIO LOGEADO */
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            let uid = result.uid;
+            let path = state.path;
+            saveImg(path,uid);
+        }).catch((error)=>{
+            Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
+        });
+    }
+    const saveImg = async (path,user)=>{
+        /**PASO 2 ACTUALIZAR IMAGEN DEL USUARIO */
+        setState({...state,cargando:{display:'flex'}});
+        let file = await fetch(path).then(r => r.blob());
+        let array = path.split('/');
+        let name = array[array.length-1];
+        let profile = {};
+        let portada = require('./img/sebas.jpg');   
+        await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
+             await snapshot.ref.getDownloadURL().then(function(imgurl){
+                var url = imgurl;
+                switch(state.oper_display){
+                    case 'perfil':
+                        if(state.profile.url_portada!=portada){
+                            profile = {
+                                displayName:state.profile.displayName,
+                                email:state.profile.email,
+                                url_photo:{uri:url},
+                                url_portada:{uri:state.profile.url_portada}
+                            }
+                        }else{
+                            profile = {
+                                displayName:state.profile.displayName,
+                                email:state.profile.email,
+                                url_photo:{uri:url},
+                                url_portada:portada
+                            }
+                        }
+                        setState({...state,profile:profile});
+                        update(user,url);
+                        break;
+                    case 'portada':
+                        profile = {
+                            displayName:state.profile.displayName,
+                            email:state.profile.email,
+                            url_photo:{uri:state.profile.url_photo},
+                            url_portada:{uri:url}
+                        }
+                        setState({...state,profile:profile});
+                        update(user,url);
+                        break;
+                }
+            });
+        }).catch((error)=>{
+            console.log(error.code+' '+error.message);
+            setState({...state,cargando:{display:'none'}});
+            alert("error: " + error.message);
+        });
+    }
+    const update=async(uid,url)=>{
+        if(state.open_display=='portada'){
+            await db.collection('users').doc(uid).update({
+                url_portada:url
+            }).then((result)=>{
+                setState({
+                    ...state,
+                    cargando:{display:'none'},
+                    open_display:{display:'none'},
+                    open_display_2:{display:'none'}
+                });
+            }).catch((error)=>{
+                setState({...state,cargando:{display:'none'}});
+                Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
+            });
+        }else if(state.oper_display=='perfil'){
+            await db.collection('users').doc(uid).update({
+                displayName:state.name,
+                url_portada:url
+            }).then((result)=>{
+                setState({
+                    ...state,
+                    cargando:{display:'none'},
+                    open_display:{display:'none'},
+                    open_display_2:{display:'none'}
+                });
+            }).catch((error)=>{
+                setState({...state,cargando:{display:'none'}});
+                Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
+            });
+        }else{
+            setState({...state,cargando:{display:'none'}});
+            Alert.alert('Atención','Ha ocurrido un error inesperado.');
+        }
+    };
+    /**--FIREBASE FUNCTION END-- */
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
@@ -224,6 +324,10 @@ export default function Perfil({navigation}){
     return(
         <>
             <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <View style={[styles.loading_contenedor,state.cargando]}>
+                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                <Text style={styles.loading_text}>Cargando</Text>
+            </View>
             <View style={[styles.loading_contenedor,state.loading_state]}>
                 <View style={styles.ventana_modal}>
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>{uiPicker('perfil')}}>

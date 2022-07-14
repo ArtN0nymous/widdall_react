@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 export default function Usuarios({navigation}){
     const styles = CSS.styles;
     const db = firebase.db;
-    const storage = firebase.firebase.storage();
     var users = null;
     var localstorage = new Storage ({
         size:1000,
