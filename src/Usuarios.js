@@ -1,4 +1,5 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image } from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image} from "react-native";
+import { SearchBar } from "react-native-screens";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
 import firebase from "./database/firebase";
@@ -22,7 +23,8 @@ export default function Usuarios({navigation}){
     ];
     const [state,setState]=useState({
         usuarios:[],
-        uid:''
+        uid:'',
+        searchValue:''
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -68,6 +70,17 @@ export default function Usuarios({navigation}){
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });
     }
+    const handleChangeText = (name,value)=>{
+        setState({...state,[name]:value})
+    }
+    const searchFunction = (text) => {
+        const updatedData = state.usuarios.filter((item) => {
+          const item_data = `${item.username.toUpperCase()})`;
+          const text_data = text.toUpperCase();
+          return item_data.indexOf(text_data) > -1;
+        });
+        setState({ usuarios: updatedData, searchValue: text });
+      };
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
@@ -108,7 +121,15 @@ export default function Usuarios({navigation}){
                     </View>
                 </View>
             </View>
-            <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'}/>
+            <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>searchFunction(value)} value={state.searchValue}/>
+            <SearchBar
+                placeholder="Encontrar amigos"
+                lightTheme
+                round
+                value={state.searchValue}
+                onChangeText={(text) => searchFunction(text)}
+                autoCorrect={false}
+            />
         </>
     );
     const footer = (
