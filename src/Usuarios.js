@@ -1,4 +1,4 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image} from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image,TouchableOpacity} from "react-native";
 import { SearchBar } from "react-native-screens";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
@@ -24,7 +24,8 @@ export default function Usuarios({navigation}){
     const [state,setState]=useState({
         usuarios:[],
         uid:'',
-        searchValue:''
+        searchValue:'',
+        contador:0
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -65,7 +66,15 @@ export default function Usuarios({navigation}){
                     }
                 }
             });
-            setState({...state,usuarios:usuarios})
+            try{
+                localstorage.save({
+                    key:'usuarios',
+                    data:usuarios
+                });
+            }catch(e){
+                alert(e.message);
+            }
+            setState({...state,usuarios:usuarios});
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });
@@ -73,14 +82,38 @@ export default function Usuarios({navigation}){
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
     }
-    const searchFunction = (text) => {
-        const updatedData = state.usuarios.filter((item) => {
-          const item_data = `${item.username.toUpperCase()})`;
-          const text_data = text.toUpperCase();
-          return item_data.indexOf(text_data) > -1;
-        });
-        setState({ usuarios: updatedData, searchValue: text });
-      };
+    const searchFunction = (value) => {
+        console.log('este valor es el que llaga primero: '+value);
+        localstorage.load({
+            key:'usuarios'
+        }).then((result)=>{
+            let text = value;
+            const updatedData = result.filter((item) => {
+                const item_data = `${item.username.toUpperCase()})`;
+                const text_data = text.toUpperCase();
+                return item_data.indexOf(text_data) > -1;
+            });
+            console.log('VALOR DE TEXT: '+text);
+            setState({ usuarios: updatedData});
+        }).catch((error)=>{
+            alert('Ha ocurrido un error inesperado, intentalo de nuevo más tarde.');
+        })
+    }
+    const checkSearch=(value)=>{
+        let longitud = value.length;
+        console.log('longitud actual: '+value.length);
+        if(longitud>0){
+            searchFunction(value);
+        }else{
+            localstorage.load({
+                key:'usuarios'
+            }).then((result)=>{
+                setState({...state,usuarios:result,searchValue:''});
+            }).catch((error)=>{
+                alert(error.message);
+            });
+        }
+    }
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
@@ -121,15 +154,14 @@ export default function Usuarios({navigation}){
                     </View>
                 </View>
             </View>
-            <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>searchFunction(value)} value={state.searchValue}/>
-            <SearchBar
-                placeholder="Encontrar amigos"
-                lightTheme
-                round
-                value={state.searchValue}
-                onChangeText={(text) => searchFunction(text)}
-                autoCorrect={false}
-            />
+            <View style={styles.search_bar}>
+                <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)} value={state.searchValue}/>
+                <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
+                    <View style={styles.buton_search}>
+                        <FontAwesome5 size={15} name='search' color='white'/>
+                    </View>
+                </TouchableOpacity>
+            </View>
         </>
     );
     const footer = (

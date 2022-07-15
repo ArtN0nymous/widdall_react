@@ -419,7 +419,8 @@ const styles = StyleSheet.create({
         borderColor:'#40DDF3',
         borderWidth:1,
         borderRadius:10,
-        textAlign:'center'
+        textAlign:'center',
+        width:dimension('W',470)
     },
     icon_usu:{
         width:30,
@@ -428,6 +429,20 @@ const styles = StyleSheet.create({
         borderColor:'red',
         borderRadius:100
     },
+    search_bar:{
+        justifyContent:'center',
+        flexDirection:'row',
+        alignItems:'center',
+        alignSelf:'stretch'
+    },
+    buton_search:{
+        backgroundColor:'skyblue',
+        width:30,
+        height:30,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:10
+    },  
     /*--Usuarios.js END--*/
     /*--Perfil.js BEGIN--*/
     circle_cont_usu:{
