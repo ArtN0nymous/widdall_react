@@ -63,7 +63,7 @@ export default function Perfil({navigation}){
         }
     }
     function cerrar_update(){
-        setState({...state,loading_state:{display:'none'}})
+        setState({...state,loading_state:{display:'none'}});
     }
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -85,7 +85,6 @@ export default function Perfil({navigation}){
             return;
         }else{
             let pickerResult = await ImagePicker.launchCameraAsync();
-            console.log(pickerResult);
             setState({...state,img:{uri:pickerResult.uir}, path:pickerResult.uri,open_display:{display:'none'}});
         }
     }
@@ -126,7 +125,6 @@ export default function Perfil({navigation}){
                         email:doc.data().email
                     }
                     setState({...state,profile:perfil});
-                    console.log(state.profile);
                 }
             }).catch((error)=>{
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
@@ -146,7 +144,7 @@ export default function Perfil({navigation}){
         return data;
     }
     function edit_perfil(){
-        setState({...state,loading_state:{display:'flex'}});
+        setState({...state,loading_state:{display:'flex'},oper_display:'perfil'});
     }
     function checarDatos(){
         var name = state.name;
@@ -157,7 +155,7 @@ export default function Perfil({navigation}){
                 Alert.alert('Atención','El nombre debe tener al menos 4 caracteres.');
             }
         }else{
-            Alert.alert('Atención','Los campos no pueden estar vacios');
+            updateUser();
         }
     }
     /**--FIREBASE FUNCTION BEGIN--*/
@@ -176,54 +174,58 @@ export default function Perfil({navigation}){
     const saveImg = async (path,user)=>{
         /**PASO 2 ACTUALIZAR IMAGEN DEL USUARIO */
         setState({...state,cargando:{display:'flex'}});
-        let file = await fetch(path).then(r => r.blob());
-        let array = path.split('/');
-        let name = array[array.length-1];
-        let profile = {};
-        let portada = require('./img/sebas.jpg');   
-        await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
-             await snapshot.ref.getDownloadURL().then(function(imgurl){
-                var url = imgurl;
-                switch(state.oper_display){
-                    case 'perfil':
-                        if(state.profile.url_portada!=portada){
+        if(path!=''){
+            let file = await fetch(path).then(r => r.blob());
+            let array = path.split('/');
+            let name = array[array.length-1];
+            let profile = {};
+            let portada = require('./img/sebas.jpg');   
+            await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
+                await snapshot.ref.getDownloadURL().then(function(imgurl){
+                    var url = imgurl;
+                    switch(state.oper_display){
+                        case 'perfil':
+                            if(state.profile.url_portada!=portada){
+                                profile = {
+                                    displayName:state.profile.displayName,
+                                    email:state.profile.email,
+                                    url_photo:{uri:url},
+                                    url_portada:{uri:state.profile.url_portada}
+                                }
+                            }else{
+                                profile = {
+                                    displayName:state.profile.displayName,
+                                    email:state.profile.email,
+                                    url_photo:{uri:url},
+                                    url_portada:portada
+                                }
+                            }
+                            setState({...state,profile:profile});
+                            update(user,url);
+                            break;
+                        case 'portada':
                             profile = {
                                 displayName:state.profile.displayName,
                                 email:state.profile.email,
-                                url_photo:{uri:url},
-                                url_portada:{uri:state.profile.url_portada}
+                                url_photo:{uri:state.profile.url_photo},
+                                url_portada:{uri:url}
                             }
-                        }else{
-                            profile = {
-                                displayName:state.profile.displayName,
-                                email:state.profile.email,
-                                url_photo:{uri:url},
-                                url_portada:portada
-                            }
-                        }
-                        setState({...state,profile:profile});
-                        update(user,url);
-                        break;
-                    case 'portada':
-                        profile = {
-                            displayName:state.profile.displayName,
-                            email:state.profile.email,
-                            url_photo:{uri:state.profile.url_photo},
-                            url_portada:{uri:url}
-                        }
-                        setState({...state,profile:profile});
-                        update(user,url);
-                        break;
-                }
+                            setState({...state,profile:profile});
+                            update(user,url);
+                            break;
+                    }
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+                setState({...state,cargando:{display:'none'}});
+                alert("error: " + error.message);
             });
-        }).catch((error)=>{
-            console.log(error.code+' '+error.message);
-            setState({...state,cargando:{display:'none'}});
-            alert("error: " + error.message);
-        });
+        }else{
+            update(user,'');
+        }
     }
     const update=async(uid,url)=>{
-        if(state.open_display=='portada'){
+        if(state.oper_display=='portada'){
             await db.collection('users').doc(uid).update({
                 url_portada:url
             }).then((result)=>{
@@ -238,20 +240,38 @@ export default function Perfil({navigation}){
                 Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
             });
         }else if(state.oper_display=='perfil'){
-            await db.collection('users').doc(uid).update({
-                displayName:state.name,
-                url_portada:url
-            }).then((result)=>{
-                setState({
-                    ...state,
-                    cargando:{display:'none'},
-                    open_display:{display:'none'},
-                    open_display_2:{display:'none'}
+            if(state.name!=''){
+                await db.collection('users').doc(uid).update({
+                    displayName:state.name,
+                    url_photo:url
+                }).then((result)=>{
+                    setState({
+                        ...state,
+                        cargando:{display:'none'},
+                        open_display:{display:'none'},
+                        open_display_2:{display:'none'}
+                    });
+                }).catch((error)=>{
+                    setState({...state,cargando:{display:'none'}});
+                    Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
                 });
-            }).catch((error)=>{
-                setState({...state,cargando:{display:'none'}});
-                Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
-            });
+            }else if(url!=''){
+                await db.collection('users').doc(uid).update({
+                    url_photo:url
+                }).then((result)=>{
+                    setState({
+                        ...state,
+                        cargando:{display:'none'},
+                        open_display:{display:'none'},
+                        open_display_2:{display:'none'}
+                    });
+                }).catch((error)=>{
+                    setState({...state,cargando:{display:'none'}});
+                    Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
+                });
+            }else{
+                alert('NO ha realizado ningún cambio todavia.');
+            }
         }else{
             setState({...state,cargando:{display:'none'}});
             Alert.alert('Atención','Ha ocurrido un error inesperado.');
