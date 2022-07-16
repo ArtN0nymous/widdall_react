@@ -74,7 +74,11 @@ export default function Perfil({navigation}){
           return;
         }else{
             let pickerResult = await ImagePicker.launchImageLibraryAsync();
-            setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+            if(pickerResult.cancelled==true){
+                return;
+            }else{
+                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+            }
         }
     }
     let openCamera = async ()=>{
@@ -85,7 +89,11 @@ export default function Perfil({navigation}){
             return;
         }else{
             let pickerResult = await ImagePicker.launchCameraAsync();
-            setState({...state,img:{uri:pickerResult.uir}, path:pickerResult.uri,open_display:{display:'none'}});
+            if(pickerResult.cancelled==true){
+                return;
+            }else{
+                setState({...state,img:{uri:pickerResult.uri}, path:pickerResult.uri,open_display:{display:'none'}});
+            }
         }
     }
     const handleChangeText = (name,value)=>{
@@ -124,7 +132,7 @@ export default function Perfil({navigation}){
                         descripcion:doc.data().descripcion,
                         email:doc.data().email
                     }
-                    setState({...state,profile:perfil});
+                    setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
                 }
             }).catch((error)=>{
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
@@ -164,16 +172,18 @@ export default function Perfil({navigation}){
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            let uid = result.uid;
+            let uid = result.userKey;
             let path = state.path;
             saveImg(path,uid);
         }).catch((error)=>{
+            console.log('ES AQUI AUI');
             Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
         });
     }
     const saveImg = async (path,user)=>{
         /**PASO 2 ACTUALIZAR IMAGEN DEL USUARIO */
         setState({...state,cargando:{display:'flex'}});
+        console.log('el path trae esto: '+path);
         if(path!=''){
             let file = await fetch(path).then(r => r.blob());
             let array = path.split('/');
@@ -200,7 +210,7 @@ export default function Perfil({navigation}){
                                     url_portada:portada
                                 }
                             }
-                            setState({...state,profile:profile});
+                            setState({...state,profile:profile,img:{uri:state.url_photo}});
                             update(user,url);
                             break;
                         case 'portada':
@@ -210,7 +220,7 @@ export default function Perfil({navigation}){
                                 url_photo:{uri:state.profile.url_photo},
                                 url_portada:{uri:url}
                             }
-                            setState({...state,profile:profile});
+                            setState({...state,profile:profile,img:{uri:state.url_photo}});
                             update(user,url);
                             break;
                     }
@@ -233,14 +243,17 @@ export default function Perfil({navigation}){
                     ...state,
                     cargando:{display:'none'},
                     open_display:{display:'none'},
-                    open_display_2:{display:'none'}
+                    open_display_2:{display:'none'},
+                    loading_state:{display:'none'}
                 });
             }).catch((error)=>{
                 setState({...state,cargando:{display:'none'}});
+                console.log('ES AQUI 2');
                 Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
             });
         }else if(state.oper_display=='perfil'){
-            if(state.name!=''){
+            if(state.name!=''&&url!=''){
+                console.log(uid)
                 await db.collection('users').doc(uid).update({
                     displayName:state.name,
                     url_photo:url
@@ -253,9 +266,11 @@ export default function Perfil({navigation}){
                     });
                 }).catch((error)=>{
                     setState({...state,cargando:{display:'none'}});
+                    console.log('ES AQUI 3');
+                    console.log(error.code+' '+error.message);
                     Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
                 });
-            }else if(url!=''){
+            }else if(url!=''&&state.name==''){
                 await db.collection('users').doc(uid).update({
                     url_photo:url
                 }).then((result)=>{
@@ -263,14 +278,32 @@ export default function Perfil({navigation}){
                         ...state,
                         cargando:{display:'none'},
                         open_display:{display:'none'},
-                        open_display_2:{display:'none'}
+                        open_display_2:{display:'none'},
+                        loading_state:{display:'none'}
                     });
                 }).catch((error)=>{
                     setState({...state,cargando:{display:'none'}});
+                    console.log('ES AQUI 4');
                     Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
                 });
+            }else if(state.name!=''&&url==''){
+                await db.collection('users').doc(uid).update({
+                    displayName:state.name
+                }).then((result)=>{
+                    setState({
+                        ...state,
+                        cargando:{display:'none'},
+                        open_display:{display:'none'},
+                        open_display_2:{display:'none'},
+                        loading_state:{display:'none'}
+                    });
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                    alert('Ha ocurrido un error por favior intentelo de nuevo mas tarde');
+                });
             }else{
-                alert('NO ha realizado ningún cambio todavia.');
+                setState({...state,cargando:{display:'none'}});
+                alert('NO has hecho ningun cambio aún :)');
             }
         }else{
             setState({...state,cargando:{display:'none'}});
@@ -344,7 +377,7 @@ export default function Perfil({navigation}){
     return(
         <>
             <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
-            <View style={[styles.loading_contenedor,state.cargando]}>
+            <View style={[styles.loading_contenedor,state.cargando,{zIndex:13}]}>
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                 <Text style={styles.loading_text}>Cargando</Text>
             </View>
@@ -352,7 +385,7 @@ export default function Perfil({navigation}){
                 <View style={styles.ventana_modal}>
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>{uiPicker('perfil')}}>
                         <LinearGradient animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
-                            <Image source={state.profile.url_photo} style={styles.img_regist}/>
+                            <Image source={state.img} style={styles.img_regist}/>
                         </LinearGradient>
                     </TouchableOpacity>
                     <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={30}/>
