@@ -253,7 +253,6 @@ export default function Perfil({navigation}){
             });
         }else if(state.oper_display=='perfil'){
             if(state.name!=''&&url!=''){
-                console.log(uid)
                 await db.collection('users').doc(uid).update({
                     displayName:state.name,
                     url_photo:url
@@ -262,8 +261,11 @@ export default function Perfil({navigation}){
                         ...state,
                         cargando:{display:'none'},
                         open_display:{display:'none'},
-                        open_display_2:{display:'none'}
+                        open_display_2:{display:'none'},
+                        loading_state:{display:'none'}
                     });
+                    loadProfile();
+                    Alert.alert('Genial !!','has actualizado tu perfil 😎');
                 }).catch((error)=>{
                     setState({...state,cargando:{display:'none'}});
                     console.log('ES AQUI 3');
@@ -392,7 +394,7 @@ export default function Perfil({navigation}){
                     <View style={styles.buton_row_perfil}>
                         <TouchableOpacity activeOpacity={0.6} onPress={cerrar_update}>
                             <LinearGradient colors={['#D55C04', '#D03203', '#B51F02']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.btn_perfil_update}>
-                                <Text style={styles.texts_regist}>Cancelar</Text>
+                                <Text style={styles.texts_regist}>Cerrar</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                         <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
