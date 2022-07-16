@@ -135,7 +135,9 @@ export default function Login({navigation}){
                         </View>
                     </View>
                 </TouchableOpacity>
-                <Text style={{color:'white',fontSize:15,marginBottom:10}} onPress={()=>navigation.push('Registro')}>Registrarme ?</Text>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.push('Registro')}>
+                    <Text style={{color:'white',fontSize:15,marginBottom:10}}>Registrarme ?</Text>
+                </TouchableOpacity>
             </LinearGradient>
             <View style={[styles.loading_contenedor,state.loading_display]}>
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
