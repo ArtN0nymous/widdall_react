@@ -394,7 +394,6 @@ const styles = StyleSheet.create({
        width:173,
        height:100,
        marginLeft:15,
-       backgroundColor:'white',
        borderRadius:15,
        justifyContent:'center',
        marginTop:5
@@ -423,10 +422,10 @@ const styles = StyleSheet.create({
         width:dimension('W',470)
     },
     icon_usu:{
-        width:30,
-        height:30,
+        width:50,
+        height:50,
         borderWidth:2,
-        borderColor:'red',
+        borderColor:'skyblue',
         borderRadius:100
     },
     search_bar:{
@@ -460,6 +459,17 @@ const styles = StyleSheet.create({
         marginBottom:10,
         borderColor:'#40DDF3',
         borderWidth:3,
+        overflow:'hidden'
+    },
+    target_usuarios:{
+        backgroundColor:'white',
+        width:173,
+        height:100,
+        borderRadius:10,
+        alignItems:'center',
+        marginTop:5,
+        marginLeft:15,
+        justifyContent:'center',
         overflow:'hidden'
     },
     edit_portada:{

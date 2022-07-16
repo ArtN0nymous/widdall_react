@@ -117,13 +117,13 @@ export default function Usuarios({navigation}){
     const numColums = 2;
     const renderItem = ({item,index})=>{
         return(
-            <View style={styles.caja1_usu}>
+            <ImageBackground style={styles.target_usuarios}  source={require('./img/sebas.jpg')}>
                 <View style={styles.contenido_caja_usu}>
                     <Image style={styles.icon_usu} source={item.url_photo}/>
                     <Text style={styles.limpiador_usu}>{item.username}</Text>
                     <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
                 </View>
-            </View>
+            </ImageBackground>
         );
     }
     const header = (
