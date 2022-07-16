@@ -77,7 +77,20 @@ export default function Perfil({navigation}){
             if(pickerResult.cancelled==true){
                 return;
             }else{
-                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                if(state.oper_display=='portada'){
+                    console.log(pickerResult.uri);
+                    localstorage.load({
+                        key:'loginState'
+                    }).then((result)=>{
+                        let uid = result.userKey;
+                        setState({...state,path:pickerResult.uri, open_display_2:{display:'none'},cargando:{display:'flex'}});
+                        saveImg(pickerResult.uri,uid);
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }else{
+                    setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                }
             }
         }
     }
@@ -123,7 +136,7 @@ export default function Perfil({navigation}){
                         descripcion:doc.data().descripcion,
                         email:doc.data().email
                     }
-                    setState({...state,profile:perfil});
+                    setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
                 }else{
                     perfil={
                         url_photo:{uri:doc.data().url_photo},
@@ -157,7 +170,7 @@ export default function Perfil({navigation}){
     function checarDatos(){
         var name = state.name;
         if(name!=''&&name!=null){
-            if(name.length>4){
+            if(name.length>=4){
                 updateUser();
             }else{
                 Alert.alert('Atención','El nombre debe tener al menos 4 caracteres.');
@@ -246,6 +259,7 @@ export default function Perfil({navigation}){
                     open_display_2:{display:'none'},
                     loading_state:{display:'none'}
                 });
+                loadProfile();
             }).catch((error)=>{
                 setState({...state,cargando:{display:'none'}});
                 console.log('ES AQUI 2');
@@ -283,6 +297,8 @@ export default function Perfil({navigation}){
                         open_display_2:{display:'none'},
                         loading_state:{display:'none'}
                     });
+                    loadProfile();
+                    Alert.alert('Genial !!','Tu foto de perfil se ha actualizado ⭐');
                 }).catch((error)=>{
                     setState({...state,cargando:{display:'none'}});
                     console.log('ES AQUI 4');
@@ -299,13 +315,15 @@ export default function Perfil({navigation}){
                         open_display_2:{display:'none'},
                         loading_state:{display:'none'}
                     });
+                    loadProfile();
+                    Alert.alert('Genial !!','Tu nombre de usuario se ha actualizado 😁');
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
                     alert('Ha ocurrido un error por favior intentelo de nuevo mas tarde');
                 });
             }else{
                 setState({...state,cargando:{display:'none'}});
-                alert('NO has hecho ningun cambio aún :)');
+                Alert.alert('Atención','NO has hecho ningun cambio aún :)');
             }
         }else{
             setState({...state,cargando:{display:'none'}});
