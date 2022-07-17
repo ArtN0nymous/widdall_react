@@ -47,7 +47,7 @@ export default function Login({navigation}){
         }).then((result)=>{
             console.log(result.userKey);
             user = result.userKey;
-            if(user!=''&& user != null){
+            if(user!=''){
                 navigation.push('Chats');
             }
         }).catch((err)=>{
