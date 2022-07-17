@@ -4,6 +4,8 @@ import { useState } from "react";
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import firebase from "../src/database/firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
 import CSS from './Styles';
 import Funciones from "./Funciones";
 export default function Registro({navigation}){
@@ -11,10 +13,16 @@ export default function Registro({navigation}){
     // const Input_per = Animatable.createAnimatableComponent(TextInput);
     const db = firebase.db;
     const auth = firebase.auth;
-    const localstorage = Funciones.localstorage;
     var styles = CSS.styles;
     const storage = firebase.firebase.storage();
     const App = Funciones.App;
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:true,
+    });
+    global.localStorage = localstorage;
     const [state,setState] = useState({
         email:'',
         name:'',
@@ -160,17 +168,13 @@ export default function Registro({navigation}){
             displayName:name,
             descripcion:state.descripcion
         }).then((result)=>{
-            try{
-                localstorage.save({
-                    key:'loginState',
-                    data:{
-                        userName:name,
-                        userKey:uid
-                    }
-                });
-            }catch(e){
-                alert(e);
-            }
+            localstorage.save({
+                key:'loginState',
+                data:{
+                    userName:name,
+                    userKey:uid
+                }
+            });
             setState({...state,loading_display:{
                 display:'none'
             }});
