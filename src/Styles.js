@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start'
     },
     scroll_messages:{
-        width:dimension('W',140)
+        width:dimension('W',440)
     },
     input_messages:{
         borderColor:'blue',
