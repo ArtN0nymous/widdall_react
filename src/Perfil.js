@@ -29,7 +29,8 @@ export default function Perfil({navigation}){
             displayName:'',
             email:'',
             url_photo:'',
-            url_portada:''
+            url_portada:'',
+            color_portada:''
         },
         uid:'',
         img : require('./img/default_profile.jpg'),
@@ -128,25 +129,15 @@ export default function Perfil({navigation}){
             uid = result.userKey;
             db.collection('users').doc(uid).get().then((doc)=>{
                 state.link_image_profile = doc.data().url_photo;
-                if(doc.data().url_portada!=''){
-                    perfil={
-                        url_photo:{uri:doc.data().url_photo},
-                        url_portada:{uri:doc.data().url_portada},
-                        displayName:doc.data().displayName,
-                        descripcion:doc.data().descripcion,
-                        email:doc.data().email
-                    }
-                    setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
-                }else{
-                    perfil={
-                        url_photo:{uri:doc.data().url_photo},
-                        url_portada:require('./img/sebas.jpg'),
-                        displayName:doc.data().displayName,
-                        descripcion:doc.data().descripcion,
-                        email:doc.data().email
-                    }
-                    setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
+                perfil={
+                    url_photo:{uri:doc.data().url_photo},
+                    url_portada:{uri:doc.data().url_portada},
+                    color_portada:doc.data().color_portada,
+                    displayName:doc.data().displayName,
+                    descripcion:doc.data().descripcion,
+                    email:doc.data().email
                 }
+                setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
             }).catch((error)=>{
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
             });
@@ -213,14 +204,16 @@ export default function Perfil({navigation}){
                                     displayName:state.profile.displayName,
                                     email:state.profile.email,
                                     url_photo:{uri:url},
-                                    url_portada:{uri:state.profile.url_portada}
+                                    url_portada:{uri:state.profile.url_portada},
+                                    color_portada:state.profile.color_portada
                                 }
                             }else{
                                 profile = {
                                     displayName:state.profile.displayName,
                                     email:state.profile.email,
                                     url_photo:{uri:url},
-                                    url_portada:portada
+                                    url_portada:portada,
+                                    color_portada:state.profile.color_portada
                                 }
                             }
                             setState({...state,profile:profile,img:{uri:state.url_photo}});
@@ -231,7 +224,8 @@ export default function Perfil({navigation}){
                                 displayName:state.profile.displayName,
                                 email:state.profile.email,
                                 url_photo:{uri:state.profile.url_photo},
-                                url_portada:{uri:url}
+                                url_portada:{uri:url},
+                                color_portada:state.profile.color_portada
                             }
                             setState({...state,profile:profile,img:{uri:state.url_photo}});
                             update(user,url);
@@ -345,7 +339,7 @@ export default function Perfil({navigation}){
     }
     const header = (
         <>
-            <ImageBackground style={styles.circle_cont_usu} source={state.profile.url_portada}>
+            <ImageBackground style={[styles.circle_cont_usu,{backgroundColor:state.profile.color_portada}]} source={state.profile.url_portada}>
                 <View style={styles.edit_portada}>
                     <TouchableOpacity onPress={()=>{uiPicker('portada')}}>
                         <FontAwesome size={25} name='pencil-square-o' color='white'/>
