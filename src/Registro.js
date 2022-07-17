@@ -141,11 +141,21 @@ export default function Registro({navigation}){
             Alert.alert('Atención','Ha ocurrido un error!: '+error.message);
         }); 
     }
+    function randomHexColor(){
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
     const addingUsu= async (uid,url,name) =>{
         /**PASO 5 GUARDAR USUARIO EN FIRESTORE */
+        let color_portada = randomHexColor();
         await db.collection('users').doc(uid).set({
             url_photo:url,
             url_portada:'',
+            color_portada:color_portada,
             chats:'',
             displayName:name,
             descripcion:state.descripcion

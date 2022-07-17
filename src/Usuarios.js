@@ -52,6 +52,7 @@ export default function Usuarios({navigation}){
                             username:doc.data().displayName,
                             url_photo:{uri:doc.data().url_photo},
                             url_portada:{uri:doc.data().url_portada},
+                            color_portada:doc.data().color_portada,
                             descripcion:doc.data().descripcion
                         }
                         usuarios.push(user);
@@ -59,7 +60,8 @@ export default function Usuarios({navigation}){
                         let user = {
                             username:doc.data().displayName,
                             url_photo:{uri:doc.data().url_photo},
-                            url_portada:require('./img/sebas.jpg'),
+                            url_portada:{uri:doc.data().url_portada},
+                            color_portada:doc.data().color_portada,
                             descripcion:doc.data().descripcion
                         }
                         usuarios.push(user);
@@ -116,15 +118,27 @@ export default function Usuarios({navigation}){
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
-        return(
-            <ImageBackground style={styles.target_usuarios}  source={require('./img/sebas.jpg')}>
-                <View style={styles.contenido_caja_usu}>
-                    <Image style={styles.icon_usu} source={item.url_photo}/>
-                    <Text style={styles.limpiador_usu}>{item.username}</Text>
-                    <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
+        if(item.url_portada.uri!=''){
+            return(
+                <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                    <View style={styles.contenido_caja_usu}>
+                        <Image style={styles.icon_usu} source={item.url_photo}/>
+                        <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                        <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                    </View>
+                </ImageBackground>
+            );
+        }else{
+            return(
+                <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
+                    <View style={styles.contenido_caja_usu}>
+                        <Image style={styles.icon_usu} source={item.url_photo}/>
+                        <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                        <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                    </View>
                 </View>
-            </ImageBackground>
-        );
+            );
+        }
     }
     const header = (
         <>

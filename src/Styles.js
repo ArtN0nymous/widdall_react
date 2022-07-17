@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
         height:50,
         borderWidth:2,
         borderColor:'skyblue',
-        borderRadius:100
+        borderRadius:15
     },
     search_bar:{
         justifyContent:'center',
