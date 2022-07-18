@@ -1,9 +1,11 @@
 // In App.js in a new project
 
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
 //import {NavigationContainer} from 'react-navigation'; 
 //import {createStackNavigator} from 'react-navigation-stack';
 import HolaMundo from '../HolaMundo';
@@ -13,17 +15,8 @@ import BandejaChats from '../BandejaChats';
 import BandejaMessages from '../BandejaMessages';
 import Usuarios from '../Usuarios';
 import Perfil from '../Perfil';
-
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
-
+import {useState} from 'react';
 const Stack = createNativeStackNavigator();
-
 function StackNavigator() {
   return (
     <NavigationContainer screenOptions={{
@@ -38,10 +31,9 @@ function StackNavigator() {
       }
     }}>
       <Stack.Navigator>
-        <Stack.Screen options={{tittle:'Inicio'}} name="holamundo" component={HolaMundo} />
+        <Stack.Screen options={{tittle:'Inicio'}} name="Chats" component={BandejaChats} />
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='Registro' component={Registro}/>
-        <Stack.Screen name='Chats' component={BandejaChats}/>
         <Stack.Screen name='Messages' component={BandejaMessages}/>
         <Stack.Screen name='Usuario' component={Usuarios}/>
         <Stack.Screen name='Perfil' component={Perfil}/>

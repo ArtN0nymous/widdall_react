@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:10,
         textAlign:'center',
-        width:dimension('W',470)
+        width:dimension('W',100)
     },
     icon_usu:{
         width:50,
@@ -518,8 +518,46 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center'
-    }
+    },
     /*--Perfil.js END--*/
+    /*Menu lateral-- */
+    contenedor_chats:{
+        flex:1,
+        alignItems:'center',
+        flexDirection:'column',
+        justifyContent:'flex-start',
+        backgroundColor:'#0B2379'
+    },
+    button_menu_container:{
+        width:45,
+        height:45,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    contenedor_general_chats:{
+        flex:1,
+        flexDirection:'row'
+    },
+    contenedor_menu:{
+        flex:0.5,
+        flexDirection:'column',
+        alignItems:'center',
+        position:'absolute',
+        alignSelf:'flex-end',
+        right:0,
+        backgroundColor:'red',
+        borderTopLeftRadius:15
+    },
+    menu_content:{
+        flex:0.5,
+        alignSelf:'flex-end'
+    },
+    contenedor_boton_menu:{
+        backgroundColor:'yellow',
+        borderRadius:15,
+        margin:5
+    }
+    /*Menu lateral end */
 });
 export default{
     styles

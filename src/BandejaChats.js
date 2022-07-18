@@ -6,6 +6,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
+import Styles from "./Styles";
+import { Entypo } from '@expo/vector-icons'; 
 export default function BandejaChats({navigation}){
     const img = require('./img/default_profile.jpg');
     const auth = firebase.auth;
@@ -16,12 +18,7 @@ export default function BandejaChats({navigation}){
         enableCache:true,
     });
     global.localStorage = localstorage;
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-        {label: 'Apple', value: 'apple'},
-        {label: 'Banana', value: 'banana'}
-    ]);
+    const styles = Styles.styles;
     var chats = [
         {
             usuario:'Usuario',
@@ -29,6 +26,13 @@ export default function BandejaChats({navigation}){
             img:''
         }
     ];
+    function toggle_menu(){
+        if(state.menu_display.display=='none'){
+            setState({...state,menu_display:{display:'flex'}})
+        }else{
+            setState({...state,menu_display:{display:'none'}})
+        }
+    }
     const cerrarSesion=async()=>{
         await auth.signOut().then(()=>{
             localstorage.remove({
@@ -44,14 +48,9 @@ export default function BandejaChats({navigation}){
         });
     }
     return(
-        <>
-            <View style={styles.contenedor}>
+        <View style={styles.contenedor_general_chats}>
+            <View style={styles.contenedor_chats}>
                 <ScrollView>
-                    <TouchableOpacity activeOpacity={0.6} onPress={cerrarSesion}>
-                        <View style={{width:100,height:40,backgroundColor:'white'}}>
-                            <Text>Cerrar Sesión</Text>
-                        </View>
-                    </TouchableOpacity>
                     { 
                         chats.map((p)=>(
                             <TouchableOpacity onPress={()=>navigation.push('Messages')} activeOpacity={0.6}>
@@ -60,24 +59,25 @@ export default function BandejaChats({navigation}){
                         ))
                     }
                 </ScrollView>
-                <DropDownPicker
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                />
             </View>
-        </>
+            <View style={styles.contenedor_menu}>
+                <View style={styles.contenedor_boton_menu}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>toggle_menu()}>
+                        <View style={styles.button_menu_container}>
+                            <Entypo name="menu" size={35} color="black" />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.menu_content}>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>toggle_menu()}>
+                            <View style={styles.button_menu_container}>
+                                <Entypo name="menu" size={35} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </View>
     );
 }
-const styles=StyleSheet.create({
-    contenedor:{
-        flex:1,
-        alignItems:'center',
-        flexDirection:'column',
-        justifyContent:'flex-start',
-        backgroundColor:'#0B2379'
-    }
-});
