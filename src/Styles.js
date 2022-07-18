@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
         alignSelf:'flex-end'
     },
     contenedor_boton_menu:{
-        backgroundColor:'yellow',
+        backgroundColor:'rgba(0,0,0,0.25)',
         borderRadius:15,
         margin:5
     }

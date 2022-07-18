@@ -26,6 +26,9 @@ export default function BandejaChats({navigation}){
             img:''
         }
     ];
+    const [state,setState]=useState({
+        menu_display:{display:'none'}
+    });
     function toggle_menu(){
         if(state.menu_display.display=='none'){
             setState({...state,menu_display:{display:'flex'}})
@@ -60,45 +63,45 @@ export default function BandejaChats({navigation}){
                     }
                 </ScrollView>
             </View>
-            <View style={styles.contenedor_menu}>
-                <View style={styles.contenedor_boton_menu}>
+            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.contenedor_menu}>
+            <View style={styles.contenedor_boton_menu}>
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>toggle_menu()}>
                         <View style={styles.button_menu_container}>
-                            <Entypo name="menu" size={35} color="black" />
+                            <Entypo name="menu" size={35} color="white" />
                         </View>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.menu_content}>
+                <View style={[styles.menu_content,state.menu_display]}>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>toggle_menu()}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.push('Perfil')}>
                             <View style={styles.button_menu_container}>
-                                <Entypo name="menu" size={35} color="black" />
+                                <FontAwesome5 name="user-circle" size={35} color="white" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.push('Usuario')}>
+                            <View style={styles.button_menu_container}>
+                                <Ionicons name="people-circle" size={35} color="white" />
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
                         <TouchableOpacity activeOpacity={0.6}>
                             <View style={styles.button_menu_container}>
-                                <FontAwesome5 name="user-circle" size={35} color="black" />
+                                <Ionicons name="md-settings" size={35} color="white" />
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>cerrarSesion}>
                             <View style={styles.button_menu_container}>
-                                <Ionicons name="people-circle" size={35} color="black" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <View style={styles.button_menu_container}>
-                                <Ionicons name="ios-log-out" size={35} color="black" />
+                                <Ionicons name="ios-log-out" size={35} color="white" />
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </LinearGradient>
         </View>
     );
 }
