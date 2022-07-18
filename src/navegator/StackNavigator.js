@@ -35,7 +35,7 @@ function StackNavigator() {
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='Registro' component={Registro}/>
         <Stack.Screen name='Messages' component={BandejaMessages}/>
-        <Stack.Screen name='Usuario' component={Usuarios}/>
+        <Stack.Screen name='Usuario' options={{title:'Amigos'}} component={Usuarios}/>
         <Stack.Screen name='Perfil' component={Perfil}/>
       </Stack.Navigator>
     </NavigationContainer>

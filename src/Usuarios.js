@@ -1,6 +1,6 @@
 import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image,TouchableOpacity} from "react-native";
 import { SearchBar } from "react-native-screens";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign, FontAwesome5,Ionicons } from '@expo/vector-icons'; 
 import CSS from "./Styles";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,7 +25,8 @@ export default function Usuarios({navigation}){
         usuarios:[],
         uid:'',
         searchValue:'',
-        contador:0
+        contador:0,
+        img:require('./img/default_profile.jpg')
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -142,32 +143,6 @@ export default function Usuarios({navigation}){
     }
     const header = (
         <>
-            <View style={styles.cont_target_b_usu}>
-                <View style={styles.target_b}>
-                    <View style={styles.target_cont_b_usu}>
-                        <View style={{flexDirection:'row'}}>
-                            <View style={styles.icon_target_b_cont_1_usu}>
-                                <View style={styles.icon_target_b_usu}>
-                                    <View style={styles.fondo_icon_target_b_usu}>
-                                        <FontAwesome5 size={13} name='brush' color='white'/>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.row_b_usu}>
-                                <View style={styles.det_atg_b_usu}>
-                                    <Text style={styles.limpieza_b_usu}>HEADER</Text>
-                                    <Text style={styles.detalles_b_usu}>Realizar un análisis para liberar espacio de almacenamiento</Text>
-                                </View>                                  
-                            </View>
-                            <View style={styles.icon_target_b_cont_2_usu}>
-                                <View style={styles.icon_target_b_cont_1}>
-                                    <FontAwesome5 size={25} name='angle-right' color='grey'/>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </View>
             <View style={styles.search_bar}>
                 <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)} value={state.searchValue}/>
                 <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
@@ -180,37 +155,45 @@ export default function Usuarios({navigation}){
     );
     const footer = (
         <>
-            <View style={styles.cont_target_b_usu}>
-                <View style={styles.target_b}>
-                    <View style={styles.target_cont_b_usu}>
-                        <View style={{flexDirection:'row'}}>
-                            <View style={styles.icon_target_b_cont_1_usu}>
-                                <View style={styles.icon_target_b_usu}>
-                                    <View style={styles.fondo_icon_target_b_usu}>
-                                        <FontAwesome5 size={13} name='brush' color='white'/>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.row_b_usu}>
-                                <View style={styles.det_atg_b_usu}>
-                                    <Text style={styles.limpieza_b_usu}> Footer</Text>
-                                    <Text style={styles.detalles_b_usu}>Realizar un análisis para liberar espacio de almacenamiento</Text>
-                                </View>                                  
-                            </View>
-                            <View style={styles.icon_target_b_cont_2_usu}>
-                                <View style={styles.icon_target_b_cont_1}>
-                                    <FontAwesome5 size={25} name='angle-right' color='grey'/>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </View>
+            
         </>
     );
     return(
         <>
             <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <ImageBackground style={styles.contenedor_preview}>
+                <TouchableOpacity>
+                    <View style={[styles.btn_cancel_regist, styles.cancel_preview]}>
+                        <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={styles.content_preview}>
+                    <Image source={state.img} style={styles.image_preview}/>
+                    <View style={styles.options_preview}>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6}>
+                                <View style={styles.button_menu_container}>
+                                    <Ionicons name="people-circle" size={35} color="white" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="star" size={35} color="white" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6}>
+                                <View style={styles.button_menu_container}>
+                                    <Ionicons name="person-add-sharp" size={35} color="white" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </ImageBackground>
         </>
     );
 }

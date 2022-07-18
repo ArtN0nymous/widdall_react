@@ -441,6 +441,41 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         borderRadius:10
+    },
+    contenedor_preview:{
+        width:300,
+        height:250,
+        backgroundColor:'red',
+        alignSelf:'center',
+        borderRadius:15,
+        position:'absolute',
+        borderColor:'white',
+        borderWidth:1,
+        flexDirection:'row',
+        top:20
+    },
+    image_preview:{
+        width:100,
+        height:100,
+        borderRadius:50
+    },
+    options_preview:{
+        backgroundColor:'rgba(255,255,255,0.3)',
+        flexDirection:'row',
+        height:50,
+        width:190,
+        borderRadius:20,
+        justifyContent:'space-between'
+    },
+    content_preview:{
+        flexDirection:'row',
+        alignSelf:'flex-end',
+        margin:5,
+        alignItems:'center'
+    },
+    cancel_preview:{
+        position:'absolute',
+        left:258
     },  
     /*--Usuarios.js END--*/
     /*--Perfil.js BEGIN--*/
@@ -555,7 +590,8 @@ const styles = StyleSheet.create({
     contenedor_boton_menu:{
         backgroundColor:'rgba(0,0,0,0.25)',
         borderRadius:15,
-        margin:5
+        margin:5,
+        justifyContent:'center'
     }
     /*Menu lateral end */
 });
