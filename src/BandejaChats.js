@@ -7,7 +7,7 @@ import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import Styles from "./Styles";
-import { Entypo } from '@expo/vector-icons'; 
+import { Entypo, FontAwesome5,Ionicons } from '@expo/vector-icons'; 
 export default function BandejaChats({navigation}){
     const img = require('./img/default_profile.jpg');
     const auth = firebase.auth;
@@ -73,6 +73,27 @@ export default function BandejaChats({navigation}){
                         <TouchableOpacity activeOpacity={0.6} onPress={()=>toggle_menu()}>
                             <View style={styles.button_menu_container}>
                                 <Entypo name="menu" size={35} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <FontAwesome5 name="user-circle" size={35} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <Ionicons name="people-circle" size={35} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <Ionicons name="ios-log-out" size={35} color="black" />
                             </View>
                         </TouchableOpacity>
                     </View>
