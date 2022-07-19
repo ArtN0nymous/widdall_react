@@ -51,6 +51,7 @@ export default function Usuarios({navigation}){
         
         return data;
     }
+    /*FIREBASE FUNCTIONS */
     const leerUsuarios= async () =>{
         let usuarios = "";
         db.collection("users").onSnapshot((snapshot) => {
@@ -93,6 +94,39 @@ export default function Usuarios({navigation}){
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });
     }
+    const addFriend = async (uid)=>{
+        let uid = '';
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            uid=result.userKey;
+        }).catch((error)=>{
+            console.log(error);
+        });
+        let friends = '';
+        if(uid!=''){
+            db.collection('users').doc(uid).get().then((doc)=>{
+                friends=doc.data().fiends;
+                if(friends!=""){
+                    friends+=','+uid;
+                }else{
+                    friends=uid;
+                }
+                await db.collection('users').doc(uid).update({
+                    friends:friends
+                }).then((result)=>{
+                    setState({...state,display_preview:{display:'none'}});
+                }).catch((error)=>{
+                    Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }else{
+            console.log('Error al cargar el id del usuario');
+        }
+    }
+    /*FIREBASE FUNCTION END */
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
     }
@@ -222,7 +256,7 @@ export default function Usuarios({navigation}){
                                     </TouchableOpacity>
                                 </View>
                                 <View style={styles.contenedor_boton_menu}>
-                                    <TouchableOpacity activeOpacity={0.6}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
                                         <View style={styles.button_menu_container}>
                                             <Ionicons name="person-add-sharp" size={35} color="white" />
                                         </View>
