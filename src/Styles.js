@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     btn_cancel_regist:{
         width:30,
         height:30, 
-        backgroundColor:'rgba(255,255,255,0.2)',
+        backgroundColor:'rgba(0,0,0,0.15)',
         borderRadius:50,
         justifyContent:'center',
         alignItems:'center',
@@ -424,9 +424,8 @@ const styles = StyleSheet.create({
     icon_usu:{
         width:50,
         height:50,
-        borderWidth:2,
-        borderColor:'skyblue',
-        borderRadius:15
+        borderRadius:15,
+        overflow:'hidden'
     },
     search_bar:{
         justifyContent:'center',
@@ -443,27 +442,35 @@ const styles = StyleSheet.create({
         borderRadius:10
     },
     contenedor_preview:{
+        borderRadius:15,
         width:300,
         height:250,
-        backgroundColor:'red',
         alignSelf:'center',
-        borderRadius:15,
         position:'absolute',
         borderColor:'white',
         borderWidth:1,
         flexDirection:'row',
-        top:20
+        top:20,
+        overflow:'hidden'
     },
     image_preview:{
         width:100,
         height:100,
-        borderRadius:50
+        borderRadius:10,
+        overflow:'hidden',
+        marginRight:5
     },
     options_preview:{
         backgroundColor:'rgba(255,255,255,0.3)',
         flexDirection:'row',
+        width:180,
+        borderRadius:20,
+        justifyContent:'space-between'
+    },
+    options_preview_b:{
+        flexDirection:'row',
         height:50,
-        width:190,
+        width:180,
         borderRadius:20,
         justifyContent:'space-between'
     },

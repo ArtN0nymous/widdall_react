@@ -26,7 +26,16 @@ export default function Usuarios({navigation}){
         uid:'',
         searchValue:'',
         contador:0,
-        img:require('./img/default_profile.jpg')
+        img:require('./img/default_profile.jpg'),
+        display_preview:{display:'none'},
+        profile:{
+            uid:'',
+            name:'',
+            url_photo:'',
+            url_portada:'',
+            descripcion:'',
+            color:'white'
+        }
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -50,6 +59,7 @@ export default function Usuarios({navigation}){
                 if(state.uid!=doc.id){
                     if(doc.data().url_portada!=''){
                         let user = {
+                            uid:doc.id,
                             username:doc.data().displayName,
                             url_photo:{uri:doc.data().url_photo},
                             url_portada:{uri:doc.data().url_portada},
@@ -59,6 +69,7 @@ export default function Usuarios({navigation}){
                         usuarios.push(user);
                     }else{
                         let user = {
+                            uid:doc.id,
                             username:doc.data().displayName,
                             url_photo:{uri:doc.data().url_photo},
                             url_portada:{uri:doc.data().url_portada},
@@ -84,6 +95,13 @@ export default function Usuarios({navigation}){
     }
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
+    }
+    function display_preview(){
+        if(state.display_preview.display=='flex'){
+            setState({...state,display_preview:{display:'none'}});
+        }else{
+            setState({...state,display_preview:{display:'flex'}});
+        }
     }
     const searchFunction = (value) => {
         console.log('este valor es el que llaga primero: '+value);
@@ -117,27 +135,43 @@ export default function Usuarios({navigation}){
             });
         }
     }
+    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color)=>{
+        setState({...state,display_preview:{
+            display:'flex'
+        },profile:{
+            uid:uid,
+            name:name,
+            url_photo:url_photo,
+            url_portada:url_portada,
+            descripcion:descripcion,
+            color:color
+        }});
+    }
     const numColums = 2;
     const renderItem = ({item,index})=>{
         if(item.url_portada.uri!=''){
             return(
-                <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
-                    <View style={styles.contenido_caja_usu}>
-                        <Image style={styles.icon_usu} source={item.url_photo}/>
-                        <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
-                        <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
-                    </View>
-                </ImageBackground>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada)}>
+                    <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                        <View style={styles.contenido_caja_usu}>
+                            <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                            <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                            <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                        </View>
+                    </ImageBackground>
+                </TouchableOpacity>
             );
         }else{
             return(
-                <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
-                    <View style={styles.contenido_caja_usu}>
-                        <Image style={styles.icon_usu} source={item.url_photo}/>
-                        <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
-                        <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada)}>
+                    <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
+                        <View style={styles.contenido_caja_usu}>
+                            <Image style={styles.icon_usu} source={item.url_photo}/>
+                            <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                            <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                        </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             );
         }
     }
@@ -161,35 +195,40 @@ export default function Usuarios({navigation}){
     return(
         <>
             <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
-            <ImageBackground style={styles.contenedor_preview}>
-                <TouchableOpacity>
+            <ImageBackground style={[styles.contenedor_preview,state.display_preview,{backgroundColor:state.profile.color}]} source={state.profile.url_portada}>
+                <TouchableOpacity onPress={()=>display_preview()}>
                     <View style={[styles.btn_cancel_regist, styles.cancel_preview]}>
                         <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
                     </View>
                 </TouchableOpacity>
                 <View style={styles.content_preview}>
-                    <Image source={state.img} style={styles.image_preview}/>
+                    <ImageBackground source={state.profile.url_photo} style={styles.image_preview}/>
                     <View style={styles.options_preview}>
-                        <View style={styles.contenedor_boton_menu}>
-                            <TouchableOpacity activeOpacity={0.6}>
-                                <View style={styles.button_menu_container}>
-                                    <Ionicons name="people-circle" size={35} color="white" />
+                        <View style={{flexDirection:'column'}}>
+                            <Text style={{alignSelf:'center',fontSize:17,fontWeight:'bold'}}>{state.profile.name}</Text>
+                            <View style={styles.options_preview_b}>
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6}>
+                                        <View style={styles.button_menu_container}>
+                                            <Ionicons name="people-circle" size={35} color="white" />
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.contenedor_boton_menu}>
-                            <TouchableOpacity activeOpacity={0.6}>
-                                <View style={styles.button_menu_container}>
-                                    <AntDesign name="star" size={35} color="white" />
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="star" size={35} color="white" />
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.contenedor_boton_menu}>
-                            <TouchableOpacity activeOpacity={0.6}>
-                                <View style={styles.button_menu_container}>
-                                    <Ionicons name="person-add-sharp" size={35} color="white" />
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6}>
+                                        <View style={styles.button_menu_container}>
+                                            <Ionicons name="person-add-sharp" size={35} color="white" />
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </View>
