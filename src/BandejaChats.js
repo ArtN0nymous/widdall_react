@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Chat from "./Chat";
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,6 +26,22 @@ export default function BandejaChats({navigation}){
             img:''
         }
     ];
+    useEffect(()=>{
+        let abortController = new AbortController();
+        loadProfile();
+        return ()=>{
+            abortController.abort();
+        }
+    },[]);
+    const loadProfile=async()=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            //
+        }).catch((error)=>{
+            navigation.push('Login');
+        });
+    }
     const [state,setState]=useState({
         menu_display:{display:'none'}
     });
