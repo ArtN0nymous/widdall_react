@@ -95,24 +95,24 @@ export default function Usuarios({navigation}){
         });
     }
     const addFriend = async (uid)=>{
-        let uid = '';
+        let uid_user = '';
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            uid=result.userKey;
+            uid_user=result.userKey;
         }).catch((error)=>{
             console.log(error);
         });
         let friends = '';
-        if(uid!=''){
-            db.collection('users').doc(uid).get().then((doc)=>{
+        if(uid_user!=''){
+            db.collection('users').doc(uid_user).get().then((doc)=>{
                 friends=doc.data().fiends;
                 if(friends!=""){
                     friends+=','+uid;
                 }else{
                     friends=uid;
                 }
-                await db.collection('users').doc(uid).update({
+                db.collection('users').doc(uid_user).update({
                     friends:friends
                 }).then((result)=>{
                     setState({...state,display_preview:{display:'none'}});
