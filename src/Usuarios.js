@@ -35,7 +35,15 @@ export default function Usuarios({navigation}){
             url_portada:'',
             descripcion:'',
             color:'white'
-        }
+        },
+        amigos:'',
+        amigo:(<View style={styles.contenedor_boton_menu}>
+            <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
+                <View style={styles.button_menu_container}>
+                    <Ionicons name="person-add-sharp" size={35} color="white" />
+                </View>
+            </TouchableOpacity>
+        </View>)
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -53,43 +61,51 @@ export default function Usuarios({navigation}){
     }
     /*FIREBASE FUNCTIONS */
     const leerUsuarios= async () =>{
-        let usuarios = "";
+        let id = '';
+        await localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            id= result.userKey;
+        }).catch((error)=>{
+            navigation.push('Login');
+        })
         db.collection("users").onSnapshot((snapshot) => {
             let usuarios = [];
-            snapshot.forEach((doc)=>{
-                if(state.uid!=doc.id){
-                    if(doc.data().url_portada!=''){
+            let amigos = '';
+            db.collection('users').doc(id).get().then((result)=>{
+                amigos = result.data().friends;
+                amigos = amigos.split(',');
+                snapshot.forEach((doc)=>{
+                    if(state.uid!=doc.id){
                         let user = {
                             uid:doc.id,
                             username:doc.data().displayName,
                             url_photo:{uri:doc.data().url_photo},
                             url_portada:{uri:doc.data().url_portada},
                             color_portada:doc.data().color_portada,
-                            descripcion:doc.data().descripcion
+                            descripcion:doc.data().descripcion,
+                            amigo:false
                         }
-                        usuarios.push(user);
-                    }else{
-                        let user = {
-                            uid:doc.id,
-                            username:doc.data().displayName,
-                            url_photo:{uri:doc.data().url_photo},
-                            url_portada:{uri:doc.data().url_portada},
-                            color_portada:doc.data().color_portada,
-                            descripcion:doc.data().descripcion
-                        }
+                        amigos.forEach(element => {
+                            if(element==user.uid){
+                                user.amigo=true;
+                            }
+                        });
                         usuarios.push(user);
                     }
-                }
-            });
-            try{
-                localstorage.save({
-                    key:'usuarios',
-                    data:usuarios
                 });
-            }catch(e){
-                alert(e.message);
-            }
-            setState({...state,usuarios:usuarios});
+                try{
+                    localstorage.save({
+                        key:'usuarios',
+                        data:usuarios
+                    });
+                }catch(e){
+                    alert(e.message);
+                }
+                setState({...state,usuarios:usuarios});
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
         }, (error) => {
             Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
         });
@@ -100,30 +116,64 @@ export default function Usuarios({navigation}){
             key:'loginState'
         }).then((result)=>{
             uid_user=result.userKey;
+            let friends = '';
+            if(uid_user!=''){
+                db.collection('users').doc(uid_user).get().then((doc)=>{
+                    friends=doc.data().friends;
+                    if(friends!=""){
+                        friends+=','+uid;
+                    }else{
+                        friends=uid;
+                    }
+                    db.collection('users').doc(uid_user).update({
+                        friends:friends
+                    }).then((result)=>{
+                        setState({...state,display_preview:{display:'none'}});
+                    }).catch((error)=>{
+                        Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
+                    });
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }else{
+                console.log('Error al cargar el id del usuario');
+            }
         }).catch((error)=>{
             console.log(error);
         });
-        let friends = '';
-        if(uid_user!=''){
-            db.collection('users').doc(uid_user).get().then((doc)=>{
-                friends=doc.data().fiends;
-                if(friends!=""){
-                    friends+=','+uid;
-                }else{
-                    friends=uid;
-                }
-                db.collection('users').doc(uid_user).update({
-                    friends:friends
-                }).then((result)=>{
-                    setState({...state,display_preview:{display:'none'}});
+    }
+    const delFriend=async(uid)=>{
+        if(uid!=''){
+            localstorage.load({
+                key:'loginState'
+            }).then((result)=>{
+                db.collection('users').doc(result.userKey).get().then((doc)=>{
+                    let amigos = doc.data().friends;
+                    console.log('amigos antes: '+amigos);
+                    let array = amigos.split(',');
+                    for(var i in array){
+                        if(array[i]==uid){
+                            array.splice(i,1);
+                        }
+                    }
+                    amigos = array.join();
+                    console.log('amigos despues: '+amigos);
+                    db.collection('users').doc(result.userKey).update({
+                        friends:amigos
+                    }).then((result)=>{
+                        leerUsuarios();
+                        alert('Amigo eliminado');
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
                 }).catch((error)=>{
-                    Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
+                    console.log(error.code+' '+error.message);
                 });
-            }).catch((error)=>{
-                console.log(error.code+' '+error.message);
-            });
+            }).catch((error=>{
+                console.log(error.message);
+            }));
         }else{
-            console.log('Error al cargar el id del usuario');
+            console.log('error');
         }
     }
     /*FIREBASE FUNCTION END */
@@ -169,23 +219,48 @@ export default function Usuarios({navigation}){
             });
         }
     }
-    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color)=>{
-        setState({...state,display_preview:{
-            display:'flex'
-        },profile:{
-            uid:uid,
-            name:name,
-            url_photo:url_photo,
-            url_portada:url_portada,
-            descripcion:descripcion,
-            color:color
-        }});
+    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color,amigo)=>{
+        if(amigo==true){
+            setState({...state,display_preview:{
+                display:'flex'
+            },profile:{
+                uid:uid,
+                name:name,
+                url_photo:url_photo,
+                url_portada:url_portada,
+                descripcion:descripcion,
+                color:color
+            },amigo:(<View style={styles.contenedor_boton_menu_del}>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(state.profile.uid)}>
+                    <View style={styles.button_menu_container}>
+                        <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                    </View>
+                </TouchableOpacity>
+            </View>)});
+        }else if(amigo==false){
+            setState({...state,display_preview:{
+                display:'flex'
+            },profile:{
+                uid:uid,
+                name:name,
+                url_photo:url_photo,
+                url_portada:url_portada,
+                descripcion:descripcion,
+                color:color
+            },amigo:(<View style={styles.contenedor_boton_menu}>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
+                    <View style={styles.button_menu_container}>
+                        <Ionicons name="person-add-sharp" size={35} color="white" />
+                    </View>
+                </TouchableOpacity>
+            </View>)});
+        }
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
         if(item.url_portada.uri!=''){
             return(
-                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada)}>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)}>
                     <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
                         <View style={styles.contenido_caja_usu}>
                             <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
@@ -197,7 +272,7 @@ export default function Usuarios({navigation}){
             );
         }else{
             return(
-                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada)}>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)}>
                     <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                         <View style={styles.contenido_caja_usu}>
                             <Image style={styles.icon_usu} source={item.url_photo}/>
@@ -255,13 +330,7 @@ export default function Usuarios({navigation}){
                                         </View>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={styles.contenedor_boton_menu}>
-                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
-                                        <View style={styles.button_menu_container}>
-                                            <Ionicons name="person-add-sharp" size={35} color="white" />
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
+                                {state.amigo}
                             </View>
                         </View>
                     </View>

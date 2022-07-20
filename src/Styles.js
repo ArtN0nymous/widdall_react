@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:10,
         textAlign:'center',
-        width:dimension('W',100)
+        width:dimension('W',150)
     },
     icon_usu:{
         width:50,
@@ -596,6 +596,12 @@ const styles = StyleSheet.create({
     },
     contenedor_boton_menu:{
         backgroundColor:'rgba(0,0,0,0.25)',
+        borderRadius:15,
+        margin:5,
+        justifyContent:'center'
+    },
+    contenedor_boton_menu_del:{
+        backgroundColor:'rgba(179,2,46,0.25)',
         borderRadius:15,
         margin:5,
         justifyContent:'center'
