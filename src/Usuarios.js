@@ -37,13 +37,23 @@ export default function Usuarios({navigation}){
             color:'white'
         },
         amigos:'',
-        amigo:(<View style={styles.contenedor_boton_menu}>
-            <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
-                <View style={styles.button_menu_container}>
-                    <Ionicons name="person-add-sharp" size={35} color="white" />
-                </View>
-            </TouchableOpacity>
-        </View>)
+        amigo:(
+        <>
+            <View style={styles.contenedor_boton_menu}>
+                <TouchableOpacity activeOpacity={0.6}>
+                    <View style={styles.button_menu_container}>
+                        <AntDesign name="star" size={35} color="white" />
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.contenedor_boton_menu}>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
+                    <View style={styles.button_menu_container}>
+                        <Ionicons name="person-add-sharp" size={35} color="white" />
+                    </View>
+                </TouchableOpacity>
+            </View>
+        </>)
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -230,13 +240,23 @@ export default function Usuarios({navigation}){
                 url_portada:url_portada,
                 descripcion:descripcion,
                 color:color
-            },amigo:(<View style={styles.contenedor_boton_menu_del}>
-                <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(state.profile.uid)}>
-                    <View style={styles.button_menu_container}>
-                        <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+            },amigo:(
+                <>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <AntDesign name="star" size={35} color="gold" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
-            </View>)});
+                    <View style={styles.contenedor_boton_menu_del}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(state.profile.uid)}>
+                            <View style={styles.button_menu_container}>
+                                <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </>)});
         }else if(amigo==false){
             setState({...state,display_preview:{
                 display:'flex'
@@ -247,13 +267,23 @@ export default function Usuarios({navigation}){
                 url_portada:url_portada,
                 descripcion:descripcion,
                 color:color
-            },amigo:(<View style={styles.contenedor_boton_menu}>
-                <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
-                    <View style={styles.button_menu_container}>
-                        <Ionicons name="person-add-sharp" size={35} color="white" />
+            },amigo:(
+                <>
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <AntDesign name="star" size={35} color="white" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
-            </View>)});
+                    <View style={styles.contenedor_boton_menu}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
+                            <View style={styles.button_menu_container}>
+                                <Ionicons name="person-add-sharp" size={35} color="white" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </>)});
         }
     }
     const numColums = 2;
@@ -320,13 +350,6 @@ export default function Usuarios({navigation}){
                                     <TouchableOpacity activeOpacity={0.6}>
                                         <View style={styles.button_menu_container}>
                                             <Ionicons name="people-circle" size={35} color="white" />
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.contenedor_boton_menu}>
-                                    <TouchableOpacity activeOpacity={0.6}>
-                                        <View style={styles.button_menu_container}>
-                                            <AntDesign name="star" size={35} color="white" />
                                         </View>
                                     </TouchableOpacity>
                                 </View>
