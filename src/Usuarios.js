@@ -69,6 +69,9 @@ export default function Usuarios({navigation}){
         
         return data;
     }
+    function cerrarPreview(){
+        setState({...state,display_preview:{display:'none'}});
+    }
     /*FIREBASE FUNCTIONS */
     const leerUsuarios= async () =>{
         let id = '';
@@ -123,6 +126,7 @@ export default function Usuarios({navigation}){
         });
     }
     const addFriend = async (uid)=>{
+        console.log(uid);
         let uid_user = '';
         localstorage.load({
             key:'loginState'
@@ -150,14 +154,16 @@ export default function Usuarios({navigation}){
                 db.collection('users').doc(uid).get().then((doc)=>{
                     let solicitudes = doc.data().solicitudes;
                     if(solicitudes!=''){
-                        solicitudes+=','+uid;
+                        solicitudes=uid+','+solicitudes;
                     }else{
                         solicitudes=uid;
                     }
                     db.collection('users').doc(uid).update({
                         solicitudes:solicitudes
                     }).then((result)=>{
-                        
+                        Alert.alert('Atención','Solicitud enviada',[
+                            { text: "OK", onPress: () => cerrarPreview() }
+                          ]);
                     }).catch((error)=>{
                         console.log('No se ha agregado la solicitud.');
                     })
