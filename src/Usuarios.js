@@ -105,6 +105,8 @@ export default function Usuarios({navigation}){
                     }
                 });
                 try{
+                    console.log('Guardando usuarios localstorage');
+                    console.log(usuarios);
                     localstorage.save({
                         key:'usuarios',
                         data:usuarios
@@ -215,7 +217,6 @@ export default function Usuarios({navigation}){
         }
     }
     const searchFunction = (value) => {
-        console.log('este valor es el que llaga primero: '+value);
         localstorage.load({
             key:'usuarios'
         }).then((result)=>{
@@ -228,7 +229,7 @@ export default function Usuarios({navigation}){
             console.log('VALOR DE TEXT: '+text);
             setState({ usuarios: updatedData});
         }).catch((error)=>{
-            alert('Ha ocurrido un error inesperado, intentalo de nuevo más tarde.');
+            console.log('Ha ocurrido un error inesperado, intentalo de nuevo más tarde.');
         })
     }
     const checkSearch=(value)=>{
