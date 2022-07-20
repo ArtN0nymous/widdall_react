@@ -166,7 +166,8 @@ export default function Registro({navigation}){
             color_portada:color_portada,
             chats:'',
             displayName:name,
-            descripcion:state.descripcion
+            descripcion:state.descripcion,
+            solicitudes:''
         }).then((result)=>{
             localstorage.save({
                 key:'loginState',
