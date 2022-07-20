@@ -128,7 +128,7 @@ export default function Usuarios({navigation}){
             uid_user=result.userKey;
             let friends = '';
             if(uid_user!=''){
-                db.collection('users').doc(uid_user).get().then((doc)=>{
+                /*db.collection('users').doc(uid_user).get().then((doc)=>{
                     friends=doc.data().friends;
                     if(friends!=""){
                         friends+=','+uid;
@@ -144,6 +144,23 @@ export default function Usuarios({navigation}){
                     });
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
+                });*/
+                db.collection('users').doc(uid).get().then((doc)=>{
+                    let solicitudes = doc.data().solicitudes;
+                    if(solicitudes!=''){
+                        solicitudes+=','+uid;
+                    }else{
+                        solicitudes=uid;
+                    }
+                    db.collection('users').doc(uid).update({
+                        solicitudes:solicitudes
+                    }).then((result)=>{
+                        
+                    }).catch((error)=>{
+                        console.log('No se ha agregado la solicitud.');
+                    })
+                }).catch((error)=>{
+                    console.log('NO se encontró el documento para este usuario');
                 });
             }else{
                 console.log('Error al cargar el id del usuario');
