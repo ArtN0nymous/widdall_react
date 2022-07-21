@@ -239,6 +239,32 @@ export default function Usuarios({navigation}){
             console.log('ERROR AL CARGAR LOGINSTATE');
         });
     }
+    const delSolicitud=async(uid)=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            db.collection('users').doc(result.userKey).get().then((doc)=>{
+                let solicitudes = doc.data().solicitudes;
+                let array = solicitudes.split(',');
+                for(var i in array){
+                    if(array[i]==uid){
+                        array.splice(i,1);
+                    }
+                }
+                db.collection('users').doc(result.userKey).update({
+                    solicitudes:array.join()
+                }).then((res)=>{
+                    alert('Solicitud eliminada');
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            navigation.push('Login');
+        });
+    }
     /*FIREBASE FUNCTION END */
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
@@ -387,9 +413,11 @@ export default function Usuarios({navigation}){
                                         </View>
                                         <View style={styles.icon_target_b_cont_2_usu}>
                                             <View style={styles.options_solicitudes}>
-                                                <View style={styles.icon_target_b_cont_1}>
-                                                    <Foundation size={28} name='x' color='grey'/>
-                                                </View>
+                                                <TouchableOpacity onPress={()=>delSolicitud(p.uid)}>
+                                                    <View style={styles.icon_target_b_cont_1}>
+                                                        <Foundation size={28} name='x' color='grey'/>
+                                                    </View>
+                                                </TouchableOpacity>
                                                 <View style={[styles.icon_target_b_cont_1,{backgroundColor:'rgba(29,207,16,0.3)',borderRadius:100}]}>
                                                     <Foundation size={28} name='check' color='green'/>
                                                 </View>
