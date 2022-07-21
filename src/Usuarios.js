@@ -114,10 +114,11 @@ export default function Usuarios({navigation}){
                         key:'usuarios',
                         data:usuarios
                     });
+                    leerSolicitudes(usuarios);
                 }catch(e){
                     alert(e.message);
                 }
-                setState({...state,usuarios:usuarios});
+                //setState({...state,usuarios:usuarios});
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
@@ -211,7 +212,7 @@ export default function Usuarios({navigation}){
             console.log('error');
         }
     }
-    const leerSolicitudes=async()=>{
+    const leerSolicitudes=async(usuarios)=>{
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
@@ -220,13 +221,14 @@ export default function Usuarios({navigation}){
                 if(solicitudes!=''){
                     let solicitudes_profiles = [];
                     let array = solicitudes.split(',');
-                    state.profile.forEach(element => {
+                    usuarios.forEach(element => {
                         for(var i in array){
                             if(element.uid==array[i]){
                                 solicitudes_profiles.push(element);
                             }
                         }
                     });
+                    setState({...state,usuarios:usuarios,solicitudes_profiles:solicitudes_profiles});
                 }else{
                     console.log('No tienes solicitudes');
                 }
@@ -368,44 +370,42 @@ export default function Usuarios({navigation}){
         <LinearGradient colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
             <Text style={styles.texto_solicitudes}>Solicitudes</Text>
             <ScrollView style={styles.scrollview_solicitudes}>
-                {/* { 
+                { 
                     state.solicitudes_profiles.map((p)=>(
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <View style={[styles.cont_target_b_usu,{backgroundColor:'rgba(0,0,0,0)'}]}>
-                                <View style={styles.target_b}>
-                                    <View style={styles.target_cont_b_usu}>
-                                        <View style={{flexDirection:'row'}}>
-                                            <View style={styles.icon_target_b_cont_1_usu}>
-                                                <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={state.img}/>
-                                            </View>
-                                            <View style={styles.row_b_usu}>
-                                                <View style={styles.det_atg_b_usu}>
-                                                    <Text style={styles.limpieza_b_usu}>{state.profile.name}</Text>
-                                                    <Text style={styles.detalles_b_usu}>{state.profile.descripcion}</Text>
-                                                </View>                                  
-                                            </View>
-                                            <View style={styles.icon_target_b_cont_2_usu}>
-                                                <View style={styles.options_solicitudes}>
-                                                    <View style={styles.icon_target_b_cont_1}>
-                                                        <Foundation size={28} name='x' color='grey'/>
-                                                    </View>
-                                                    <View style={[styles.icon_target_b_cont_1,{backgroundColor:'rgba(29,207,16,0.3)',borderRadius:100}]}>
-                                                        <Foundation size={28} name='check' color='green'/>
-                                                    </View>
+                        <View style={[styles.cont_target_b_usu,{backgroundColor:'rgba(0,0,0,0)'}]}>
+                            <View style={styles.target_b}>
+                                <View style={styles.target_cont_b_usu}>
+                                    <View style={{flexDirection:'row'}}>
+                                        <View style={styles.icon_target_b_cont_1_usu}>
+                                            <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={p.url_photo}/>
+                                        </View>
+                                        <View style={styles.row_b_usu}>
+                                            <View style={styles.det_atg_b_usu}>
+                                                <Text style={styles.limpieza_b_usu}>{p.username}</Text>
+                                                <Text style={styles.detalles_b_usu}>{p.descripcion}</Text>
+                                            </View>                                  
+                                        </View>
+                                        <View style={styles.icon_target_b_cont_2_usu}>
+                                            <View style={styles.options_solicitudes}>
+                                                <View style={styles.icon_target_b_cont_1}>
+                                                    <Foundation size={28} name='x' color='grey'/>
+                                                </View>
+                                                <View style={[styles.icon_target_b_cont_1,{backgroundColor:'rgba(29,207,16,0.3)',borderRadius:100}]}>
+                                                    <Foundation size={28} name='check' color='green'/>
                                                 </View>
                                             </View>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-                        </TouchableOpacity>
+                        </View>
                     ))
-                } */}
+                }
             </ScrollView>
         </LinearGradient>
             <View style={styles.search_bar}>
                 <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)}/>
-                <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
+                <TouchableOpacity onPress={()=>leerSolicitudes()} activeOpacity={0.6}>
                     <View style={styles.buton_search}>
                         <FontAwesome5 size={15} name='search' color='white'/>
                     </View>
