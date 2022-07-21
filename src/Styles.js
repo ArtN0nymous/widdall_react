@@ -24,7 +24,11 @@ const styles = StyleSheet.create({
     },
     icon_target_b_cont_1:{
         flexDirection:'column',
-        justifyContent:'center'
+        justifyContent:'center',
+        alignItems:'center',
+        marginLeft:5,
+        width:30,
+        height:30
     },
     icon_target_b_cont_2:{
         flexDirection:'row',
@@ -328,14 +332,14 @@ const styles = StyleSheet.create({
     /*Message.js END--*/
     /*--Usuraios.js BEGIN*/
     fondo_icon_target_b_usu:{
-        backgroundColor:'orange',
-        width:23,
-        height:23,
-        borderRadius:100,
+        width:50,
+        height:50,
+        borderRadius:10,
         justifyContent:'center',
         alignItems:'center',
         borderColor:'grey',
-        borderWidth:1
+        borderWidth:1,
+        overflow:'hidden'
     },
     limpieza_b_usu:{
         fontSize:15,
@@ -348,16 +352,17 @@ const styles = StyleSheet.create({
     icon_target_b_cont_2_usu:{
         flexDirection:'column',
         justifyContent:'center',
-        marginLeft:30
+        marginLeft:0
     },
     det_atg_b_usu:{
         flexDirection:'column',
-        alignItems:'stretch'
+        alignItems:'stretch',
+        width:dimension('W',100)
     },
     row_b_usu:{
         flexDirection:'row',
         marginTop:5,
-        marginLeft:20
+        marginLeft:15
     },
     target_cont_b_usu:{
         marginLeft:10
@@ -483,7 +488,23 @@ const styles = StyleSheet.create({
     cancel_preview:{
         position:'absolute',
         left:258
-    },  
+    },
+    contenedor_solicitudes:{
+        backgroundColor:''
+    },
+    scrollview_solicitudes:{
+        height:200
+    },
+    texto_solicitudes:{
+        fontSize:17,
+        fontWeight:'bold',
+        color:'white',
+        left:10,
+        marginTop:10
+    },
+    options_solicitudes:{
+        flexDirection:'row'
+    },
     /*--Usuarios.js END--*/
     /*--Perfil.js BEGIN--*/
     circle_cont_usu:{
