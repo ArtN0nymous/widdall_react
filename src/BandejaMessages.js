@@ -64,22 +64,22 @@ export default function BandejaMessages({route,navigation}){
             db.collection('chats').doc(chatId).onSnapshot((snapshot)=>{
                 let array = snapshot.data().messages;
                 let mensajes =[];
-                array.forEach((doc) => {
+                for(var i in array){
                     let tipo_mensaje = 0;
-                    if(doc.user!=user){
+                    if(array[i].user!=user){
                         tipo_mensaje=2;
                     }else{
                         tipo_mensaje=1;
                     }
                     let ms ={
-                        hora:doc.hora,
-                        img:doc.img,
-                        message:doc.message,
+                        hora:array[i].hora,
+                        img:array[i].img,
+                        message:array[i].message,
                         type:tipo_mensaje,
-                        user:doc.user
+                        user:array[i].user
                     }
                     mensajes.push(ms);
-                });
+                }
                 setState({...state,messages:mensajes});
             },(error)=>{
                 console.log(error.code+' '+error.message);
@@ -95,16 +95,13 @@ export default function BandejaMessages({route,navigation}){
                 <ScrollView style={styles.scroll_messages}>
                     { 
                         state.messages.map((p)=>(
-                            <TouchableOpacity activeOpacity={0.6}>
+                            <TouchableOpacity activeOpacity={0.9}>
                                 <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.type} hora={p.hora} img={p.img}/>
                             </TouchableOpacity>
                         ))
                     }
                 </ScrollView>
                 <View style={styles.contenedor_input_messa}>
-                    <View style={{flexDirection:'row',alignSelf:'center'}}>
-
-                    </View>
                     <View style={styles.butons_input_message}>
                         <View style={styles.fondo_icon_target_message}>
                             <FontAwesome5 size={13} name='photo-video' color='white'/>
