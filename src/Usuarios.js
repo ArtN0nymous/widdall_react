@@ -340,6 +340,34 @@ export default function Usuarios({navigation}){
             navigation.push('Login');
         });
     }
+    const chatAmigo=(uid)=>{
+        console.log('COMIENZa');
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            let user = result.userKey;
+            let messages = [];
+            let ms = {
+                user:uid,
+                message:'Hola',
+                hora:'00:00',
+                type:1,
+                img:''
+
+            }
+            messages.push(ms);
+            db.collection('chats').doc(uid+':'+user).set({
+                messages:messages
+            }).then((result)=>{
+                console.log('EXITO');
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            console.log(error);
+            navigation.push('Login');
+        });
+    }
     /*FIREBASE FUNCTION END */
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
@@ -474,6 +502,11 @@ export default function Usuarios({navigation}){
                 { 
                     state.solicitudes_profiles.map((p)=>(
                         <View style={[styles.cont_target_b_usu,{backgroundColor:'rgba(0,0,0,0)'}]}>
+                            <TouchableOpacity onPress={()=>chatAmigo()}>
+                                <View style={{width:150,height:30,backgroundColor:'red'}}>
+                                    <Text>Chat user: {p.uid}</Text>
+                                </View>
+                            </TouchableOpacity>
                             <View style={styles.target_b}>
                                 <View style={styles.target_cont_b_usu}>
                                     <View style={{flexDirection:'row'}}>
