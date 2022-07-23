@@ -196,12 +196,12 @@ export default function Registro({navigation}){
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         /**VERIFICAR OPCIONES DE IMAGENES */
-        let options = {
+        /*let options = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowEditing:true,
             //aspect:[4,3],
             quality:1
-        }
+        }*/
         if (permissionResult.granted === false) {
             cancel();
           alert("Permission to access camera roll is required!");
