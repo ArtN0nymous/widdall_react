@@ -135,23 +135,6 @@ export default function Usuarios({navigation}){
             uid_user=result.userKey;
             let friends = '';
             if(uid_user!=''){
-                /*db.collection('users').doc(uid_user).get().then((doc)=>{
-                    friends=doc.data().friends;
-                    if(friends!=""){
-                        friends+=','+uid;
-                    }else{
-                        friends=uid;
-                    }
-                    db.collection('users').doc(uid_user).update({
-                        friends:friends
-                    }).then((result)=>{
-                        setState({...state,display_preview:{display:'none'}});
-                    }).catch((error)=>{
-                        Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
-                    });
-                }).catch((error)=>{
-                    console.log(error.code+' '+error.message);
-                });*/
                 db.collection('users').doc(uid).get().then((doc)=>{
                     let solicitudes = doc.data().solicitudes;
                     if(solicitudes!=''){
@@ -257,6 +240,65 @@ export default function Usuarios({navigation}){
                     alert('Solicitud eliminada');
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            navigation.push('Login');
+        });
+    }
+    const aceptSolicitud=async(uid)=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            db.collection('users').doc(result.userKey).get().then((doc)=>{
+                let friends=doc.data().friends;
+                if(friends!=""){
+                    friends+=','+uid;
+                }else{
+                    friends=uid;
+                }
+                db.collection('users').doc(uid_user).update({
+                    friends:friends
+                }).then((result)=>{
+                    db.collection('users').doc(uid).get().then((doc)=>{
+                        let friends_2 = doc.data().friends;
+                        if(friends_2!=''){
+                            friends_2+=','+result.userKey;
+                        }else{
+                            friends_2=result.userKey;
+                        }
+                        db.collection('users').doc(uid).update({
+                            friends:friends_2
+                        }).then((result)=>{ 
+                            db.collection('users').doc(result.userKey).get().then((doc)=>{
+                                let solicitudes = doc.data().solicitudes;
+                                let array = solicitudes.split(',');
+                                for(var i in array){
+                                    if(array[i]==uid){
+                                        array.splice(i,1);
+                                    }
+                                }
+                                db.collection('users').doc(result.userKey).update({
+                                    solicitudes:array.join()
+                                }).then((res)=>{
+                                    alert('Solicitud eliminada');
+                                }).catch((error)=>{
+                                    console.log(error.code+' '+error.message);
+                                });
+                            }).catch((error)=>{
+                                console.log(error.code+' '+error.message);
+                            });
+                        }).catch((error)=>{
+                            console.log(error.code+' '+error.message);
+                        });
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                    //setState({...state,display_preview:{display:'none'}});
+                }).catch((error)=>{
+                    Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
                 });
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
@@ -418,9 +460,11 @@ export default function Usuarios({navigation}){
                                                         <Foundation size={28} name='x' color='grey'/>
                                                     </View>
                                                 </TouchableOpacity>
-                                                <View style={[styles.icon_target_b_cont_1,{backgroundColor:'rgba(29,207,16,0.3)',borderRadius:100}]}>
-                                                    <Foundation size={28} name='check' color='green'/>
-                                                </View>
+                                                <TouchableOpacity activeOpacity={0.6} onPress={()=>aceptSolicitud(p.uid)}>
+                                                    <View style={[styles.icon_target_b_cont_1,{backgroundColor:'rgba(29,207,16,0.3)',borderRadius:100}]}>
+                                                        <Foundation size={28} name='check' color='green'/>
+                                                    </View>
+                                                </TouchableOpacity>
                                             </View>
                                         </View>
                                     </View>
