@@ -92,7 +92,7 @@ export default function Usuarios({navigation}){
                 amigos = result.data().friends;
                 amigos = amigos.split(',');
                 snapshot.forEach((doc)=>{
-                    if(state.uid!=doc.id){
+                    if(id!=doc.id){
                         let user = {
                             uid:doc.id,
                             username:doc.data().displayName,
