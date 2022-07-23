@@ -282,6 +282,10 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         justifyContent:'center'
     },
+    hora_message:{
+        fontSize:12,
+        margin:3
+    },
     send_btn_message:{
         backgroundColor:'white',
         width:28,
@@ -303,6 +307,7 @@ const styles = StyleSheet.create({
         fontSize:15,
         textAlign:'justify',
         margin:8,
+        marginBottom:0,
         color:'white'
     },
     triangle_left_message: {

@@ -216,7 +216,7 @@ export default function Registro({navigation}){
         let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
         if(permissionResult.granted === false){
             cancel();
-            alert('Permisos para usar la cama´ra requeridos !');
+            alert('Permisos para usar la camára requeridos !');
             return;
         }else{
             let pickerResult = await ImagePicker.launchCameraAsync();

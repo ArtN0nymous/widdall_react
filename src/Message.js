@@ -2,7 +2,7 @@ import {View,Text,Image} from 'react-native';
 import CSS from './Styles';
 import {useState} from 'react';
 import { Dimensions } from 'react-native';
-export default function Message({user,mensaje,tipo}){
+export default function Message({user,mensaje,tipo,hora,img}){
     var styles = CSS.styles;
     var color = 'rgba(9,69,220,0.98)';
     if(tipo!='1'){
@@ -53,6 +53,7 @@ export default function Message({user,mensaje,tipo}){
                 <View style={styles.triangle_left_message}/>
                 <View style={stilo}>
                     <Text style={styles.texto_message}>{mensaje}</Text>
+                    <Text style={styles.hora_message}>{hora}</Text>
                 </View>
             </View>
             </>
@@ -63,6 +64,7 @@ export default function Message({user,mensaje,tipo}){
             <View style={styles.contenedor_message}>
                 <View style={estilo_tipo_2}>
                     <Text style={styles.texto_message}>{mensaje}</Text>
+                    <Text style={[styles.hora_message,{textAlign:'right'}]}>{hora}</Text>
                 </View>
                 <View style={styles.triangle_right_message}/>
             </View>

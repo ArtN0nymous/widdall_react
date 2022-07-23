@@ -77,7 +77,8 @@ export default function BandejaChats({navigation}){
                                 userName:resul.data().displayName,
                                 url_photo:{uri:resul.data().url_photo},
                                 uid:resul.id,
-                                idchat:doc.id
+                                idchat:doc.id,
+                                color_portada:resul.data().color_portada
                             }
                             chats.push(chat);
                             asignarChats(chats);

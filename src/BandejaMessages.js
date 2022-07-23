@@ -1,4 +1,4 @@
-import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity, Alert } from "react-native";
 import CSS from './Styles';
 import Messages from "./Message";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -19,8 +19,12 @@ export default function BandejaMessages({route,navigation}){
     global.localStorage = localstorage;
     const {uid,chatId}=route.params;
     const [state,setState]=useState({
-        messages:[]
+        messages:[],
+        message:''
     });
+    const handleChangeText = (name,value)=>{
+        setState({...state,[name]:value})
+    }
     var messages =[
         {
             user:'Usuario1',
@@ -88,6 +92,35 @@ export default function BandejaMessages({route,navigation}){
             console.log(error);
         });
     }
+    const sendMessage=async()=>{
+        if(state.message!=''){
+            var sfDocRef = db.collection('chats').doc(chatId);
+            return db.runTransaction(async(transaction) => {
+                return transaction.get(sfDocRef).then((sfDoc) => {
+                    if (!sfDoc.exists) {
+                        throw "El documento no existe!";
+                    }else{
+                        let array = state.messages;
+                        let ms = {
+                            hora:'00:00',
+                            img:'',
+                            message:state.message,
+                            type:1,
+                            user:uid
+                        }
+                        array.push(ms);
+                        transaction.update(sfDocRef, { messages: array});
+                    }
+                });
+            }).then(() => {
+                console.log('mensaje enviado');
+            }).catch((error) => {
+                console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
+            });
+        }else{
+            Alert.alert('Ups!','Parece que no puedes enviar un mensaje vacío. 👀');
+        }
+    }
     /*FIREBASE END */
     return(
         <>
@@ -107,11 +140,13 @@ export default function BandejaMessages({route,navigation}){
                             <FontAwesome5 size={13} name='photo-video' color='white'/>
                         </View>
                     </View>
-                    <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages} multiline={true}/>
-                    <View style={{flexDirection:'column',justifyContent:'center'}}>
-                        <View style={styles.send_btn_message}>
-                            <FontAwesome5 size={25} name='angle-right' color='blue'/>
-                        </View>
+                    <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages} multiline={true} onChangeText={(value)=>handleChangeText('message',value)}/>
+                    <View style={styles.butons_input_message}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>sendMessage()}>
+                            <View style={styles.send_btn_message}>
+                                <FontAwesome5 size={25} name='angle-right' color='blue'/>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.butons_input_message}>
                         <View style={styles.fondo_icon_target_message}>
