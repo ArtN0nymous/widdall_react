@@ -128,30 +128,41 @@ export default function Usuarios({navigation}){
         });
     }
     const addFriend = async (uid)=>{
-        console.log(uid);
         let uid_user = '';
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
             uid_user=result.userKey;
-            let friends = '';
             if(uid_user!=''){
                 db.collection('users').doc(uid).get().then((doc)=>{
                     let solicitudes = doc.data().solicitudes;
+                    let exist = false;
                     if(solicitudes!=''){
-                        solicitudes=uid+','+solicitudes;
+                        let array = solicitudes.split(',');
+                        for(var i in array){
+                            if(array[i]==uid_user){
+                                exist = true;
+                                break;
+                            }
+                        }
+                        if(exist!=true){
+                            solicitudes=uid_user+','+solicitudes;
+                            db.collection('users').doc(uid).update({
+                                solicitudes:solicitudes
+                            }).then((result)=>{
+                                Alert.alert('Atención','Solicitud enviada',[
+                                    { text: "OK", onPress: () => cerrarPreview() }
+                                  ]);
+                            }).catch((error)=>{
+                                console.log('No se ha agregado la solicitud.');
+                            });
+                        }else{
+                            Alert.alert('Atención','Ya has enviado una solicitud a esta persona.');
+                            return;
+                        }
                     }else{
-                        solicitudes=uid;
+                        solicitudes=uid_user;
                     }
-                    db.collection('users').doc(uid).update({
-                        solicitudes:solicitudes
-                    }).then((result)=>{
-                        Alert.alert('Atención','Solicitud enviada',[
-                            { text: "OK", onPress: () => cerrarPreview() }
-                          ]);
-                    }).catch((error)=>{
-                        console.log('No se ha agregado la solicitud.');
-                    })
                 }).catch((error)=>{
                     console.log('NO se encontró el documento para este usuario');
                 });
@@ -214,6 +225,7 @@ export default function Usuarios({navigation}){
                     });
                     setState({...state,usuarios:usuarios,solicitudes_profiles:solicitudes_profiles});
                 }else{
+                    setState({...state,usuarios:usuarios});
                     console.log('No tienes solicitudes');
                 }
             }).catch((error)=>{ 
@@ -390,7 +402,7 @@ export default function Usuarios({navigation}){
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu_del}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(state.profile.uid)}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
                             <View style={styles.button_menu_container}>
                                 <AntDesign name="deleteuser" size={35} color="#B3022E"/>
                             </View>
@@ -417,7 +429,7 @@ export default function Usuarios({navigation}){
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(state.profile.uid)}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>addFriend(uid)}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="person-add-sharp" size={35} color="white" />
                             </View>
