@@ -1,4 +1,4 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image,TouchableOpacity} from "react-native";
+import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image,TouchableOpacity, ActivityIndicator} from "react-native";
 import { SearchBar } from "react-native-screens";
 import { AntDesign, FontAwesome5,Ionicons,Foundation } from '@expo/vector-icons'; 
 import CSS from "./Styles";
@@ -29,6 +29,7 @@ export default function Usuarios({navigation}){
         contador:0,
         img:require('./img/default_profile.jpg'),
         display_preview:{display:'none'},
+        loading_display:{display:'none'},
         profile:{
             uid:'',
             name:'',
@@ -237,7 +238,7 @@ export default function Usuarios({navigation}){
                 db.collection('users').doc(result.userKey).update({
                     solicitudes:array.join()
                 }).then((res)=>{
-                    alert('Solicitud eliminada');
+                    Alert.alert('Vaya :/','Solicitud de amistad eliminada');
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
                 });
@@ -249,30 +250,37 @@ export default function Usuarios({navigation}){
         });
     }
     const aceptSolicitud=async(uid)=>{
+        setState({...state,loading_display:{display:'flex'}});
+        console.log('comenzamos');
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            db.collection('users').doc(result.userKey).get().then((doc)=>{
+            var user = result.userKey;
+            db.collection('users').doc(user).get().then((doc)=>{
+                console.log('paso 1');
                 let friends=doc.data().friends;
                 if(friends!=""){
                     friends+=','+uid;
                 }else{
                     friends=uid;
                 }
-                db.collection('users').doc(uid_user).update({
+                db.collection('users').doc(user).update({
                     friends:friends
                 }).then((result)=>{
                     db.collection('users').doc(uid).get().then((doc)=>{
+                        console.log('paso 2');
                         let friends_2 = doc.data().friends;
+                        let nombre = doc.data().displayName;
                         if(friends_2!=''){
-                            friends_2+=','+result.userKey;
+                            friends_2+=','+user;
                         }else{
-                            friends_2=result.userKey;
+                            friends_2=user;
                         }
                         db.collection('users').doc(uid).update({
                             friends:friends_2
                         }).then((result)=>{ 
-                            db.collection('users').doc(result.userKey).get().then((doc)=>{
+                            db.collection('users').doc(user).get().then((doc)=>{
+                                console.log('paso 3');
                                 let solicitudes = doc.data().solicitudes;
                                 let array = solicitudes.split(',');
                                 for(var i in array){
@@ -280,27 +288,40 @@ export default function Usuarios({navigation}){
                                         array.splice(i,1);
                                     }
                                 }
-                                db.collection('users').doc(result.userKey).update({
+                                db.collection('users').doc(user).update({
                                     solicitudes:array.join()
                                 }).then((res)=>{
-                                    alert('Solicitud eliminada');
+                                    setState({...state,loading_display:{display:'none'}});
+                                    Alert.alert('Genial 😁',`Tú y ⭐ ${nombre} ⭐ ahora son amigos. Dile Hola !!!`,[
+                                        {
+                                          text: "Tal vez luego",
+                                          onPress: () => leerUsuarios(),
+                                          style: "cancel"
+                                        },
+                                        { text: "OK", onPress: () => chatAmigo(uid) }
+                                      ])
                                 }).catch((error)=>{
+                                    setState({...state,loading_display:{display:'none'}});
                                     console.log(error.code+' '+error.message);
                                 });
                             }).catch((error)=>{
+                                setState({...state,loading_display:{display:'none'}});
                                 console.log(error.code+' '+error.message);
                             });
                         }).catch((error)=>{
+                            setState({...state,loading_display:{display:'none'}});
                             console.log(error.code+' '+error.message);
                         });
                     }).catch((error)=>{
+                        setState({...state,loading_display:{display:'none'}});
                         console.log(error.code+' '+error.message);
                     });
-                    //setState({...state,display_preview:{display:'none'}});
                 }).catch((error)=>{
-                    Alert.alert('Atención','Parece que no ha podido ser agragado a tus amigos.');
+                    setState({...state,loading_display:{display:'none'}});
+                    console.log(error.code+' '+error.message);
                 });
             }).catch((error)=>{
+                setState({...state,loading_display:{display:'none'}});
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
@@ -518,6 +539,10 @@ export default function Usuarios({navigation}){
                     </View>
                 </View>
             </ImageBackground>
+            <View style={[styles.loading_contenedor,state.loading_display]}>
+                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                <Text style={styles.loading_text}>Cargando</Text>
+            </View>
         </>
     );
 }
