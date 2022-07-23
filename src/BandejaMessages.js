@@ -2,8 +2,25 @@ import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, Tou
 import CSS from './Styles';
 import Messages from "./Message";
 import { FontAwesome5 } from "@expo/vector-icons";
-export default function BandejaMessages({navigation}){
+import firebase from "./database/firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from 'react-native-storage';
+import { useState,useEffect } from "react";
+export default function BandejaMessages({route,navigation}){
     var styles = CSS.styles;
+    const db = firebase.db;
+    const storage = firebase.firebase.storage();
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:true,
+    });
+    global.localStorage = localstorage;
+    const {uid,chatId}=route.params;
+    const [state,setState]=useState({
+        messages:[]
+    });
     var messages =[
         {
             user:'Usuario1',
@@ -30,20 +47,65 @@ export default function BandejaMessages({navigation}){
             tipo:'2'
         }
     ];
+    useEffect(()=>{
+        let abortController = new AbortController();
+        readMessages();
+        return ()=>{
+            abortController.abort();
+        }
+    },[]);
+    /*FIREBASE FUNCTIONS */
+    const readMessages=async()=>{
+        let user = '';
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            user = result.userKey;
+            db.collection('chats').doc(chatId).onSnapshot((snapshot)=>{
+                let array = snapshot.data().messages;
+                let mensajes =[];
+                array.forEach((doc) => {
+                    let tipo_mensaje = 0;
+                    if(doc.user!=user){
+                        tipo_mensaje=2;
+                    }else{
+                        tipo_mensaje=1;
+                    }
+                    let ms ={
+                        hora:doc.hora,
+                        img:doc.img,
+                        message:doc.message,
+                        type:tipo_mensaje,
+                        user:doc.user
+                    }
+                    mensajes.push(ms);
+                });
+                setState({...state,messages:mensajes});
+            },(error)=>{
+                console.log(error.code+' '+error.message);
+            })
+        }).catch((error)=>{
+            console.log(error);
+        });
+    }
+    /*FIREBASE END */
     return(
         <>
             <View style={styles.contenedor_messages}>
                 <ScrollView style={styles.scroll_messages}>
                     { 
-                        messages.map((p)=>(
+                        state.messages.map((p)=>(
                             <TouchableOpacity activeOpacity={0.6}>
-                                <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.tipo}/>
+                                <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.type} hora={p.hora} img={p.img}/>
                             </TouchableOpacity>
                         ))
                     }
                 </ScrollView>
                 <View style={styles.contenedor_input_messa}>
-                    <View style={styles.icon_target_b_cont_1}>
+                    <View style={{flexDirection:'row',alignSelf:'center'}}>
+
+                    </View>
+                    <View style={styles.butons_input_message}>
                         <View style={styles.fondo_icon_target_message}>
                             <FontAwesome5 size={13} name='photo-video' color='white'/>
                         </View>
@@ -54,7 +116,7 @@ export default function BandejaMessages({navigation}){
                             <FontAwesome5 size={25} name='angle-right' color='blue'/>
                         </View>
                     </View>
-                    <View style={styles.icon_target_b_cont_1}>
+                    <View style={styles.butons_input_message}>
                         <View style={styles.fondo_icon_target_message}>
                             <FontAwesome5 size={13} name='file' color='white'/>
                         </View>

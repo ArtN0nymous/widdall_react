@@ -341,7 +341,6 @@ export default function Usuarios({navigation}){
         });
     }
     const chatAmigo=(uid)=>{
-        console.log('COMIENZa');
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
@@ -359,7 +358,7 @@ export default function Usuarios({navigation}){
             db.collection('chats').doc(uid+':'+user).set({
                 messages:messages
             }).then((result)=>{
-                console.log('EXITO');
+                navigation.goBack();
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });

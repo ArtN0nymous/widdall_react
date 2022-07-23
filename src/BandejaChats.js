@@ -2,7 +2,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from "react-native";
 import Chat from "./Chat";
 import {useState,useEffect} from 'react';
-import DropDownPicker from 'react-native-dropdown-picker';
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
@@ -77,7 +76,8 @@ export default function BandejaChats({navigation}){
                             let chat ={
                                 userName:resul.data().displayName,
                                 url_photo:{uri:resul.data().url_photo},
-                                uid:resul.id
+                                uid:resul.id,
+                                idchat:doc.id
                             }
                             chats.push(chat);
                             asignarChats(chats);
@@ -102,7 +102,7 @@ export default function BandejaChats({navigation}){
                 <ScrollView>
                     { 
                         state.chats.map((p)=>(
-                            <TouchableOpacity onPress={()=>navigation.push('Messages')} activeOpacity={0.6}>
+                            <TouchableOpacity onPress={()=>navigation.push('Messages',{uid:p.uid,chatId:p.idchat})} activeOpacity={0.6}>
                                 <View style={styles.cont_target_b}>
                                     <View style={styles.target_b}>
                                         <View style={styles.target_cont_b}>

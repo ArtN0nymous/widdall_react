@@ -278,6 +278,10 @@ const styles = StyleSheet.create({
         borderWidth:1,
         margin:5
     },
+    butons_input_message:{
+        flexDirection:'column',
+        justifyContent:'center'
+    },
     send_btn_message:{
         backgroundColor:'white',
         width:28,
