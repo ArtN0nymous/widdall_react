@@ -2,22 +2,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View,Image, Text, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CSS from "./Styles";
-export default function Chat({usuario,mensaje}) {
-    var img = require('./img/default_profile.jpg');
+export default function Chat({usuario,mensaje,url_photo}) {
     var styles = CSS.styles;
     return(
         <>
         <View style={styles.cont_target_b}>
             <View style={styles.target_b}>
                 <View style={styles.target_cont_b}>
-                    <View style={{flexDirection:'row'}}>
+                    <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                         <View style={styles.icon_target_b_cont_1}>
-                            <View style={styles.icon_target_b}>
-                                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}
-                                style={styles.fondo_icon_target_b}>
-                                    <Image source={img} style={styles.image_target_b}/>
-                                </LinearGradient>
-                            </View>
+                            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}
+                            style={styles.fondo_icon_target_b}>
+                                <Image source={url_photo} style={styles.image_target_b}/>
+                            </LinearGradient>
                         </View>
                         <View style={styles.row_b}>
                             <View style={styles.det_atg_b}>

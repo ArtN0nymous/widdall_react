@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from "react-native";
 import Chat from "./Chat";
 import {useState,useEffect} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -11,6 +11,7 @@ import { Entypo, FontAwesome5,Ionicons } from '@expo/vector-icons';
 export default function BandejaChats({navigation}){
     const img = require('./img/default_profile.jpg');
     const auth = firebase.auth;
+    const db = firebase.db;
     var localstorage = new Storage ({
         size:1000,
         storageBackend: AsyncStorage,
@@ -19,13 +20,11 @@ export default function BandejaChats({navigation}){
     });
     global.localStorage = localstorage;
     const styles = Styles.styles;
-    var chats = [
-        {
-            usuario:'Usuario',
-            mensaje:'Ejemplo de mensaje',
-            img:''
-        }
-    ];
+    const [state,setState]=useState({
+        menu_display:{display:'none'},
+        chats:[],
+        loading_display:{display:'none'}
+    });
     useEffect(()=>{
         let abortController = new AbortController();
         loadProfile();
@@ -37,14 +36,11 @@ export default function BandejaChats({navigation}){
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            //
+            leerChats(result.userKey);
         }).catch((error)=>{
             navigation.push('Login');
         });
     }
-    const [state,setState]=useState({
-        menu_display:{display:'none'}
-    });
     function toggle_menu(){
         if(state.menu_display.display=='none'){
             setState({...state,menu_display:{display:'flex'}})
@@ -66,14 +62,72 @@ export default function BandejaChats({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
+    /*FIREBASE FUNCTIONS */ 
+    const leerChats=async(user)=>{
+        setState({...state,loading_display:{display:'flex'}});
+        db.collection('chats').onSnapshot((snapshot)=>{
+            let chats = [];
+            snapshot.forEach((doc) => {
+                let chatId = doc.id;
+                let array = chatId.split(':');
+                for(var i in array){
+                    if(array[i]==user){
+                        array.splice(i,1);
+                        db.collection('users').doc(array[0]).get().then((resul)=>{
+                            let chat ={
+                                userName:resul.data().displayName,
+                                url_photo:{uri:resul.data().url_photo},
+                                uid:resul.id
+                            }
+                            chats.push(chat);
+                            asignarChats(chats);
+                        }).catch((error)=>{
+                            console.log(error.code+' '+error.message);
+                        });
+                    }
+                }
+            });
+        },(error) => {
+            setState({...state,loading_display:{display:'none'}});
+            console.log(error.code+' '+error.message);
+        });
+    }
+    /*FIREBASE END */
+    function asignarChats(chats){
+        setState({...state,chats:chats,loading_display:{display:'none'}});
+    }
     return(
         <View style={styles.contenedor_general_chats}>
             <View style={styles.contenedor_chats}>
                 <ScrollView>
                     { 
-                        chats.map((p)=>(
+                        state.chats.map((p)=>(
                             <TouchableOpacity onPress={()=>navigation.push('Messages')} activeOpacity={0.6}>
-                                <Chat key={p.usuario} usuario={p.usuario} mensaje={p.mensaje}/>
+                                <View style={styles.cont_target_b}>
+                                    <View style={styles.target_b}>
+                                        <View style={styles.target_cont_b}>
+                                            <View style={{flexDirection:'row',alignItems:'center'}}>
+                                                <View style={[styles.icon_target_b_cont_1,{marginLeft:10}]}>
+                                                    <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}
+                                                    style={styles.fondo_icon_target_b}>
+                                                        <Image source={p.url_photo} style={styles.image_target_b}/>
+                                                    </LinearGradient>
+                                                </View>
+                                                <View style={styles.row_b}>
+                                                    <View style={styles.det_atg_b}>
+                                                        <Text style={styles.title_b}>{p.userName}</Text>
+                                                        <Text style={styles.detalles_b}>Hola</Text>
+                                                    </View>                                  
+                                                </View>
+                                                <View style={[styles.icon_target_b_cont_2,{marginLeft:130}]}>
+                                                    <View style={styles.icon_target}>
+                                                        <FontAwesome5 size={25} name='angle-right' color='grey'/>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
                             </TouchableOpacity>
                         ))
                     }
@@ -118,6 +172,10 @@ export default function BandejaChats({navigation}){
                     </View>
                 </View>
             </LinearGradient>
+            <View style={[styles.loading_contenedor,state.loading_display]}>
+                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                <Text style={styles.loading_text}>Cargando</Text>
+            </View>
         </View>
     );
 }
