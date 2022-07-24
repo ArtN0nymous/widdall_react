@@ -100,7 +100,8 @@ export default function Usuarios({navigation}){
                             url_portada:{uri:doc.data().url_portada},
                             color_portada:doc.data().color_portada,
                             descripcion:doc.data().descripcion,
-                            amigo:false
+                            amigo:false,
+                            chats:doc.data().chats
                         }
                         amigos.forEach(element => {
                             if(element==user.uid){
@@ -358,7 +359,39 @@ export default function Usuarios({navigation}){
             db.collection('chats').doc(uid+':'+user).set({
                 messages:messages
             }).then((result)=>{
-                navigation.goBack();
+                db.collection('users').doc(user).get().then((doc)=>{
+                    let chats = doc.data().chats;
+                    if(chats!=''){
+                        chats+=','+uid+':'+user;
+                    }else{
+                        chats=uid+':'+user;
+                    }
+                    db.collection('users').doc(user).update({
+                        chats:chats
+                    }).then((result)=>{
+                        db.collection('users').doc(uid).get().then((doc)=>{
+                            let chats = doc.data().chats;
+                            if(chats!=''){
+                                chats+=','+uid+':'+user;
+                            }else{
+                                chats=uid+':'+user;
+                            }
+                            db.collection('users').doc(uid).update({
+                                chats:chats
+                            }).then((result)=>{
+                                navigation.goBack();
+                            }).catch((error)=>{
+                                console.log(error.code+' '+error.message);
+                            })
+                        }).catch((error)=>{
+                            console.log(error.code+' '+error.message);
+                        });
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    })
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
