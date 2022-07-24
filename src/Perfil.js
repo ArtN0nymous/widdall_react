@@ -482,7 +482,9 @@ export default function Perfil({navigation}){
                         <FontAwesome size={25} name='pencil-square-o' color='white'/>
                     </TouchableOpacity>
                 </View>
-                <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
+                <View style={{alignSelf:'flex-start',left:10}}>
+                    <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
+                    </ImageBackground>
                     <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
                     <Text style={styles.text_small_usu}>{state.profile.email}</Text>
                     <TouchableOpacity onPress={edit_perfil}>
@@ -490,10 +492,10 @@ export default function Perfil({navigation}){
                             <Text style={styles.editar_perfil}>Editar perfil</Text>
                         </View>
                     </TouchableOpacity>
-                </ImageBackground>
+                </View>
             </ImageBackground>
             <View style={styles.search_bar}>
-                <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)}/>
+                <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Mis amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)}/>
                 <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
                     <View style={styles.buton_search}>
                         <FontAwesome5 size={15} name='search' color='white'/>
