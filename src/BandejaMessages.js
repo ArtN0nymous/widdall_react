@@ -1,11 +1,11 @@
-import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity, Alert,Keyboard } from "react-native";
 import CSS from './Styles';
 import Messages from "./Message";
 import { FontAwesome5 } from "@expo/vector-icons";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 export default function BandejaMessages({route,navigation}){
     var styles = CSS.styles;
     const db = firebase.db;
@@ -16,14 +16,19 @@ export default function BandejaMessages({route,navigation}){
         defaultExpires: null,
         enableCache:true,
     });
+    var contador =0;
     global.localStorage = localstorage;
     const {uid,chatId}=route.params;
     const [state,setState]=useState({
         messages:[],
-        message:''
+        message:'',
+        contador:0
     });
+    const [text,setText]=useState("");
+    const scrollViewRef = useRef();
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
+        setText(value);
     }
     var messages =[
         {
@@ -93,39 +98,46 @@ export default function BandejaMessages({route,navigation}){
         });
     }
     const sendMessage=async()=>{
-        if(state.message!=''){
-            var sfDocRef = db.collection('chats').doc(chatId);
-            return db.runTransaction(async(transaction) => {
-                return transaction.get(sfDocRef).then((sfDoc) => {
-                    if (!sfDoc.exists) {
-                        throw "El documento no existe!";
-                    }else{
-                        let array = state.messages;
-                        let ms = {
-                            hora:'00:00',
-                            img:'',
-                            message:state.message,
-                            type:1,
-                            user:uid
+        if(contador<1){
+            contador +=1;
+            if(state.message!=''&&contador<1){
+                var sfDocRef = db.collection('chats').doc(chatId);
+                return db.runTransaction(async(transaction) => {
+                    return transaction.get(sfDocRef).then((sfDoc) => {
+                        if (!sfDoc.exists) {
+                            throw "El documento no existe!";
+                        }else{
+                            let array = state.messages;
+                            let ms = {
+                                hora:'00:00',
+                                img:'',
+                                message:state.message,
+                                type:1,
+                                user:uid
+                            }
+                            array.push(ms);
+                            transaction.update(sfDocRef, { messages: array});
+                            setText("");
+                            Keyboard.dismiss();
+                            contador=0;
                         }
-                        array.push(ms);
-                        transaction.update(sfDocRef, { messages: array});
-                    }
+                    });
+                }).then(() => {
+                    console.log('mensaje enviado');
+                }).catch((error) => {
+                    console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
                 });
-            }).then(() => {
-                console.log('mensaje enviado');
-            }).catch((error) => {
-                console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
-            });
-        }else{
-            Alert.alert('Ups!','Parece que no puedes enviar un mensaje vacío. 👀');
+            }else{
+                contador=0;
+                Alert.alert('Ups!','Parece que no puedes enviar un mensaje vacío. 👀');
+            }
         }
     }
     /*FIREBASE END */
     return(
         <>
             <View style={styles.contenedor_messages}>
-                <ScrollView style={styles.scroll_messages}>
+                <ScrollView style={styles.scroll_messages} ref={scrollViewRef} onContentSizeChange={()=>scrollViewRef.current.scrollToEnd({animated:true})}>
                     { 
                         state.messages.map((p)=>(
                             <TouchableOpacity activeOpacity={0.9}>
@@ -140,7 +152,7 @@ export default function BandejaMessages({route,navigation}){
                             <FontAwesome5 size={13} name='photo-video' color='white'/>
                         </View>
                     </View>
-                    <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages} multiline={true} onChangeText={(value)=>handleChangeText('message',value)}/>
+                    <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages} multiline={true} onChangeText={(value)=>handleChangeText('message',value)} value={text}/>
                     <View style={styles.butons_input_message}>
                         <TouchableOpacity activeOpacity={0.6} onPress={()=>sendMessage()}>
                             <View style={styles.send_btn_message}>
