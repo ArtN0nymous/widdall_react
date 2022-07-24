@@ -100,7 +100,7 @@ export default function BandejaMessages({route,navigation}){
     const sendMessage=async()=>{
         if(contador<1){
             contador +=1;
-            if(state.message!=''&&contador<1){
+            if(state.message!=''&&contador==1){
                 var sfDocRef = db.collection('chats').doc(chatId);
                 return db.runTransaction(async(transaction) => {
                     return transaction.get(sfDocRef).then((sfDoc) => {

@@ -58,7 +58,7 @@ export default function Message({user,mensaje,tipo,hora,img}){
             </View>
             </>
         );
-    }else{
+    }else if(tipo==2){
         return(
             <>
             <View style={styles.contenedor_message}>
