@@ -501,11 +501,6 @@ export default function Usuarios({navigation}){
                 { 
                     state.solicitudes_profiles.map((p)=>(
                         <View style={[styles.cont_target_b_usu,{backgroundColor:'rgba(0,0,0,0)'}]}>
-                            <TouchableOpacity onPress={()=>chatAmigo()}>
-                                <View style={{width:150,height:30,backgroundColor:'red'}}>
-                                    <Text>Chat user: {p.uid}</Text>
-                                </View>
-                            </TouchableOpacity>
                             <View style={styles.target_b}>
                                 <View style={styles.target_cont_b_usu}>
                                     <View style={{flexDirection:'row'}}>
