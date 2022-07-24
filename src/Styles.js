@@ -415,7 +415,6 @@ const styles = StyleSheet.create({
     text_1_usu:{
         fontSize:20,
         fontWeight:'bold',
-        marginTop:30,
         backgroundColor:'rgba(255,255,255,0.2)',
         borderRadius:10
     },
@@ -523,15 +522,16 @@ const styles = StyleSheet.create({
     },
     circle_usu:{
         backgroundColor:'white',
-        width:270,
-        height:270,
-        borderRadius:150,
+        width:120,
+        height:120,
+        borderRadius:100,
         alignItems:'center',
-        marginTop:15,
         marginBottom:10,
         borderColor:'#40DDF3',
-        borderWidth:3,
-        overflow:'hidden'
+        borderWidth:2,
+        overflow:'hidden',
+        alignSelf:'flex-start',
+        left:10
     },
     target_usuarios:{
         backgroundColor:'white',
@@ -559,13 +559,14 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     button_opt_usu:{
-        backgroundColor:'rgba(0,0,0,0.15)',
+        backgroundColor:'rgba(255,255,255,0.15)',
         borderRadius:50,
         width:145,
         height:39,
         alignItems:'center',
         justifyContent:'center',
-        marginTop:25
+        marginTop:25,
+        marginBottom:10
     },
     ventana_modal:{
         width:300,
