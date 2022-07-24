@@ -67,25 +67,30 @@ export default function BandejaChats({navigation}){
         db.collection('chats').onSnapshot((snapshot)=>{
             let chats = [];
             snapshot.forEach((doc) => {
-                let chatId = doc.id;
-                let array = chatId.split(':');
-                for(var i in array){
-                    if(array[i]==user){
-                        array.splice(i,1);
-                        db.collection('users').doc(array[0]).get().then((resul)=>{
-                            let chat ={
-                                userName:resul.data().displayName,
-                                url_photo:{uri:resul.data().url_photo},
-                                uid:resul.id,
-                                idchat:doc.id,
-                                color_portada:resul.data().color_portada
-                            }
-                            chats.push(chat);
-                            asignarChats(chats);
-                        }).catch((error)=>{
-                            console.log(error.code+' '+error.message);
-                        });
+                if(doc){
+                    let chatId = doc.id;
+                    let array = chatId.split(':');
+                    for(var i in array){
+                        if(array[i]==user){
+                            array.splice(i,1);
+                            db.collection('users').doc(array[0]).get().then((resul)=>{
+                                let chat ={
+                                    userName:resul.data().displayName,
+                                    url_photo:{uri:resul.data().url_photo},
+                                    uid:resul.id,
+                                    idchat:doc.id,
+                                    color_portada:resul.data().color_portada
+                                }
+                                chats.push(chat);
+                                asignarChats(chats);
+                            }).catch((error)=>{
+                                console.log(error.code+' '+error.message);
+                            });
+                        }
                     }
+                }else{
+                    setState({...state,loading_display:{display:'none'}});
+                    console.log('No hay chats');
                 }
             });
         },(error) => {

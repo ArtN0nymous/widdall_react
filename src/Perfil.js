@@ -350,6 +350,7 @@ export default function Perfil({navigation}){
         }).then((result)=>{
             let user = result.userKey;
             if(chat!=''){
+                setState({...state,display_preview:{display:'none'}});
                 navigation.push('Messages',{uid:uid,chatId:chat});
             }else{
                 setState({...state,cargando:{display:'flex'}});
