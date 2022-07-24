@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator } from "react-native";
+import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator,ImageBackground } from "react-native";
 import Chat from "./Chat";
 import {useState,useEffect} from 'react';
 import firebase from "./database/firebase";
@@ -116,7 +116,7 @@ export default function BandejaChats({navigation}){
                                                 <View style={[styles.icon_target_b_cont_1,{marginLeft:10}]}>
                                                     <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }}
                                                     style={styles.fondo_icon_target_b}>
-                                                        <Image source={p.url_photo} style={styles.image_target_b}/>
+                                                        <ImageBackground source={p.url_photo} style={styles.image_target_b}/>
                                                     </LinearGradient>
                                                 </View>
                                                 <View style={styles.row_b}>

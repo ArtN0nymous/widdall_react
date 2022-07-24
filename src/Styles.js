@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
     image_target_b:{
         width:50,
         height:50,
-        borderRadius:90
+        borderRadius:90,
+        overflow:'hidden'
     },
     icon_target:{
         marginLeft:80

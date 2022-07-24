@@ -83,7 +83,7 @@ export default function Login({navigation}){
                         userKey:uid
                     }
                 });
-                Alert.alert('Bienvenido',result.user.uid, [
+                Alert.alert('Bienvenido',result.user.displayName, [
                     {
                       text: "Aceptar",
                       onPress: navigation.push('Chats'),
