@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import { useState, useEffect } from "react";
-import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome,Ionicons,AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
 export default function Perfil({navigation}){
     const styles = Styles.styles;
@@ -41,7 +41,17 @@ export default function Perfil({navigation}){
         loading_state:{display:'none'},
         path:'',
         oper_display:'',
-        cargando:{display:'none'}
+        cargando:{display:'none'},
+        user_id:'',
+        friends:[],
+        display_preview:{display:'none'},
+        amigo:(<></>),
+        profile_amigo:{
+            displayName:'',
+            url_photo:'',
+            url_portada:'',
+            color_portada:''
+        }
     });
     const uiPicker=(oper)=>{
         switch(oper){
@@ -137,7 +147,7 @@ export default function Perfil({navigation}){
                     descripcion:doc.data().descripcion,
                     email:doc.data().email
                 }
-                setState({...state,profile:perfil,img:{uri:doc.data().url_photo}});
+                leerAmigos(perfil,doc.data().url_photo,uid);
             }).catch((error)=>{
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
             });
@@ -324,18 +334,145 @@ export default function Perfil({navigation}){
             Alert.alert('Atención','Ha ocurrido un error inesperado.');
         }
     };
+    const leerAmigos=async(perfil,img,uid)=>{
+        localstorage.load({
+            key:'usuarios'
+        }).then((result)=>{
+           let usuarios = result;
+           setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios});
+        }).catch((error)=>{
+            console.log(error);
+        })
+    }
     /**--FIREBASE FUNCTION END-- */
-    const numColums = 2;
-    const renderItem = ({item,index})=>{
-        return(
-            <View style={styles.caja1_usu}>
-                <View style={styles.contenido_caja_usu}>
-                    <Image style={styles.icon_usu} source={item.url_photo}/>
-                    <Text style={styles.limpiador_usu}>{item.username}</Text>
-                    <Text style={styles.det_lim_usu}>{item.descripcion}</Text>
+    function display_preview(){
+        if(state.display_preview.display=='flex'){
+            setState({...state,display_preview:{display:'none'}});
+        }else{
+            setState({...state,display_preview:{display:'flex'}});
+        }
+    }
+    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color,amigo)=>{
+        console.log('llega aqui');
+        setState({...state,display_preview:{
+            display:'flex'
+        },profile_amigo:{
+            uid:uid,
+            displayName:name,
+            url_photo:url_photo,
+            url_portada:url_portada,
+            descripcion:descripcion,
+            color_portada:color
+        },amigo:(
+            <>
+                <View style={styles.contenedor_boton_menu}>
+                    <TouchableOpacity activeOpacity={0.6}>
+                        <View style={styles.button_menu_container}>
+                            <AntDesign name="message1" size={35} color="skyblue"/>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-            </View>
-        );
+                <View style={styles.contenedor_boton_menu}>
+                    <TouchableOpacity activeOpacity={0.6}>
+                        <View style={styles.button_menu_container}>
+                            <AntDesign name="star" size={35} color="gold" />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.contenedor_boton_menu_del}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
+                        <View style={styles.button_menu_container}>
+                            <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </>)});
+    }
+    const checkSearch=(value)=>{
+        let longitud = value.length;
+        console.log('longitud actual: '+value.length);
+        if(longitud>0){
+            searchFunction(value);
+        }else{
+            localstorage.load({
+                key:'usuarios'
+            }).then((result)=>{
+                setState({...state,friends:result});
+            }).catch((error)=>{
+                alert(error.message);
+            });
+        }
+    }
+    const searchFunction = (value) => {
+        localstorage.load({
+            key:'usuarios'
+        }).then((result)=>{
+            let text = value;
+            const updatedData = result.filter((item) => {
+                const item_data = `${item.username.toUpperCase()})`;
+                const text_data = text.toUpperCase();
+                return item_data.indexOf(text_data) > -1;
+            });
+            setState({...state,friends: updatedData});
+        }).catch((error)=>{
+            console.log('Ha ocurrido un error inesperado, intentalo de nuevo más tarde.');
+        })
+    }
+    const numColums = 3;
+    const renderItem = ({item,index})=>{
+        if(item.url_portada.uri!=''){
+            if(item.amigo!=false){
+                return(
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)}>
+                        <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                            <View style={styles.contenido_caja_usu}>
+                                <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                                <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                                <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                            </View>
+                        </ImageBackground>
+                    </TouchableOpacity>
+                );
+            }else{
+                return(
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)} style={{display:'none'}}>
+                        <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                            <View style={styles.contenido_caja_usu}>
+                                <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                                <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                                <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                            </View>
+                        </ImageBackground>
+                    </TouchableOpacity>
+                );
+            }
+        }else{
+            if(item.amigo!=false){
+                return(
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)}>
+                        <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
+                            <View style={styles.contenido_caja_usu}>
+                                <Image style={styles.icon_usu} source={item.url_photo}/>
+                                <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                                <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                );
+            }else{
+                return(
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo)} style={{display:'none'}}>
+                        <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
+                            <View style={styles.contenido_caja_usu}>
+                                <Image style={styles.icon_usu} source={item.url_photo}/>
+                                <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
+                                <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                );
+            }
+        }
     }
     const header = (
         <>
@@ -356,7 +493,7 @@ export default function Perfil({navigation}){
                 </ImageBackground>
             </ImageBackground>
             <View style={styles.search_bar}>
-                <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)} value={state.searchValue}/>
+                <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Encontrar amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)}/>
                 <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
                     <View style={styles.buton_search}>
                         <FontAwesome5 size={15} name='search' color='white'/>
@@ -367,7 +504,7 @@ export default function Perfil({navigation}){
     );
     const footer = (
         <>
-            <View style={styles.cont_target_b_usu}>
+            {/* <View style={styles.cont_target_b_usu}>
                 <View style={styles.target_b}>
                     <View style={styles.target_cont_b_usu}>
                         <View style={{flexDirection:'row'}}>
@@ -392,12 +529,12 @@ export default function Perfil({navigation}){
                         </View>
                     </View>
                 </View>
-            </View>
+            </View> */}
         </>
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(data,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.friends,numColums)} renderItem={renderItem} numColumns={numColums}/>
             <View style={[styles.loading_contenedor,state.cargando,{zIndex:13}]}>
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                 <Text style={styles.loading_text}>Cargando</Text>
@@ -462,6 +599,24 @@ export default function Perfil({navigation}){
                     </TouchableOpacity>
                 </View>
             </View>
+            <ImageBackground style={[styles.contenedor_preview,state.display_preview,{backgroundColor:state.profile_amigo.color_portada}]} source={state.profile_amigo.url_portada}>
+                <TouchableOpacity onPress={()=>display_preview()}>
+                    <View style={[styles.btn_cancel_regist, styles.cancel_preview]}>
+                        <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={styles.content_preview}>
+                    <ImageBackground source={state.profile_amigo.url_photo} style={styles.image_preview}/>
+                    <View style={styles.options_preview}>
+                        <View style={{flexDirection:'column'}}>
+                            <Text style={{alignSelf:'center',fontSize:17,fontWeight:'bold'}}>{state.profile_amigo.displayName}</Text>
+                            <View style={styles.options_preview_b}>
+                                {state.amigo}
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </ImageBackground>
         </>
     );
 }
