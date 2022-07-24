@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator,ImageBackground } from "react-native";
+import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator,ImageBackground,Alert } from "react-native";
 import Chat from "./Chat";
 import {useState,useEffect} from 'react';
 import firebase from "./database/firebase";
@@ -27,6 +27,7 @@ export default function BandejaChats({navigation}){
     useEffect(()=>{
         let abortController = new AbortController();
         loadProfile();
+        leerUsuarios();
         return ()=>{
             abortController.abort();
         }
@@ -37,7 +38,10 @@ export default function BandejaChats({navigation}){
         }).then((result)=>{
             leerChats(result.userKey);
         }).catch((error)=>{
-            navigation.push('Login');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     function toggle_menu(){
@@ -97,6 +101,60 @@ export default function BandejaChats({navigation}){
             setState({...state,loading_display:{display:'none'}});
             console.log(error.code+' '+error.message);
         });
+    }
+    const leerUsuarios= async () =>{
+        let id = '';
+        await localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            id= result.userKey;
+            db.collection("users").onSnapshot((snapshot) => {
+                let usuarios = [];
+                let amigos = '';
+                db.collection('users').doc(id).get().then((result)=>{
+                    amigos = result.data().friends;
+                    amigos = amigos.split(',');
+                    snapshot.forEach((doc)=>{
+                        if(id!=doc.id){
+                            let user = {
+                                uid:doc.id,
+                                username:doc.data().displayName,
+                                url_photo:{uri:doc.data().url_photo},
+                                url_portada:{uri:doc.data().url_portada},
+                                color_portada:doc.data().color_portada,
+                                descripcion:doc.data().descripcion,
+                                amigo:false,
+                                chats:doc.data().chats
+                            }
+                            amigos.forEach(element => {
+                                if(element==user.uid){
+                                    user.amigo=true;
+                                }
+                            });
+                            usuarios.push(user);
+                        }
+                    });
+                    try{
+                        localstorage.save({
+                            key:'usuarios',
+                            data:usuarios
+                        });
+                    }catch(e){
+                        alert(e.message);
+                    }
+                    //setState({...state,usuarios:usuarios});
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }, (error) => {
+                Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
+            });
+        }).catch((error)=>{
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
+        })
     }
     /*FIREBASE END */
     function asignarChats(chats){

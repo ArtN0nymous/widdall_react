@@ -82,51 +82,54 @@ export default function Usuarios({navigation}){
             key:'loginState'
         }).then((result)=>{
             id= result.userKey;
-        }).catch((error)=>{
-            navigation.push('Login');
-        })
-        db.collection("users").onSnapshot((snapshot) => {
-            let usuarios = [];
-            let amigos = '';
-            db.collection('users').doc(id).get().then((result)=>{
-                amigos = result.data().friends;
-                amigos = amigos.split(',');
-                snapshot.forEach((doc)=>{
-                    if(id!=doc.id){
-                        let user = {
-                            uid:doc.id,
-                            username:doc.data().displayName,
-                            url_photo:{uri:doc.data().url_photo},
-                            url_portada:{uri:doc.data().url_portada},
-                            color_portada:doc.data().color_portada,
-                            descripcion:doc.data().descripcion,
-                            amigo:false,
-                            chats:doc.data().chats
-                        }
-                        amigos.forEach(element => {
-                            if(element==user.uid){
-                                user.amigo=true;
+            db.collection("users").onSnapshot((snapshot) => {
+                let usuarios = [];
+                let amigos = '';
+                db.collection('users').doc(id).get().then((result)=>{
+                    amigos = result.data().friends;
+                    amigos = amigos.split(',');
+                    snapshot.forEach((doc)=>{
+                        if(id!=doc.id){
+                            let user = {
+                                uid:doc.id,
+                                username:doc.data().displayName,
+                                url_photo:{uri:doc.data().url_photo},
+                                url_portada:{uri:doc.data().url_portada},
+                                color_portada:doc.data().color_portada,
+                                descripcion:doc.data().descripcion,
+                                amigo:false,
+                                chats:doc.data().chats
                             }
-                        });
-                        usuarios.push(user);
-                    }
-                });
-                try{
-                    localstorage.save({
-                        key:'usuarios',
-                        data:usuarios
+                            amigos.forEach(element => {
+                                if(element==user.uid){
+                                    user.amigo=true;
+                                }
+                            });
+                            usuarios.push(user);
+                        }
                     });
-                    leerSolicitudes(usuarios);
-                }catch(e){
-                    alert(e.message);
-                }
-                //setState({...state,usuarios:usuarios});
-            }).catch((error)=>{
-                console.log(error.code+' '+error.message);
+                    try{
+                        localstorage.save({
+                            key:'usuarios',
+                            data:usuarios
+                        });
+                        leerSolicitudes(usuarios);
+                    }catch(e){
+                        alert(e.message);
+                    }
+                    //setState({...state,usuarios:usuarios});
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }, (error) => {
+                Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
             });
-        }, (error) => {
-            Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
-        });
+        }).catch((error)=>{
+            Alert.alert('Atención','Debes iniciar sesión.',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
+        })
     }
     const addFriend = async (uid)=>{
         let uid_user = '';
@@ -171,6 +174,10 @@ export default function Usuarios({navigation}){
                 console.log('Error al cargar el id del usuario');
             }
         }).catch((error)=>{
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
             console.log(error);
         });
     }
@@ -202,6 +209,10 @@ export default function Usuarios({navigation}){
                     console.log(error.code+' '+error.message);
                 });
             }).catch((error=>{
+                Alert.alert('Atención','Debes iniciar sesión',[{
+                    text:'Ok',
+                    onPress:()=>{navigation.push('Login');}
+                }]);
                 console.log(error.message);
             }));
         }else{
@@ -233,7 +244,10 @@ export default function Usuarios({navigation}){
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
-            console.log('ERROR AL CARGAR LOGINSTATE');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const delSolicitud=async(uid)=>{
@@ -259,7 +273,10 @@ export default function Usuarios({navigation}){
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
-            navigation.push('Login');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const aceptSolicitud=async(uid)=>{
@@ -338,7 +355,10 @@ export default function Usuarios({navigation}){
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
-            navigation.push('Login');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const chatAmigo=(chat,uid)=>{
@@ -354,8 +374,10 @@ export default function Usuarios({navigation}){
                 crearChat(uid,user);
             }
         }).catch((error)=>{
-            console.log(error);
-            navigation.push('Login');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const crearChat=async(uid,user)=>{
@@ -504,7 +526,10 @@ export default function Usuarios({navigation}){
                             </View>
                         </>)});
             }).catch((error)=>{
-                console.log(error.code+' '+error.message);
+                Alert.alert('Atención','Debes iniciar sesión',[{
+                    text:'Ok',
+                    onPress:()=>{navigation.push('Login');}
+                }]);
             });
         }else if(amigo==false){
             setState({...state,display_preview:{

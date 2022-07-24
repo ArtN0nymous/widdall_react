@@ -94,7 +94,10 @@ export default function BandejaMessages({route,navigation}){
                 console.log(error.code+' '+error.message);
             })
         }).catch((error)=>{
-            console.log(error);
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const sendMessage=async()=>{

@@ -190,8 +190,10 @@ export default function Perfil({navigation}){
             let path = state.path;
             saveImg(path,uid);
         }).catch((error)=>{
-            console.log('ES AQUI AUI');
-            Alert.alert('Atención','Ha ocurrido un error, por favor intentelo nuevamente más tarde.');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const saveImg = async (path,user)=>{
@@ -357,8 +359,10 @@ export default function Perfil({navigation}){
                 crearChat(uid,user);
             }
         }).catch((error)=>{
-            console.log(error);
-            navigation.push('Login');
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         });
     }
     const crearChat=async(uid,user)=>{
@@ -471,7 +475,10 @@ export default function Perfil({navigation}){
                             </View>
                         </>)});
             }).catch((error)=>{
-                console.log(error.code+' '+error.message);
+                Alert.alert('Atención','Debes iniciar sesión',[{
+                    text:'Ok',
+                    onPress:()=>{navigation.push('Login');}
+                }]);
             });
         }else{
             setState({...state,display_preview:{
