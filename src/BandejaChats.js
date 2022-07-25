@@ -99,7 +99,6 @@ export default function BandejaChats({navigation}){
             });
         },(error) => {
             setState({...state,loading_display:{display:'none'}});
-            console.log('llega aqui');
             console.log(error.code+' '+error.message);
         });
     }

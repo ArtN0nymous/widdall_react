@@ -48,7 +48,7 @@ export default function Login({navigation}){
             console.log(result.userKey);
             user = result.userKey;
             if(user!=''){
-                navigation.push('Chats');
+                navigation.goBack();
             }
         }).catch((err)=>{
             console.log(err.message);
@@ -86,7 +86,7 @@ export default function Login({navigation}){
                 Alert.alert('Bienvenido',result.user.displayName, [
                     {
                       text: "Aceptar",
-                      onPress: navigation.push('Chats'),
+                      onPress: ()=>navigation.goBack(),
                     }
                 ]);
             }catch(e){
