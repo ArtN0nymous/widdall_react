@@ -61,7 +61,7 @@ export default function Login({navigation}){
                 if(valido!=false){
                     loginIn(state.email,state.password);
                 }else{
-                    Alert.alert('Atención','Ingrese euna direccion de correo valida.');
+                    Alert.alert('Atención','Ingrese una direccion de correo valida.');
                 }
             }else{
                 Alert.alert('Atención','Debe ingresar una contraseña.');

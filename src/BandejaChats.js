@@ -92,6 +92,7 @@ export default function BandejaChats({navigation}){
                             });
                         }
                     }
+                    setState({...state,loading_display:{display:'none'}});
                 }else{
                     setState({...state,loading_display:{display:'none'}});
                     console.log('No hay chats');

@@ -179,7 +179,7 @@ export default function Registro({navigation}){
             setState({...state,loading_display:{
                 display:'none'
             }});
-            navigation.goBack();
+            navigation.push('Chats');
         }).catch((error)=>{
             setState({...state,loading_display:{
                 display:'none'
