@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator, Button } from "react-native";
+import { View, Text, Image,Alert,TouchableOpacity,TextInput,Switch,ActivityIndicator, ScrollView } from "react-native";
 import { useState } from "react";
 //import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
@@ -168,7 +168,8 @@ export default function Registro({navigation}){
             displayName:name,
             descripcion:state.descripcion,
             solicitudes:'',
-            friends:''
+            friends:'',
+            email:state.email
         }).then((result)=>{
             localstorage.save({
                 key:'loginState',
@@ -180,7 +181,7 @@ export default function Registro({navigation}){
             setState({...state,loading_display:{
                 display:'none'
             }});
-            navigation.push('Chats');
+            navigation.goBack();
         }).catch((error)=>{
             setState({...state,loading_display:{
                 display:'none'
@@ -197,18 +198,18 @@ export default function Registro({navigation}){
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         /**VERIFICAR OPCIONES DE IMAGENES */
-        /*let options = {
+        let options = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowEditing:true,
-            //aspect:[4,3],
+            aspect:[4,3],
             quality:1
-        }*/
+        }
         if (permissionResult.granted === false) {
             cancel();
           alert("Permission to access camera roll is required!");
           return;
         }else{
-            let pickerResult = await ImagePicker.launchImageLibraryAsync();
+            let pickerResult = await ImagePicker.launchImageLibraryAsync(options);
             setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
         }
     }
@@ -227,56 +228,58 @@ export default function Registro({navigation}){
     }
     return(
         <>
-        <LinearGradient style={styles.contenedor_regist} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
-            <TouchableOpacity activeOpacity={0.6} onPress={uiPicker}>
-                <LinearGradient animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
-                    <Image source={state.img} style={styles.img_regist}/>
-                </LinearGradient>
-            </TouchableOpacity>
-            <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
-            <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={15}/>
-            <TextInput  keyboardType="default" placeholder="Agrega una breve descripción de ti..." placeholderTextColor={'#0B2379'} style={[styles.inputs_regist,{height:50}]} onChangeText={(value)=>handleChangeText('descripcion',value)} multiline={true} maxLength={100}/>
-            <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)} maxLength={30}/>
-            <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
-            <View style={styles.contenedor_switch}>
-                <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
-                <Switch
-                trackColor={{ false: "purple", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "purple" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-                />
-            </View>
-            <View style={[styles.loading_contenedor,state.loading_display]}>
-                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
-                <Text style={styles.loading_text}>Cargando</Text>
-            </View>
-            <View style={[styles.loading_contenedor,state.open_display,{zIndex:9}]}>
-                <View style={{ width:200,top:100, zIndex:10, justifyContent:'center', alignItems:'center', backgroundColor:'rgba(255,255,255,0.2)', borderRadius:10}}>
-                    <TouchableOpacity onPress={cancel}>
-                        <View style={styles.btn_cancel_regist}>
-                            <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.6} onPress={openCamera}>
-                        <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
-                            <Text style={styles.texts_regist}>Cámara</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.6} onPress={openImagePickerAsync}>
-                        <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
-                            <Text style={styles.texts_regist}>Galería</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
+        <ScrollView style={{flex:1,backgroundColor:'#0C679B'}}>
+            <LinearGradient style={styles.contenedor_regist} colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
+                <TouchableOpacity activeOpacity={0.6} onPress={uiPicker}>
+                    <LinearGradient animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
+                        <Image source={state.img} style={styles.img_regist}/>
+                    </LinearGradient>
+                </TouchableOpacity>
+                <TextInput  keyboardType="email-address" placeholder="Correo" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('email',value)}/>
+                <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={15}/>
+                <TextInput  keyboardType="default" placeholder="Agrega una breve descripción de ti..." placeholderTextColor={'#0B2379'} style={[styles.inputs_regist,{height:50}]} onChangeText={(value)=>handleChangeText('descripcion',value)} multiline={true} maxLength={100}/>
+                <TextInput  keyboardType="default" placeholder="Contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password',value)} maxLength={30}/>
+                <TextInput  keyboardType="default" placeholder="Repita su contraseña" secureTextEntry={isEnabled?false:true} placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('password2',value)}/>
+                <View style={styles.contenedor_switch}>
+                    <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
+                    <Switch
+                    trackColor={{ false: "purple", true: "#81b0ff" }}
+                    thumbColor={isEnabled ? "purple" : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleSwitch}
+                    value={isEnabled}
+                    />
                 </View>
-            </View>
-            <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
-                <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
-                    <Text style={styles.texts_regist}>Registrarme</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-        </LinearGradient>
+                <View style={[styles.loading_contenedor,state.loading_display]}>
+                    <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                    <Text style={styles.loading_text}>Cargando</Text>
+                </View>
+                <View style={[styles.loading_contenedor,state.open_display,{zIndex:9}]}>
+                    <View style={{ width:200,top:100, zIndex:10, justifyContent:'center', alignItems:'center', backgroundColor:'rgba(255,255,255,0.2)', borderRadius:10}}>
+                        <TouchableOpacity onPress={cancel}>
+                            <View style={styles.btn_cancel_regist}>
+                                <Text style={{color:'white', fontWeight:'bold'}}>X</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.6} onPress={openCamera}>
+                            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
+                                <Text style={styles.texts_regist}>Cámara</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.6} onPress={openImagePickerAsync}>
+                            <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.open_btn_regist}>
+                                <Text style={styles.texts_regist}>Galería</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <TouchableOpacity activeOpacity={0.6} onPress={checarDatos}>
+                    <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.login_btn_regist}>
+                        <Text style={styles.texts_regist}>Registrarme</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </LinearGradient>
+        </ScrollView>
         </>
     );
 }

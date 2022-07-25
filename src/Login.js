@@ -22,20 +22,28 @@ export default function Login({navigation}){
     var img  = require('./img/icon.png');
     var styles = CSS.styles;
     const [state,setState]= useState({
-        email:'',
         password:'',
         loading_display:{
             display:'none'
-        }
+        },
+        loginState:''
     });
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-    const handleChangeText=(name,value)=>{
-        setState({...state,[name]:value});
-    }
+    const [email,setEmail]=useState('');
+    const [pass,setPass]=useState('');
+    const hasUnsavedChanges = Boolean(state.loginState);
     useEffect(()=>{
         let abortController = new AbortController();
         verify_user_logedIn();
+        navigation.addListener('beforeRemove', (e) => {
+            if(state.loginState==''){
+                console.log('Entra aqui');
+                e.preventDefault();   
+            }else{
+                navigation.dispatch(e.data.action);
+            }
+        });
         return ()=>{
             abortController.abort();
         }
@@ -45,21 +53,21 @@ export default function Login({navigation}){
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            console.log(result.userKey);
             user = result.userKey;
             if(user!=''){
-                navigation.goBack();
+                setState({...state,loginState:result});
             }
         }).catch((err)=>{
             console.log(err.message);
         });
     }
     function checarDatos(){
-        if(state.email!=""){
-            if(state.password!=""){
-                var valido = App.validarEmail(state.email);
+        console.log(email+pass);
+        if(email!=""){
+            if(pass!=""){
+                var valido = App.validarEmail(email);
                 if(valido!=false){
-                    loginIn(state.email,state.password);
+                    loginIn(email,pass);
                 }else{
                     Alert.alert('Atención','Ingrese una direccion de correo valida.');
                 }
@@ -71,6 +79,7 @@ export default function Login({navigation}){
         }
     }
     const loginIn= async (email,password)=>{
+        setState({...state,loading_display:{display:'flex'}});
         await auth.signInWithEmailAndPassword(email,password)
         .then((result)=>{
             let uid = result.user.uid;
@@ -83,17 +92,20 @@ export default function Login({navigation}){
                         userKey:uid
                     }
                 });
+                setState({...state,loginState:'1'});
                 Alert.alert('Bienvenido',result.user.displayName, [
                     {
                       text: "Aceptar",
-                      onPress: ()=>navigation.goBack(),
+                      onPress: ()=>navigation.navigate('Chats')
                     }
                 ]);
             }catch(e){
+                setState({...state,loading_display:{display:'none'}});
                 alert(e);
             }
         })
         .catch((error)=>{
+            setState({...state,loading_display:{display:'none'}});
             switch(error.code){
                 case 'auth/user-not-found':
                     Alert.alert('Atención','Parece que este usuario no existe!');
@@ -116,8 +128,8 @@ export default function Login({navigation}){
                 style={styles.border_image_login}>
                     <Image source={img} style={styles.imagen_login}/>
                 </LinearGradient>
-                <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} keyboardType='email-address' style={styles.inputs_login} onChangeText={(value)=>handleChangeText('email',value)}/>
-                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs_login} secureTextEntry={isEnabled?false:true} onChangeText={(value)=>handleChangeText('password',value)}/>
+                <TextInput placeholder="Usuario" placeholderTextColor={'#1C9AB9'} autoFocus={true} keyboardType='email-address' style={styles.inputs_login} onChangeText={(value)=>setEmail(value)}/>
+                <TextInput placeholder="Password" placeholderTextColor={'#1C9AB9'} style={styles.inputs_login} secureTextEntry={isEnabled?false:true} onChangeText={(value)=>setPass(value)}/>
                 <View style={styles.contenedor_switch}>
                     <Text style={styles.texto_switch}>Mostrar contraseña:</Text>
                     <Switch

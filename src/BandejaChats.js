@@ -56,7 +56,7 @@ export default function BandejaChats({navigation}){
             localstorage.remove({
                 key:'loginState'
             }).then((resul)=>{
-                navigation.push('Login');
+                navigation.navigate('Login');
             }).catch((error)=>{
                 console.log(error);
             });
@@ -97,6 +97,7 @@ export default function BandejaChats({navigation}){
                     console.log('No hay chats');
                 }
             });
+            setState({...state,loading_display:{display:'none'}});
         },(error) => {
             setState({...state,loading_display:{display:'none'}});
             console.log(error.code+' '+error.message);
@@ -181,7 +182,7 @@ export default function BandejaChats({navigation}){
             setState({...state,loading_display:{display:'none'}});
             Alert.alert('Atención','Debes iniciar sesión',[{
                 text:'Ok',
-                onPress:()=>{navigation.push('Login');}
+                onPress:()=>{navigation.navigate('Login');}
             }]);
         })
     }
@@ -236,14 +237,14 @@ export default function BandejaChats({navigation}){
                 </View>
                 <View style={[styles.menu_content,state.menu_display]}>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.push('Perfil')}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.navigate('Perfil')}>
                             <View style={styles.button_menu_container}>
                                 <FontAwesome5 name="user-circle" size={35} color="white" />
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.push('Usuario')}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.navigate('Usuario')}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="people-circle" size={35} color="white" />
                             </View>

@@ -624,7 +624,7 @@ export default function Perfil({navigation}){
             </ImageBackground>
             <View style={styles.search_bar}>
                 <TextInput keyboardType="default" style={styles.input_buscar_usu} placeholder="Mis amigos..." placeholderTextColor={'purple'} onChangeText={(value)=>checkSearch(value)}/>
-                <TouchableOpacity onPress={()=>searchFunction()} activeOpacity={0.6}>
+                <TouchableOpacity activeOpacity={0.6}>
                     <View style={styles.buton_search}>
                         <FontAwesome5 size={15} name='search' color='white'/>
                     </View>
