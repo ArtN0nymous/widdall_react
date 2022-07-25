@@ -92,7 +92,6 @@ export default function BandejaChats({navigation}){
                             });
                         }
                     }
-                    setState({...state,loading_display:{display:'none'}});
                 }else{
                     setState({...state,loading_display:{display:'none'}});
                     console.log('No hay chats');
@@ -100,6 +99,7 @@ export default function BandejaChats({navigation}){
             });
         },(error) => {
             setState({...state,loading_display:{display:'none'}});
+            console.log('llega aqui');
             console.log(error.code+' '+error.message);
         });
     }
@@ -114,43 +114,72 @@ export default function BandejaChats({navigation}){
                 let amigos = '';
                 db.collection('users').doc(id).get().then((result)=>{
                     amigos = result.data().friends;
-                    amigos = amigos.split(',');
-                    snapshot.forEach((doc)=>{
-                        if(id!=doc.id){
-                            let user = {
-                                uid:doc.id,
-                                username:doc.data().displayName,
-                                url_photo:{uri:doc.data().url_photo},
-                                url_portada:{uri:doc.data().url_portada},
-                                color_portada:doc.data().color_portada,
-                                descripcion:doc.data().descripcion,
-                                amigo:false,
-                                chats:doc.data().chats
-                            }
-                            amigos.forEach(element => {
-                                if(element==user.uid){
-                                    user.amigo=true;
+                    if(amigos!=''){
+                        amigos = amigos.split(',');
+                        snapshot.forEach((doc)=>{
+                            if(id!=doc.id){
+                                let user = {
+                                    uid:doc.id,
+                                    username:doc.data().displayName,
+                                    url_photo:{uri:doc.data().url_photo},
+                                    url_portada:{uri:doc.data().url_portada},
+                                    color_portada:doc.data().color_portada,
+                                    descripcion:doc.data().descripcion,
+                                    amigo:false,
+                                    chats:doc.data().chats
                                 }
-                            });
-                            usuarios.push(user);
-                        }
-                    });
-                    try{
-                        localstorage.save({
-                            key:'usuarios',
-                            data:usuarios
+                                amigos.forEach(element => {
+                                    if(element==user.uid){
+                                        user.amigo=true;
+                                    }
+                                });
+                                usuarios.push(user);
+                            }
                         });
-                    }catch(e){
-                        alert(e.message);
+                        try{
+                            localstorage.save({
+                                key:'usuarios',
+                                data:usuarios
+                            });
+                        }catch(e){
+                            alert(e.message);
+                        }
+                    }else{
+                        snapshot.forEach((doc)=>{
+                            if(id!=doc.id){
+                                let user = {
+                                    uid:doc.id,
+                                    username:doc.data().displayName,
+                                    url_photo:{uri:doc.data().url_photo},
+                                    url_portada:{uri:doc.data().url_portada},
+                                    color_portada:doc.data().color_portada,
+                                    descripcion:doc.data().descripcion,
+                                    amigo:false,
+                                    chats:doc.data().chats
+                                }
+                                usuarios.push(user);
+                            }
+                        });
+                        try{
+                            localstorage.save({
+                                key:'usuarios',
+                                data:usuarios
+                            });
+                        }catch(e){
+                            alert(e.message);
+                        }
                     }
                     //setState({...state,usuarios:usuarios});
                 }).catch((error)=>{
+                    setState({...state,loading_display:{display:'none'}});
                     console.log(error.code+' '+error.message);
                 });
             }, (error) => {
+                setState({...state,loading_display:{display:'none'}});
                 Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
             });
         }).catch((error)=>{
+            setState({...state,loading_display:{display:'none'}});
             Alert.alert('Atención','Debes iniciar sesión',[{
                 text:'Ok',
                 onPress:()=>{navigation.push('Login');}

@@ -167,7 +167,8 @@ export default function Registro({navigation}){
             chats:'',
             displayName:name,
             descripcion:state.descripcion,
-            solicitudes:''
+            solicitudes:'',
+            friends:''
         }).then((result)=>{
             localstorage.save({
                 key:'loginState',
