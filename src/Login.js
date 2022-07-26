@@ -80,44 +80,53 @@ export default function Login({navigation}){
     }
     const loginIn= async (email,password)=>{
         setState({...state,loading_display:{display:'flex'}});
-        await auth.signInWithEmailAndPassword(email,password)
-        .then((result)=>{
-            let uid = result.user.uid;
-            let name = result.user.displayName;
-            try{
-                localstorage.save({
-                    key:'loginState',
-                    data:{
-                        userName:name,
-                        userKey:uid
+        auth.setPersistence(firebase.firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+            return auth.signInWithEmailAndPassword(email,password)
+            .then((result)=>{
+                let uid = result.user.uid;
+                let name = result.user.displayName;
+                try{
+                    localstorage.save({
+                        key:'loginState',
+                        data:{
+                            userName:name,
+                            userKey:uid,
+                            verified:result.user.emailVerified
+                        }
+                    });
+                    setState({...state,loginState:'1'});
+                    if(result.user.emailVerified!=false){
+                        Alert.alert('Bienvenido a Widdall',result.user.displayName, [
+                            {
+                            text: "Aceptar",
+                            onPress: ()=>navigation.navigate('Chats')
+                            }
+                        ]);
+                    }else{
+                        Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
                     }
-                });
-                setState({...state,loginState:'1'});
-                Alert.alert('Bienvenido',result.user.displayName, [
-                    {
-                      text: "Aceptar",
-                      onPress: ()=>navigation.navigate('Chats')
-                    }
-                ]);
-            }catch(e){
+                }catch(e){
+                    setState({...state,loading_display:{display:'none'}});
+                    alert(e);
+                }
+            })
+            .catch((error)=>{
                 setState({...state,loading_display:{display:'none'}});
-                alert(e);
-            }
-        })
-        .catch((error)=>{
-            setState({...state,loading_display:{display:'none'}});
-            switch(error.code){
-                case 'auth/user-not-found':
-                    Alert.alert('Atención','Parece que este usuario no existe!');
-                    break;
-                case 'auth/wrong-password':
-                    Alert.alert('Atención', 'Usuario o contraseña incorrecta.');
-                    break;
-                case 'auth/too-many-requests':
-                    Alert.alert('Atención','El acceso a esta cuenta ha sido bloqueado temporalmente por demasiados intentos fallidos, puedes intentar reestablecer tu contraseña.');
-                    break;
-            }
-            console.log(error.code +' '+error.message);
+                switch(error.code){
+                    case 'auth/user-not-found':
+                        Alert.alert('Atención','Parece que este usuario no existe!');
+                        break;
+                    case 'auth/wrong-password':
+                        Alert.alert('Atención', 'Usuario o contraseña incorrecta.');
+                        break;
+                    case 'auth/too-many-requests':
+                        Alert.alert('Atención','El acceso a esta cuenta ha sido bloqueado temporalmente por demasiados intentos fallidos, puedes intentar reestablecer tu contraseña.');
+                        break;
+                }
+                console.log(error.code +' '+error.message);
+            });
+        }).catch((err)=>{
+            console.log(err.code+' '+err.message);
         });
     }
     return(

@@ -36,7 +36,12 @@ export default function BandejaChats({navigation}){
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
-            leerChats(result.userKey);
+            if(result.verified!=true){
+                Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
+                navigation.navigate('Login');
+            }else{
+                leerChats(result.userKey);
+            }
         }).catch((error)=>{
             Alert.alert('Atención','Debes iniciar sesión',[{
                 text:'Ok',

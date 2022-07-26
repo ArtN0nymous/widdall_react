@@ -141,7 +141,7 @@ export default function Registro({navigation}){
         displayName: state.name,
         photoURL: url
         }).then(() => {
-            addingUsu(user.uid,url,state.name);
+            addingUsu(user.uid,url,state.name,user);
         }).catch((error) => {
             setState({...state,loading_display:{
                 display:'none'
@@ -157,7 +157,7 @@ export default function Registro({navigation}){
         }
         return color;
     }
-    const addingUsu= async (uid,url,name) =>{
+    const addingUsu= async (uid,url,name,user) =>{
         /**PASO 5 GUARDAR USUARIO EN FIRESTORE */
         let color_portada = randomHexColor();
         await db.collection('users').doc(uid).set({
@@ -175,13 +175,21 @@ export default function Registro({navigation}){
                 key:'loginState',
                 data:{
                     userName:name,
-                    userKey:uid
+                    userKey:uid,
+                    verified:user.emailVerified
                 }
             });
-            setState({...state,loading_display:{
-                display:'none'
-            }});
-            navigation.goBack();
+            user.sendEmailVerification()
+            .then(function() {
+                Alert.alert('Atención','Enviamos un correo a tu dirección: ⭐ '+state.email+' ⭐.Verifica tu dirección de correo electónico para iniciar sesión.');
+                setState({...state,loading_display:{
+                    display:'none'
+                }});
+                navigation.goBack();
+            })
+            .catch(function(error) {
+              console.log(error.code+' '+error.message);
+            })
         }).catch((error)=>{
             setState({...state,loading_display:{
                 display:'none'
