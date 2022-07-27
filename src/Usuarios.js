@@ -165,7 +165,16 @@ export default function Usuarios({navigation}){
                             return;
                         }
                     }else{
-                        solicitudes=uid_user;
+                        solicitudes=uid_user+',';
+                        db.collection('users').doc(uid).update({
+                            solicitudes:solicitudes
+                        }).then((result)=>{
+                            Alert.alert('Atención','Solicitud enviada',[
+                                { text: "OK", onPress: () => cerrarPreview() }
+                                ]);
+                        }).catch((error)=>{
+                            console.log('No se ha agregado la solicitud.');
+                        });
                     }
                 }).catch((error)=>{
                     console.log('NO se encontró el documento para este usuario');
