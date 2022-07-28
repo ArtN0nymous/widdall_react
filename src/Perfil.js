@@ -30,7 +30,8 @@ export default function Perfil({navigation}){
             email:'',
             url_photo:'',
             url_portada:'',
-            color_portada:''
+            color_portada:'',
+            descripcion:''
         },
         uid:'',
         img : require('./img/default_profile.jpg'),
@@ -199,7 +200,7 @@ export default function Perfil({navigation}){
             if(name.length>=4){
                 updateUser();
             }else{
-                Alert.alert('Atención','El nombre debe tener al menos 4 caracteres.');
+                Alert.alert('Atención','Tu descripción debe tener al menos 4 caracteres.');
             }
         }else{
             updateUser();
@@ -299,7 +300,7 @@ export default function Perfil({navigation}){
         }else if(state.oper_display=='perfil'){
             if(state.name!=''&&url!=''){
                 await db.collection('users').doc(uid).update({
-                    displayName:state.name,
+                    descripcion:state.name,
                     url_photo:url
                 }).then((result)=>{
                     setState({
@@ -307,10 +308,11 @@ export default function Perfil({navigation}){
                         cargando:{display:'none'},
                         open_display:{display:'none'},
                         open_display_2:{display:'none'},
-                        loading_state:{display:'none'}
+                        loading_state:{display:'none'},
+                        loa
                     });
                     loadProfile();
-                    Alert.alert('Genial !!','has actualizado tu perfil 😎');
+                    Alert.alert('Genial !!','Tu perfil se ha actualizado 😎');
                 }).catch((error)=>{
                     setState({...state,cargando:{display:'none'}});
                     console.log('ES AQUI 3');
@@ -337,17 +339,10 @@ export default function Perfil({navigation}){
                 });
             }else if(state.name!=''&&url==''){
                 await db.collection('users').doc(uid).update({
-                    displayName:state.name
+                    descripcion:state.name
                 }).then((result)=>{
-                    setState({
-                        ...state,
-                        cargando:{display:'none'},
-                        open_display:{display:'none'},
-                        open_display_2:{display:'none'},
-                        loading_state:{display:'none'}
-                    });
                     loadProfile();
-                    Alert.alert('Genial !!','Tu nombre de usuario se ha actualizado 😁');
+                    Alert.alert('Genial !!','Tu descripción se ha actualizado 😁');
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
                     alert('Ha ocurrido un error por favior intentelo de nuevo mas tarde');
@@ -366,7 +361,10 @@ export default function Perfil({navigation}){
             key:'usuarios'
         }).then((result)=>{
            let usuarios = result;
-           setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios});
+           setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios,cargando:{display:'none'},
+           open_display:{display:'none'},
+           open_display_2:{display:'none'},
+           loading_state:{display:'none'}});
         }).catch((error)=>{
             console.log(error);
         })
@@ -640,6 +638,7 @@ export default function Perfil({navigation}){
                     </ImageBackground>
                     <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
                     <Text style={styles.text_small_usu}>{state.profile.email}</Text>
+                    <Text style={styles.text_small_usu}>{state.profile.descripcion}</Text>
                     <TouchableOpacity onPress={edit_perfil}>
                         <View style={styles.button_opt_usu}>
                             <Text style={styles.editar_perfil}>Editar perfil</Text>
@@ -701,7 +700,7 @@ export default function Perfil({navigation}){
                             <Image source={state.img} style={styles.img_regist}/>
                         </LinearGradient>
                     </TouchableOpacity>
-                    <TextInput  keyboardType="default" placeholder="Nombre de usuario" placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={30}/>
+                    <TextInput  keyboardType="default" placeholder="Cambiar mi descripción..." placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={30}/>
                     <View style={styles.buton_row_perfil}>
                         <TouchableOpacity activeOpacity={0.6} onPress={cerrar_update}>
                             <LinearGradient colors={['#D55C04', '#D03203', '#B51F02']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.btn_perfil_update}>
