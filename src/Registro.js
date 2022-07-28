@@ -210,7 +210,7 @@ export default function Registro({navigation}){
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowEditing:true,
             aspect:[4,3],
-            quality:1
+            quality:0.8
         }
         if (permissionResult.granted === false) {
             cancel();
@@ -222,14 +222,20 @@ export default function Registro({navigation}){
         }
     }
     let openCamera = async ()=>{
-        console.log('camera intent');
+        let options = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowEditing:true,
+            aspect:[4,3],
+            quality:0.8,
+            saveToPhotos:true
+        }
         let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
         if(permissionResult.granted === false){
             cancel();
             alert('Permisos para usar la camára requeridos !');
             return;
         }else{
-            let pickerResult = await ImagePicker.launchCameraAsync();
+            let pickerResult = await ImagePicker.launchCameraAsync(options);
             console.log(pickerResult);
             setState({...state,img:{uri:pickerResult.uir}, path:pickerResult.uri,open_display:{display:'none'}});
         }

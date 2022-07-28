@@ -595,7 +595,7 @@ export default function Usuarios({navigation}){
                 <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats)}>
                     <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                         <View style={styles.contenido_caja_usu}>
-                            <Image style={styles.icon_usu} source={item.url_photo}/>
+                            <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
                             <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                             <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                         </View>

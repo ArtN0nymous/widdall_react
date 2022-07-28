@@ -78,7 +78,12 @@ export default function Perfil({navigation}){
     }
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+        let options = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowEditing:true,
+            aspect:[4,3],
+            quality:0.8
+        }
         if (permissionResult.granted === false) {
             cancel();
           alert("Permission to access camera roll is required!");
@@ -107,16 +112,36 @@ export default function Perfil({navigation}){
     }
     let openCamera = async ()=>{
         let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        let options = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowEditing:true,
+            aspect:[4,3],
+            quality:0.8,
+            saveToPhotos:true
+        }
         if(permissionResult.granted === false){
             cancel();
             alert('Permisos para usar la cámara requeridos !');
             return;
         }else{
-            let pickerResult = await ImagePicker.launchCameraAsync();
+            let pickerResult = await ImagePicker.launchCameraAsync(options);
             if(pickerResult.cancelled==true){
                 return;
             }else{
-                setState({...state,img:{uri:pickerResult.uri}, path:pickerResult.uri,open_display:{display:'none'}});
+                if(state.oper_display=='portada'){
+                    console.log(pickerResult.uri);
+                    localstorage.load({
+                        key:'loginState'
+                    }).then((result)=>{
+                        let uid = result.userKey;
+                        setState({...state,path:pickerResult.uri, open_display_2:{display:'none'},cargando:{display:'flex'}});
+                        saveImg(pickerResult.uri,uid);
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }else{
+                    setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                }
             }
         }
     }
