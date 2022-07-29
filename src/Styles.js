@@ -298,6 +298,25 @@ const styles = StyleSheet.create({
         borderWidth:1,
         marginLeft:3
     },
+    miniatura_imagen_message:{
+        width:100,
+        height:100,
+        backgroundColor:'gray',
+        borderRadius:20,
+        justifyContent:'center',
+        alignItems:'center',
+        display:'flex',
+        overflow:'hidden'
+    },
+    cerrar_miniatura:{
+        width:70,
+        height:70,
+        backgroundColor:'rgba(255,255,255,0.2)',
+        textAlign:'center',
+        borderRadius:20,
+        alignItems:'center',
+        justifyContent:'center'
+    },
     /*--BandejaMessages.js END--*/
     /*--Message.js BEGIN--*/
     contenedor_message:{

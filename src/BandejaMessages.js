@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image, ImageBackground,TextInput,StyleSheet,ScrollView, TouchableOpacity, Alert,Keyboard, ActivityIndicator } from "react-native";
+import { View, Text, Image, ImageBackground,TextInput,ScrollView, TouchableOpacity, Alert,Keyboard, ActivityIndicator } from "react-native";
 import CSS from './Styles';
+import * as ImagePicker from 'expo-image-picker';
 import Messages from "./Message";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5,Ionicons } from "@expo/vector-icons";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
@@ -25,15 +26,19 @@ export default function BandejaMessages({route,navigation}){
         message:'',
         contador:0,
         open_display:{display:'none'},
-        img:'',
+        img:{uri:''},
         path:'',
-        cargando:{display:'none'}
+        cargando:{display:'none'},
+        display_ministura:{display:'none'}
     });
     const [text,setText]=useState("");
     const scrollViewRef = useRef();
     const handleChangeText = (name,value)=>{
         setState({...state,[name]:value})
         setText(value);
+    }
+    function cerrarMiniatura(){
+        setState({...state,display_ministura:{display:'none'},img:{uri:''}});
     }
     var messages =[
         {
@@ -69,8 +74,8 @@ export default function BandejaMessages({route,navigation}){
         }
     },[]);
     function sendMessageCheck(){
-        if(state.img!=''){
-
+        if(state.path!=''){
+            saveImg();
         }else{
             sendMessage('');
         }
@@ -115,7 +120,7 @@ export default function BandejaMessages({route,navigation}){
     const sendMessage=async(img)=>{
         if(contador<1){
             contador +=1;
-            if(state.message!=''&&contador==1){
+            if(state.message!=''&&contador==1&&state.path!=''){
                 var sfDocRef = db.collection('chats').doc(chatId);
                 return db.runTransaction(async(transaction) => {
                     return transaction.get(sfDocRef).then((sfDoc) => {
@@ -138,12 +143,73 @@ export default function BandejaMessages({route,navigation}){
                         }
                     });
                 }).then(() => {
+                    setState({...state,cargando:{display:'none'}});
                     console.log('mensaje enviado');
                 }).catch((error) => {
+                    setState({...state,cargando:{display:'none'}});
                     console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
                 });
-            }else{
+            }else if(state.message==''&&state.path!=''&&contador==1){
+                var sfDocRef = db.collection('chats').doc(chatId);
+                return db.runTransaction(async(transaction) => {
+                    return transaction.get(sfDocRef).then((sfDoc) => {
+                        if (!sfDoc.exists) {
+                            throw "El documento no existe!";
+                        }else{
+                            let array = state.messages;
+                            let ms = {
+                                hora:'00:00',
+                                img:img,
+                                message:state.message,
+                                type:1,
+                                user:uid
+                            }
+                            array.push(ms);
+                            transaction.update(sfDocRef, { messages: array});
+                            setText("");
+                            Keyboard.dismiss();
+                            contador=0;
+                        }
+                    });
+                }).then(() => {
+                    setState({...state,cargando:{display:'none'}});
+                    console.log('Imagen enviada');
+                }).catch((error) => {
+                    setState({...state,cargando:{display:'none'}});
+                    console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
+                });
+            }else if(state.message!=''&&state.path==''){
+                var sfDocRef = db.collection('chats').doc(chatId);
+                return db.runTransaction(async(transaction) => {
+                    return transaction.get(sfDocRef).then((sfDoc) => {
+                        if (!sfDoc.exists) {
+                            throw "El documento no existe!";
+                        }else{
+                            let array = state.messages;
+                            let ms = {
+                                hora:'00:00',
+                                img:img,
+                                message:state.message,
+                                type:1,
+                                user:uid
+                            }
+                            array.push(ms);
+                            transaction.update(sfDocRef, { messages: array});
+                            setText("");
+                            Keyboard.dismiss();
+                            contador=0;
+                        }
+                    });
+                }).then(() => {
+                    setState({...state,cargando:{display:'none'}});
+                    console.log('Imagen enviada');
+                }).catch((error) => {
+                    setState({...state,cargando:{display:'none'}});
+                    console.log('Ocurrió un error intentelo nuevamente más tarde: '+error.message);
+                });
+            }else if(state.message==''&&state.path==''){
                 contador=0;
+                setState({...state,cargando:{display:'none'}});
                 Alert.alert('Ups!','Parece que no puedes enviar un mensaje vacío. 👀');
             }
         }
@@ -167,7 +233,8 @@ export default function BandejaMessages({route,navigation}){
                 alert("error: " + error.message);
             });
         }else{
-            update(user,'');
+            setState({...state,cargando:{display:'none'}});
+            Alert.alert('Ups','Parece que ha ocurrido un error al cargar tu imagen, intentalo de nuevo más tarde.');
         }
     }
     /*FIREBASE END */
@@ -191,7 +258,7 @@ export default function BandejaMessages({route,navigation}){
             if(pickerResult.cancelled==true){
                 return;
             }else{
-                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'},display_ministura:{display:'flex'}});
             }
         }
     }
@@ -213,7 +280,7 @@ export default function BandejaMessages({route,navigation}){
             if(pickerResult.cancelled==true){
                 return;
             }else{
-                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'},display_ministura:{display:'flex'}});
             }
         }
     }
@@ -230,14 +297,20 @@ export default function BandejaMessages({route,navigation}){
                     }
                 </ScrollView>
                 <View style={{flexDirection:'column',alignItems:'center'}}>
-                    <ImageBackground style={{width:100,height:100,backgroundColor:'gray',borderRadius:20,justifyContent:'center',alignItems:'center',display:'none'}}>
-                        <Text style={{fontSize:40}}>X</Text>
+                    <ImageBackground style={[styles.miniatura_imagen_message,state.display_ministura]} source={state.img}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>cerrarMiniatura()}>
+                            <View style={styles.cerrar_miniatura}>
+                                <Ionicons name="md-close-sharp" size={30} color="black"/>
+                            </View>
+                        </TouchableOpacity>
                     </ImageBackground>
                     <View style={styles.contenedor_input_messa}>
                         <View style={styles.butons_input_message}>
-                            <View style={styles.fondo_icon_target_message}>
-                                <FontAwesome5 size={13} name='photo-video' color='white'/>
-                            </View>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>setState({...state,open_display:{display:'flex'}})}>
+                                <View style={styles.fondo_icon_target_message}>
+                                    <FontAwesome5 size={13} name='photo-video' color='white'/>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                         <View style={{flexDirection:'column'}}>
                             <TextInput placeholder="Escribe un mensaje..." style={styles.input_messages} multiline={true} onChangeText={(value)=>handleChangeText('message',value)} value={text}/>

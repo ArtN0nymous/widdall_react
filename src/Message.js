@@ -1,4 +1,4 @@
-import {View,Text,Image} from 'react-native';
+import {View,Text,ImageBackground} from 'react-native';
 import CSS from './Styles';
 import {useState} from 'react';
 import { Dimensions } from 'react-native';
@@ -46,19 +46,85 @@ export default function Message({user,mensaje,tipo,hora,img}){
         stilo=estilo2;
         estilo_tipo_2 = estilo2_tipo2;
     }
-    if(tipo=='1'){
-        return(
-            <>
-            <View style={styles.contenedor_message}>
-                <View style={styles.triangle_left_message}/>
-                <View style={stilo}>
-                    <Text style={styles.texto_message}>{mensaje}</Text>
-                    <Text style={styles.hora_message}>{hora}</Text>
+    if(tipo=='1' && img!=''){
+        if(mensaje.length>20){
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={styles.triangle_left_message}/>
+                    <View style={[stilo,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*69)/100,height:150,alignSelf:'center'}} source={{uri:img}}/>
+                        <Text style={styles.texto_message}>{mensaje}</Text>
+                        <Text style={styles.hora_message}>{hora}</Text>
+                    </View>
                 </View>
-            </View>
-            </>
-        );
-    }else if(tipo==2){
+                </>
+            );
+        }else if(mensaje.length<1){
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={styles.triangle_left_message}/>
+                    <View style={[stilo,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*49)/100,height:100,alignSelf:'center'}} source={{uri:img}}/>
+                    </View>
+                </View>
+                </>
+            );
+        }else{
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={styles.triangle_left_message}/>
+                    <View style={[stilo,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*49)/100,height:100,alignSelf:'center'}} source={{uri:img}}/>
+                        <Text style={styles.texto_message}>{mensaje}</Text>
+                        <Text style={styles.hora_message}>{hora}</Text>
+                    </View>
+                </View>
+                </>
+            );
+        }
+    }else if(tipo=='2'&&img!=''){
+        if(mensaje.length>20){
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={[estilo_tipo_2,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*69)/100,height:150,alignSelf:'center'}} source={{uri:img}}/>
+                        <Text style={styles.texto_message}>{mensaje}</Text>
+                        <Text style={[styles.hora_message,{textAlign:'right'}]}>{hora}</Text>
+                    </View>
+                    <View style={styles.triangle_right_message}/>
+                </View>
+                </>
+            );
+        }else if(mensaje.length<1){
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={[estilo_tipo_2,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*49)/100,height:100,alignSelf:'center'}} source={{uri:img}}/>
+                    </View>
+                    <View style={styles.triangle_right_message}/>
+                </View>
+                </>
+            );
+        }else{
+            return(
+                <>
+                <View style={styles.contenedor_message}>
+                    <View style={[estilo_tipo_2,{overflow:'hidden',zIndex:2}]}>
+                        <ImageBackground style={{width:(Dimensions.get('screen').width*49)/100,height:100,alignSelf:'center'}} source={{uri:img}}/>
+                        <Text style={styles.texto_message}>{mensaje}</Text>
+                        <Text style={[styles.hora_message,{textAlign:'right'}]}>{hora}</Text>
+                    </View>
+                    <View style={styles.triangle_right_message}/>
+                </View>
+                </>
+            );
+        }
+    }else if(tipo==2&&img==''){
         return(
             <>
             <View style={styles.contenedor_message}>
@@ -67,6 +133,18 @@ export default function Message({user,mensaje,tipo,hora,img}){
                     <Text style={[styles.hora_message,{textAlign:'right'}]}>{hora}</Text>
                 </View>
                 <View style={styles.triangle_right_message}/>
+            </View>
+            </>
+        );
+    }else if(tipo==1&&img==''){
+        return(
+            <>
+            <View style={styles.contenedor_message}>
+                <View style={styles.triangle_left_message}/>
+                <View style={stilo}>
+                    <Text style={styles.texto_message}>{mensaje}</Text>
+                    <Text style={styles.hora_message}>{hora}</Text>
+                </View>
             </View>
             </>
         );
