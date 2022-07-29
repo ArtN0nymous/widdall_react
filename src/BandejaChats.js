@@ -72,8 +72,8 @@ export default function BandejaChats({navigation}){
       async function schedulePushNotification() {
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: "Primera notificación",
-            body: 'Hola :3',
+            title: "Tal vez tienes mensajes nuevos",
+            body: 'Revisa tu bandeja de chats :3',
             data: { data: 'holoakjadj,' },
             sound:'notification.wav'
           },
@@ -153,6 +153,7 @@ export default function BandejaChats({navigation}){
     const leerChats=async(user)=>{
         setState({...state,loading_display:{display:'flex'}});
         db.collection('chats').onSnapshot((snapshot)=>{
+            schedulePushNotification();
             let chats = [];
             snapshot.forEach((doc) => {
                 if(doc){
@@ -354,7 +355,7 @@ export default function BandejaChats({navigation}){
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={async()=>schedulePushNotification()}>
+                        <TouchableOpacity activeOpacity={0.6}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="md-settings" size={35} color="white" />
                             </View>
