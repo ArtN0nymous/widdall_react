@@ -1,11 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, ScrollView, Text, Image, StyleSheet, TouchableOpacity,ActivityIndicator,ImageBackground,Alert } from "react-native";
+import { View, ScrollView, Text, Image, RefreshControl, TouchableOpacity,ActivityIndicator,ImageBackground,Alert } from "react-native";
 import Chat from "./Chat";
-import {useState,useEffect} from 'react';
+import {useState,useEffect,useCallback} from 'react';
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import Styles from "./Styles";
+import { NavigationEvents } from 'react-navigation';
 import { Entypo, FontAwesome5,Ionicons } from '@expo/vector-icons'; 
 export default function BandejaChats({navigation}){
     const img = require('./img/default_profile.jpg');
@@ -22,7 +23,8 @@ export default function BandejaChats({navigation}){
     const [state,setState]=useState({
         menu_display:{display:'none'},
         chats:[],
-        loading_display:{display:'none'}
+        loading_display:{display:'none'},
+        refreshing:false
     });
     useEffect(()=>{
         let abortController = new AbortController();
@@ -49,6 +51,12 @@ export default function BandejaChats({navigation}){
             }]);
         });
     }
+    /**Controles para actualizar scrollview al deslizar */
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        loadProfile().then(() => setRefreshing(false));
+      }, []);
     function toggle_menu(){
         if(state.menu_display.display=='none'){
             setState({...state,menu_display:{display:'flex'}})
@@ -198,7 +206,8 @@ export default function BandejaChats({navigation}){
     return(
         <View style={styles.contenedor_general_chats}>
             <View style={styles.contenedor_chats}>
-                <ScrollView>
+            <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
+                <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>}>
                     { 
                         state.chats.map((p)=>(
                             <TouchableOpacity onPress={()=>navigation.push('Messages',{uid:p.uid,chatId:p.idchat})} activeOpacity={0.6}>
@@ -271,10 +280,6 @@ export default function BandejaChats({navigation}){
                     </View>
                 </View>
             </LinearGradient>
-            <View style={[styles.loading_contenedor,state.loading_display]}>
-                <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
-                <Text style={styles.loading_text}>Cargando</Text>
-            </View>
         </View>
     );
 }
