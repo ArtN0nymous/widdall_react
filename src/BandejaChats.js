@@ -87,19 +87,34 @@ export default function BandejaChats({navigation}){
                 if(doc){
                     let chatId = doc.id;
                     let array = chatId.split(':');
+                    let messages = doc.data().messages;
+                    let lastText = messages[messages.length-1].message;
+                    let lastUser =messages[messages.length-1].user;
                     for(var i in array){
                         if(array[i]==user){
                             array.splice(i,1);
                             db.collection('users').doc(array[0]).get().then((resul)=>{
-                                let chat ={
-                                    userName:resul.data().displayName,
-                                    url_photo:{uri:resul.data().url_photo},
-                                    uid:resul.id,
-                                    idchat:doc.id,
-                                    color_portada:resul.data().color_portada
-                                }
-                                chats.push(chat);
-                                asignarChats(chats);
+                                localstorage.load({
+                                    key:'loginState'
+                                }).then((result)=>{
+                                    if(lastUser!=result.userKey){
+                                        lastUser=result.userName;
+                                    }else{
+                                        lastUser=resul.data().displayName;
+                                    }
+                                    let chat ={
+                                        userName:resul.data().displayName,
+                                        url_photo:{uri:resul.data().url_photo},
+                                        uid:resul.id,
+                                        idchat:doc.id,
+                                        color_portada:resul.data().color_portada,
+                                        lastMessage:lastUser+': '+lastText
+                                    }
+                                    chats.push(chat);
+                                    asignarChats(chats);
+                                }).catch((error)=>{
+                                    console.log('Error al cargar los datos de usuario.');
+                                });
                             }).catch((error)=>{
                                 console.log(error.code+' '+error.message);
                             });
@@ -209,8 +224,8 @@ export default function BandejaChats({navigation}){
             <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
                 <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>}>
                     { 
-                        state.chats.map((p)=>(
-                            <TouchableOpacity onPress={()=>navigation.push('Messages',{uid:p.uid,chatId:p.idchat})} activeOpacity={0.6}>
+                        state.chats.map((p,i)=>(
+                            <TouchableOpacity key={i} onPress={()=>navigation.push('Messages',{uid:p.uid,chatId:p.idchat})} activeOpacity={0.6}>
                                 <View style={styles.cont_target_b}>
                                     <View style={styles.target_b}>
                                         <View style={styles.target_cont_b}>
@@ -224,7 +239,7 @@ export default function BandejaChats({navigation}){
                                                 <View style={styles.row_b}>
                                                     <View style={styles.det_atg_b}>
                                                         <Text style={styles.title_b}>{p.userName}</Text>
-                                                        <Text style={styles.detalles_b}>Hola</Text>
+                                                        <Text style={styles.detalles_b}>{p.lastMessage}</Text>
                                                     </View>                                  
                                                 </View>
                                                 <View style={[styles.icon_target_b_cont_2,{marginLeft:130}]}>
