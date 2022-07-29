@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image, ImageBackground,TextInput,ScrollView, TouchableOpacity, Alert,Keyboard, ActivityIndicator } from "react-native";
+import Gallery from 'react-native-image-gallery';
+import { View, Text, Image, ImageBackground,TextInput,ScrollView, TouchableOpacity,Modal, Alert,Keyboard, ActivityIndicator } from "react-native";
 import CSS from './Styles';
 import * as ImagePicker from 'expo-image-picker';
 import Messages from "./Message";
@@ -29,7 +30,9 @@ export default function BandejaMessages({route,navigation}){
         img:{uri:''},
         path:'',
         cargando:{display:'none'},
-        display_ministura:{display:'none'}
+        display_ministura:{display:'none'},
+        display_gallery:false,
+        img_gallery:''
     });
     const [text,setText]=useState("");
     const scrollViewRef = useRef();
@@ -40,32 +43,9 @@ export default function BandejaMessages({route,navigation}){
     function cerrarMiniatura(){
         setState({...state,display_ministura:{display:'none'},img:{uri:''}});
     }
-    var messages =[
-        {
-            user:'Usuario1',
-            message:'Mensaje saasassadsdas',
-            hora:'10:20',
-            tipo:'1'
-        },
-        {
-            user:'usuario1',
-            message:'Hola',
-            hora:'10:20',
-            tipo:'1'
-        },
-        {
-            user:'Usuario2',
-            message:'Mensaje saasassadsdas',
-            hora:'10:20',
-            tipo:'2'
-        },
-        {
-            user:'usuario1',
-            message:'Hola',
-            hora:'10:20',
-            tipo:'2'
-        }
-    ];
+    const dimiss=()=>{
+        setState({...state,display_gallery:false});
+    }
     useEffect(()=>{
         let abortController = new AbortController();
         readMessages();
@@ -284,13 +264,18 @@ export default function BandejaMessages({route,navigation}){
             }
         }
     }
+    function validImage(img){
+        if(img!=''){
+            setState({...state,display_gallery:true,img_gallery:img});
+        }
+    }
     return(
         <>
             <View style={styles.contenedor_messages}>
                 <ScrollView style={styles.scroll_messages} ref={scrollViewRef} onContentSizeChange={()=>scrollViewRef.current.scrollToEnd({animated:true})}>
                     { 
                         state.messages.map((p)=>(
-                            <TouchableOpacity activeOpacity={0.9}>
+                            <TouchableOpacity activeOpacity={0.9} onPress={()=>validImage(p.img)}>
                                 <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.type} hora={p.hora} img={p.img}/>
                             </TouchableOpacity>
                         ))
@@ -352,6 +337,11 @@ export default function BandejaMessages({route,navigation}){
                         </TouchableOpacity>
                     </View>
                 </View>
+                <Modal visible={state.display_gallery} transparent={true}>
+                    <Gallery style={{flex:1,backgroundColor:'rgba(0,0,0,0.6)'}} images={[
+                        {source:{uri:state.img_gallery}}
+                    ]} onSingleTapConfirmed={()=>dimiss()}/>
+                </Modal>
             </View>
         </>
     );
