@@ -1,14 +1,85 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, ScrollView, Text, Image, RefreshControl, TouchableOpacity,ActivityIndicator,ImageBackground,Alert } from "react-native";
 import Chat from "./Chat";
-import {useState,useEffect,useCallback} from 'react';
+import {useState,useEffect,useCallback,useRef} from 'react';
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import Styles from "./Styles";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import { NavigationEvents } from 'react-navigation';
 import { Entypo, FontAwesome5,Ionicons } from '@expo/vector-icons'; 
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
 export default function BandejaChats({navigation}){
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+          setNotification(notification);
+        });
+    
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+          console.log(response);
+        });
+    
+        return () => {
+          Notifications.removeNotificationSubscription(notificationListener.current);
+          Notifications.removeNotificationSubscription(responseListener.current);
+        };
+      }, []);
+      async function registerForPushNotificationsAsync() {
+        let token;
+        if (Device.isDevice) {
+          const { status: existingStatus } = await Notifications.getPermissionsAsync();
+          let finalStatus = existingStatus;
+          if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+          if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+          }
+          token = (await Notifications.getExpoPushTokenAsync()).data;
+          console.log(token);
+        } else {
+          alert('Must use physical device for Push Notifications');
+        }
+      
+        if (Platform.OS === 'android') {
+          Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+            sound:'notification.wav',
+          });
+        }
+      
+        return token;
+      }
+      async function schedulePushNotification() {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Primera notificación",
+            body: 'Hola :3',
+            data: { data: 'holoakjadj,' },
+            sound:'notification.wav'
+          },
+          trigger: { seconds: 1 },
+        });
+      }
     const img = require('./img/default_profile.jpg');
     const auth = firebase.auth;
     const db = firebase.db;
@@ -89,6 +160,9 @@ export default function BandejaChats({navigation}){
                     let array = chatId.split(':');
                     let messages = doc.data().messages;
                     let lastText = messages[messages.length-1].message;
+                    if(lastText.length>20){
+                        lastText = lastText.substring(0, 19)+'...';
+                    }
                     let lastUser =messages[messages.length-1].user;
                     for(var i in array){
                         if(array[i]==user){
@@ -280,7 +354,7 @@ export default function BandejaChats({navigation}){
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={async()=>schedulePushNotification()}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="md-settings" size={35} color="white" />
                             </View>

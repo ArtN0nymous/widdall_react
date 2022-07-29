@@ -11,5 +11,17 @@
       "package": "ramsus.widdall.app",
       "versionCode":1
     }
-  }
+  },
+  "plugins": [
+    [
+      "expo-notifications",
+      {
+        "icon": "./src/img/icon.png",
+        "color": "#ffffff",
+        "sounds": [
+          "./src/assets/sounds/notification.wav"
+        ]
+      }
+    ]
+  ]
 }
