@@ -394,7 +394,7 @@ export default function Usuarios({navigation}){
         let ms = {
             user:uid,
             message:'Hola',
-            hora:'00:00',
+            hora:Date.now(),
             type:1,
             img:''
 

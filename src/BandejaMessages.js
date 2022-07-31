@@ -77,14 +77,36 @@ export default function BandejaMessages({route,navigation}){
                     }else{
                         tipo_mensaje=1;
                     }
-                    let ms ={
-                        hora:array[i].hora,
-                        img:array[i].img,
-                        message:array[i].message,
-                        type:tipo_mensaje,
-                        user:array[i].user
+                    if(array[i].hora!='00:00'){
+                        console.log('Fecha: '+array[i].hora.toLocaleString());
+                        let fecha = new Date(array[i].hora);
+                        let fulltime = fecha.toLocaleTimeString().split(':');
+                        let arraytime = fulltime.pop();
+                        var time ='';
+                        if(fulltime[0]>12){
+                            fulltime[0]=fulltime[0]-12;
+                            time = fulltime.join().replace(',',':')+' PM';
+                        }else{
+                            time = fulltime.join().replace(',',':')+' AM';
+                        }
+                        let ms ={
+                            hora:time,
+                            img:array[i].img,
+                            message:array[i].message,
+                            type:tipo_mensaje,
+                            user:array[i].user
+                        }
+                        mensajes.push(ms);
+                    }else{
+                        let ms ={
+                            hora:array[i].hora,
+                            img:array[i].img,
+                            message:array[i].message,
+                            type:tipo_mensaje,
+                            user:array[i].user
+                        }
+                        mensajes.push(ms);
                     }
-                    mensajes.push(ms);
                 }
                 setState({...state,messages:mensajes});
             },(error)=>{
@@ -109,7 +131,7 @@ export default function BandejaMessages({route,navigation}){
                         }else{
                             let array = state.messages;
                             let ms = {
-                                hora:'00:00',
+                                hora:Date.now(),
                                 img:img,
                                 message:state.message,
                                 type:1,
@@ -138,7 +160,7 @@ export default function BandejaMessages({route,navigation}){
                         }else{
                             let array = state.messages;
                             let ms = {
-                                hora:'00:00',
+                                hora:Date.now(),
                                 img:img,
                                 message:state.message,
                                 type:1,
@@ -167,7 +189,7 @@ export default function BandejaMessages({route,navigation}){
                         }else{
                             let array = state.messages;
                             let ms = {
-                                hora:'00:00',
+                                hora:Date.now(),
                                 img:img,
                                 message:state.message,
                                 type:1,
