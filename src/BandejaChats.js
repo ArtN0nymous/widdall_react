@@ -355,13 +355,6 @@ export default function BandejaChats({navigation}){
                         </TouchableOpacity>
                     </View>
                     <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <View style={styles.button_menu_container}>
-                                <Ionicons name="md-settings" size={35} color="white" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu}>
                         <TouchableOpacity activeOpacity={0.6} onPress={()=>cerrarSesion()}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="ios-log-out" size={35} color="white" />

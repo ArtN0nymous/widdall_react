@@ -3,9 +3,9 @@ var ancho = Dimensions.get('screen').width;
 var alto = Dimensions.get('screen').height;
 function dimension(prop,porcent){
     if(prop=='H'){
-        return alto = (alto*porcent)/100;
+        return alto = Math.trunc((alto*porcent)/100);
     }else{
-        return ancho = (ancho*porcent)/100;
+        return ancho = Math.trunc((ancho*porcent)/100);
     }
 }
 const styles = StyleSheet.create({
@@ -656,8 +656,120 @@ const styles = StyleSheet.create({
         borderRadius:15,
         margin:5,
         justifyContent:'center'
-    }
+    },
     /*Menu lateral end */
+    /*Publicaciones Begin */
+    contenedor_publicaciones:{
+        flex:1,
+        flexDirection:'row'
+    },
+    contenedor_publicacion:{
+        flex:1,
+        alignItems:'center',
+        flexDirection:'column',
+        justifyContent:'flex-start',
+        backgroundColor:'#0B2379'
+    },
+    tarjeta_public_cont:{
+        width:dimension('W',115),
+        height:dimension('H',230),
+        backgroundColor:'white',
+        marginTop:5,
+        alignItems:'center',
+        borderRadius:10,
+        flexDirection:'column'
+    },
+    image_public:{
+        marginTop:5,
+        flexDirection:"column",
+        backgroundColor:'skyblue',
+        width:dimension('W',90),
+        height:dimension('H',73)
+    },
+    header_public:{
+        marginTop:5,
+        flexDirection:"row",
+        width:dimension('W',106),
+        height:dimension('H',15)
+    },
+    footer_public:{
+        marginTop:5,
+        flexDirection:"row",
+        width:dimension('W',100),
+        height:dimension('H',100)
+    },
+    contenedor_profile_public:{
+        flexDirection:"column",
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    image_profile_public:{
+        width:50,
+        height:50,
+        backgroundColor:'green',
+        borderRadius:100
+    },
+    text_name_profile_public:{
+        fontSize:20,
+        fontWeight:'bold',
+        marginLeft:5
+    },
+    footer_buttons:{
+        width:50,
+        height:50,
+        borderRadius:100,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    descrip_public:{
+        alignSelf:'flex-start',
+        textAlign:'justify',
+        left:17,
+        fontSize:16,
+        maxWidth:dimension('W',95)
+    },
+    newPost:{
+        justifyContent:'center',
+        alignItems:'center',
+        flex:1,
+        backgroundColor:'rgba(0,0,0,0.2)'
+    },
+    form_newpost:{
+        width:dimension('W',100),
+        height:dimension('H',800),
+        backgroundColor:'white',
+        borderRadius:10,
+        flexDirection:'column',
+        overflow:'hidden'
+    },
+    header_newpost:{
+        backgroundColor:'#0B2379',
+        height:dimension('H',25)
+    },
+    body_newpost:{
+        height:dimension('H',255)
+    },
+    footer_newpost:{
+        backgroundColor:'#0B2379'
+    },
+    image_newpost:{
+        width:dimension('W',100),
+        height:dimension('H',100),
+        backgroundColor:'skyblue'
+    },
+    texto_header_newpost:{
+        color:'white',
+        marginTop:10,
+        left:10,
+        fontWeight:'bold',
+        fontSize:17
+    },
+    input_newpost:{
+        width:dimension('W',100),
+        height:dimension('H',30),
+        backgroundColor:'white'
+    }
+    /*Publicaciones end */
 });
 export default{
     styles

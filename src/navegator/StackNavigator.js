@@ -15,7 +15,7 @@ import BandejaChats from '../BandejaChats';
 import BandejaMessages from '../BandejaMessages';
 import Usuarios from '../Usuarios';
 import Perfil from '../Perfil';
-import {useState} from 'react';
+import Publicaciones from '../Publicaciones';
 const Stack = createNativeStackNavigator();
 function StackNavigator() {
   return (
@@ -31,6 +31,7 @@ function StackNavigator() {
       }
     }}>
       <Stack.Navigator>
+        <Stack.Screen name='Publicaciones' component={Publicaciones}/>
         <Stack.Screen options={{tittle:'Inicio'}} name="Chats" component={BandejaChats} />
         <Stack.Screen name='Login' component={Login} options={{headerLeft:(props)=><></>, gestureEnabled:false}}/>
         <Stack.Screen name='Registro' component={Registro}/>
