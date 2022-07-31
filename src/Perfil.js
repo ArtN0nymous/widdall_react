@@ -440,6 +440,44 @@ export default function Perfil({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
+    const delFriend=async(uid)=>{
+        if(uid!=''){
+            localstorage.load({
+                key:'loginState'
+            }).then((result)=>{
+                db.collection('users').doc(result.userKey).get().then((doc)=>{
+                    let amigos = doc.data().friends;
+                    console.log('amigos antes: '+amigos);
+                    let array = amigos.split(',');
+                    for(var i in array){
+                        if(array[i]==uid){
+                            array.splice(i,1);
+                        }
+                    }
+                    amigos = array.join();
+                    console.log('amigos despues: '+amigos);
+                    db.collection('users').doc(result.userKey).update({
+                        friends:amigos
+                    }).then((result)=>{
+                        loadProfile();
+                        alert('Amigo eliminado');
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error=>{
+                Alert.alert('Atención','Debes iniciar sesión',[{
+                    text:'Ok',
+                    onPress:()=>{navigation.push('Login');}
+                }]);
+                console.log(error.message);
+            }));
+        }else{
+            console.log('error');
+        }
+    }
     /**--FIREBASE FUNCTION END-- */
     function display_preview(){
         if(state.display_preview.display=='flex'){
