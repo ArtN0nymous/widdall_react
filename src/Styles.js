@@ -755,7 +755,8 @@ const styles = StyleSheet.create({
     image_newpost:{
         width:dimension('W',100),
         height:dimension('H',100),
-        backgroundColor:'skyblue'
+        backgroundColor:'skyblue',
+        position:'absolute'
     },
     texto_header_newpost:{
         color:'white',
