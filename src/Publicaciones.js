@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ScrollView,Modal,TextInput,Text,ImageBackground, Alert } from "react-native";
+import { View, TouchableOpacity, ScrollView,Modal,TextInput,Text,ImageBackground, Alert,ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import Styles from "./Styles";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,7 +29,8 @@ export default function Publicaciones({navigation}){
         path:'',
         descripcion:'',
         img:'',
-        img_gallery:''
+        img_gallery:'',
+        cargando:{display:'none'}
     });
     function toggle_menu(){
         if(state.menu_display.display=='none'){
@@ -49,6 +50,30 @@ export default function Publicaciones({navigation}){
     }
     const dimiss=()=>{
         setState({...state,display_gallery:{display:'none'}});
+    }
+    useEffect(()=>{
+        let abortController = new AbortController();
+        loadProfile();
+        return()=>{
+            abortController.abort();
+        }
+    });
+    const loadProfile=async()=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            if(result.verified!=true){
+                Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
+                navigation.navigate('Login');
+            }else{
+                //leerPublic(result.userKey);
+            }
+        }).catch((error)=>{
+            Alert.alert('Atención','Debes iniciar sesión',[{
+                text:'Ok',
+                onPress:()=>{navigation.navigate('Login');}
+            }]);
+        });
     }
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -95,8 +120,13 @@ export default function Publicaciones({navigation}){
     }
     const data =[{usuario:'Usuario',url_photo:'',descripcion:'Hola :3',img:''},{usuario:'Usuario',url_photo:'',descripcion:'El oeste de Texas divide la frontera entre S',img:''}]
     function checarDatos(){
-        if(state.path!=''&&state.descripcion!=''){
-            publicar(state.path,state.descripcion);
+        if(state.path!=''||state.descripcion!=''){
+            if(state.path!=''){
+                setState({...state,cargando:{display:'flex'}});
+                saveImg(state.path);
+            }else{
+                publicar(state.descripcion,'');
+            }
         }else{
             Alert.alert('Ups!','Parece que no puedes hacer una publicación vacía 👀');
         }
@@ -108,21 +138,48 @@ export default function Publicaciones({navigation}){
         }
     }
     /*FUNCIONES FIREBASE */
-    const publicar = async()=>{
+    const publicar = async(desc,url)=>{
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
             let uid = result.userKey;
-            db.collection('publicaciones').doc(uid).get((doc)=>{
-                let publicaciones = doc.data().publicaciones;
-                let time = Date.now();
-                
+            db.collection('publicaciones').doc(uid).collection('post').add({
+                user:uid,
+                fecha:Date.now(),
+                img:url,
+                stars:0,
+                descripcion:desc
+            }).then((result)=>{
+                setState({...state,newPost_display:false,path:'',img:{uri:''}});
+                //leerPublicaciones();
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
             console.log('Error al cargar el usuario');
         });
+    }
+    const saveImg = async (path)=>{
+        if(path!=''){
+            let file = await fetch(path).then(r => r.blob());
+            let array = path.split('/');
+            let name = array[array.length-1];
+            let profile = {};
+            let portada = require('./img/sebas.jpg');   
+            await storage.ref('Perfiles').child('Imagenes/'+name).put(file).then( async function(snapshot){
+                await snapshot.ref.getDownloadURL().then(function(imgurl){
+                    var url = imgurl;
+                    setState({...state,cargando:{display:'flex'}});
+                    publicar(state.descripcion,url);
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+                setState({...state,cargando:{display:'none'}});
+                alert("error: " + error.message);
+            });
+        }else{
+            Alert.alert('Vaya','Parece que algo salio mal :/');
+        }
     }
     const cerrarSesion=async()=>{
         await auth.signOut().then(()=>{
@@ -205,7 +262,7 @@ export default function Publicaciones({navigation}){
                     <View style={styles.form_newpost}>
                         <View style={styles.header_newpost}>
                             <Text style={styles.texto_header_newpost}>Crear nueva publicación</Text>
-                            <TextInput placeholder="Agrega una descripción...(opcional)" maxLength={50} style={styles.input_newpost} onChangeText={(value)=>handleChangeText(value)}/>
+                            <TextInput placeholder="Agrega una descripción...(opcional)" maxLength={50} style={styles.input_newpost} onChangeText={(value)=>handleChangeText('descripcion',value)}/>
                         </View>
                         <View style={styles.body_newpost}>
                             <View style={[styles.edit_portada,{zIndex:5}]}>
@@ -258,6 +315,10 @@ export default function Publicaciones({navigation}){
                             {source:{uri:state.img_gallery}}
                         ]} onSingleTapConfirmed={()=>dimiss()}/>
                     </View>
+                </View>
+                <View style={[styles.loading_contenedor,state.cargando,{zIndex:13}]}>
+                    <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
+                    <Text style={styles.loading_text}>Cargando</Text>
                 </View>
             </Modal>
         </View>
