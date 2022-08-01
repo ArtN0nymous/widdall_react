@@ -124,6 +124,24 @@ export default function Publicaciones({navigation}){
             console.log('Error al cargar el usuario');
         });
     }
+    const cerrarSesion=async()=>{
+        await auth.signOut().then(()=>{
+            localstorage.remove({
+                key:'loginState'
+            }).then((resul)=>{
+                localstorage.remove({
+                    key:'usuarios'
+                }).then((result)=>{
+                    navigation.navigate('Login');
+                });
+            }).catch((error)=>{
+                console.log(error);
+            });
+        }).catch((error)=>{
+            alert('Ha ocurrido un error al intentar cerrar la sesión.');
+            console.log(error.code+' '+error.message);
+        });
+    }
     /*FIREBASE END */
     return(
         <View style={styles.contenedor_publicaciones}>

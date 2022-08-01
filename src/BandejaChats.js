@@ -140,7 +140,11 @@ export default function BandejaChats({navigation}){
             localstorage.remove({
                 key:'loginState'
             }).then((resul)=>{
-                navigation.navigate('Login');
+                localstorage.remove({
+                    key:'usuarios'
+                }).then((result)=>{
+                    navigation.navigate('Login');
+                });
             }).catch((error)=>{
                 console.log(error);
             });
@@ -153,7 +157,7 @@ export default function BandejaChats({navigation}){
     const leerChats=async(user)=>{
         setState({...state,loading_display:{display:'flex'}});
         db.collection('chats').onSnapshot((snapshot)=>{
-            schedulePushNotification();
+            // NOTIFICACION schedulePushNotification();
             let chats = [];
             snapshot.forEach((doc) => {
                 if(doc){
@@ -316,11 +320,6 @@ export default function BandejaChats({navigation}){
                                                         <Text style={styles.title_b}>{p.userName}</Text>
                                                         <Text style={styles.detalles_b}>{p.lastMessage}</Text>
                                                     </View>                                  
-                                                </View>
-                                                <View style={[styles.icon_target_b_cont_2,{marginLeft:130}]}>
-                                                    <View style={styles.icon_target}>
-                                                        <FontAwesome5 size={25} name='angle-right' color='grey'/>
-                                                    </View>
                                                 </View>
                                             </View>
                                         </View>

@@ -440,14 +440,15 @@ export default function Perfil({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
-    const delFriend=async(uid)=>{
+    const delFriend=(uid)=>{
+        setState({...state,cargando:{display:'flex'}});
         if(uid!=''){
             localstorage.load({
                 key:'loginState'
             }).then((result)=>{
-                db.collection('users').doc(result.userKey).get().then((doc)=>{
+                const user = result.userKey;
+                db.collection('users').doc(user).get().then((doc)=>{
                     let amigos = doc.data().friends;
-                    console.log('amigos antes: '+amigos);
                     let array = amigos.split(',');
                     for(var i in array){
                         if(array[i]==uid){
@@ -455,19 +456,20 @@ export default function Perfil({navigation}){
                         }
                     }
                     amigos = array.join();
-                    console.log('amigos despues: '+amigos);
-                    db.collection('users').doc(result.userKey).update({
+                    db.collection('users').doc(user).update({
                         friends:amigos
                     }).then((result)=>{
-                        loadProfile();
-                        alert('Amigo eliminado');
+                        delFriend_2(uid,user);
                     }).catch((error)=>{
+                        setState({...state,cargando:{display:'none'}});
                         console.log(error.code+' '+error.message);
                     });
                 }).catch((error)=>{
+                    setState({...state,cargando:{display:'none'}});
                     console.log(error.code+' '+error.message);
                 });
             }).catch((error=>{
+                setState({...state,cargando:{display:'none'}});
                 Alert.alert('Atención','Debes iniciar sesión',[{
                     text:'Ok',
                     onPress:()=>{navigation.push('Login');}
@@ -475,8 +477,34 @@ export default function Perfil({navigation}){
                 console.log(error.message);
             }));
         }else{
+            setState({...state,cargando:{display:'none'}});
             console.log('error');
         }
+    }
+    const delFriend_2=(uid,user)=>{
+        db.collection('users').doc(uid).get().then((doc)=>{
+            let amigos =doc.data().friends;
+            let array= amigos.split(',');
+            for(var i in array){
+                if(array[i]==user){
+                    array.splice(i,1);
+                }
+            }
+            amigos=array.join();
+            db.collection('users').doc(uid).update({
+                friends:amigos
+            }).then((result)=>{
+                setState({...state,cargando:{display:'none'}});
+                loadProfile();
+                alert('Amigo eliminado');
+            }).catch((error)=>{
+                setState({...state,cargando:{display:'none'}});
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            setState({...state,cargando:{display:'none'}});
+            console.log(error.code+' '+error.message);
+        });
     }
     /**--FIREBASE FUNCTION END-- */
     function display_preview(){

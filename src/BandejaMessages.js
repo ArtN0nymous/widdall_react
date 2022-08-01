@@ -24,6 +24,7 @@ export default function BandejaMessages({route,navigation}){
     const {uid,chatId}=route.params;
     const [state,setState]=useState({
         messages:[],
+        messages_1:[],
         message:'',
         contador:0,
         open_display:{display:'none'},
@@ -77,8 +78,7 @@ export default function BandejaMessages({route,navigation}){
                     }else{
                         tipo_mensaje=1;
                     }
-                    if(array[i].hora!='00:00'){
-                        console.log('Fecha: '+array[i].hora.toLocaleString());
+                    try{
                         let fecha = new Date(array[i].hora);
                         let fulltime = fecha.toLocaleTimeString().split(':');
                         let arraytime = fulltime.pop();
@@ -97,18 +97,11 @@ export default function BandejaMessages({route,navigation}){
                             user:array[i].user
                         }
                         mensajes.push(ms);
-                    }else{
-                        let ms ={
-                            hora:array[i].hora,
-                            img:array[i].img,
-                            message:array[i].message,
-                            type:tipo_mensaje,
-                            user:array[i].user
-                        }
-                        mensajes.push(ms);
+                    }catch(error){
+                        console.log(error);
                     }
                 }
-                setState({...state,messages:mensajes});
+                setState({...state,messages_1:mensajes,messages:array});
             },(error)=>{
                 console.log(error.code+' '+error.message);
             })
@@ -296,7 +289,7 @@ export default function BandejaMessages({route,navigation}){
             <View style={styles.contenedor_messages}>
                 <ScrollView style={styles.scroll_messages} ref={scrollViewRef} onContentSizeChange={()=>scrollViewRef.current.scrollToEnd({animated:true})}>
                     { 
-                        state.messages.map((p)=>(
+                        state.messages_1.map((p)=>(
                             <TouchableOpacity activeOpacity={0.9} onPress={()=>validImage(p.img)}>
                                 <Messages key={p.user} user={p.user} mensaje={p.message} tipo={p.type} hora={p.hora} img={p.img}/>
                             </TouchableOpacity>

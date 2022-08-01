@@ -99,7 +99,7 @@ export default function Login({navigation}){
                         Alert.alert('Bienvenido a Widdall',result.user.displayName, [
                             {
                             text: "Aceptar",
-                            onPress: ()=>navigation.navigate('Chats')
+                            onPress: ()=>navigation.navigate('Publicaciones')
                             }
                         ]);
                     }else{
