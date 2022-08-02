@@ -169,7 +169,9 @@ export default function Registro({navigation}){
             descripcion:state.descripcion,
             solicitudes:'',
             friends:'',
-            email:state.email
+            email:state.email,
+            following:'',
+            followme:''
         }).then((result)=>{
             localstorage.save({
                 key:'loginState',

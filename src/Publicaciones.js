@@ -159,6 +159,9 @@ export default function Publicaciones({navigation}){
             console.log('Error al cargar el usuario');
         });
     }
+    const leerPublic=async()=>{
+        //db.collection('publicaciones').doc()
+    }
     const saveImg = async (path)=>{
         if(path!=''){
             let file = await fetch(path).then(r => r.blob());

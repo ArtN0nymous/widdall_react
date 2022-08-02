@@ -356,17 +356,187 @@ export default function Perfil({navigation}){
             Alert.alert('Atención','Ha ocurrido un error inesperado.');
         }
     };
-    const leerAmigos=async(perfil,img,uid)=>{
+    const follow=async(uid)=>{
         localstorage.load({
-            key:'usuarios'
+            key:'loginState'
         }).then((result)=>{
-           let usuarios = result;
-           setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios,cargando:{display:'none'},
-           open_display:{display:'none'},
-           open_display_2:{display:'none'},
-           loading_state:{display:'none'}});
+            let user = result.userKey;
+            db.collection('users').doc(user).get().then((doc)=>{
+                let following = doc.data().following;
+                if(following!=''){
+                    following+=','+uid;
+                }else{
+                    following=uid;
+                }
+                db.collection('users').doc(user).update({
+                    following:following
+                }).then((result)=>{
+                    db.collection('users').doc(uid).get().then((result)=>{
+                        let followme = result.data().followme;
+                        let displayName = result.data().displayName;
+                        if(followme!=''){
+                            followme+=','+user;
+                        }else{
+                            followme=user;
+                        }
+                        db.collection('users').doc(uid).update({
+                            followme:followme
+                        }).then((result)=>{
+                            setState({...state,display_preview:{display:'none'}});
+                            Alert.alert('Genial !','Comenzaste a seguir a '+displayName);
+                            loadProfile();
+                        }).catch((error)=>{
+                            console.log(error.code+' '+error.message);
+                        });
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.cod+' '+error.message);
+            });
+        }).catch((error)=>{
+            console.log('Error al cargar los datos de usuario');
+        });
+    }
+    const unFollow=async(uid)=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            let user = result.userKey;
+            db.collection('users').doc(user).get().then((doc)=>{
+                let following = doc.data().following;
+                if(following!=''){
+                    following=following.split(',');
+                    for(var i in following){
+                        if(following[i]==uid){
+                            following.splice(i,1);
+                        }
+                    }
+                }else{
+                    Alert.alert('Error','No sigues a este usuario');
+                }
+                db.collection('users').doc(user).update({
+                    following:following
+                }).then((result)=>{
+                    db.collection('users').doc(uid).get().then((result)=>{
+                        let followme = result.data().followme;
+                        if(followme!=''){
+                            followme=followme.split(',');
+                            for(var i in followme){
+                                if(followme[i]==user){
+                                    followme.splice(i,1);
+                                }
+                            }
+                        }else{
+                            Alert.alert('Error','No sigues a este usuario');
+                        }
+                        db.collection('users').doc(uid).update({
+                            followme:followme
+                        }).then((result)=>{
+                            console.log('Ya no sigues a este usuario');
+                            setState({...state,display_preview:{display:'none'}});
+                            loadProfile();
+                        }).catch((error)=>{
+                            console.log(error.code+' '+error.message);
+                        });
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.cod+' '+error.message);
+            });
+        }).catch((error)=>{
+            console.log('Error al cargar los datos de usuario');
+        });
+    }
+    const leerAmigos=async(perfil,img,uid)=>{
+        leerUsuarios().then((result)=>{
+            localstorage.load({
+                key:'usuarios'
+            }).then((result)=>{
+               let usuarios = result;
+               setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios,cargando:{display:'none'},
+               open_display:{display:'none'},
+               open_display_2:{display:'none'},
+               loading_state:{display:'none'}});
+            }).catch((error)=>{
+                console.log(error);
+            });
         }).catch((error)=>{
             console.log(error);
+            console.log('No se leyeron los usuarios');
+        });
+    }
+    const leerUsuarios= async () =>{
+        let id = '';
+        await localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            id= result.userKey;
+            db.collection("users").onSnapshot((snapshot) => {
+                let usuarios = [];
+                let amigos = '';
+                let following='';
+                db.collection('users').doc(id).get().then((result)=>{
+                    amigos = result.data().friends;
+                    amigos = amigos.split(',');
+                    following=result.data().following;
+                    snapshot.forEach((doc)=>{
+                        if(id!=doc.id){
+                            let user = {
+                                uid:doc.id,
+                                username:doc.data().displayName,
+                                url_photo:{uri:doc.data().url_photo},
+                                url_portada:{uri:doc.data().url_portada},
+                                color_portada:doc.data().color_portada,
+                                descripcion:doc.data().descripcion,
+                                amigo:false,
+                                following:false,
+                                chats:doc.data().chats
+                            }
+                            amigos.forEach(element => {
+                                if(element==user.uid){
+                                    user.amigo=true;
+                                }
+                            });
+                            if(following!=''){
+                                following=following.split(',');
+                                following.forEach(element=>{
+                                    if(element==user.uid){
+                                        user.following=true;
+                                    }
+                                });
+                            }
+                            usuarios.push(user);
+                        }
+                    });
+                    try{
+                        localstorage.save({
+                            key:'usuarios',
+                            data:usuarios
+                        });
+                        //leerSolicitudes(usuarios);
+                    }catch(e){
+                        alert(e.message);
+                    }
+                    //setState({...state,usuarios:usuarios});
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }, (error) => {
+                Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
+            });
+        }).catch((error)=>{
+            Alert.alert('Atención','Debes iniciar sesión.',[{
+                text:'Ok',
+                onPress:()=>{navigation.push('Login');}
+            }]);
         })
     }
     const chatAmigo=(chat,uid)=>{
@@ -450,14 +620,32 @@ export default function Perfil({navigation}){
                 db.collection('users').doc(user).get().then((doc)=>{
                     let amigos = doc.data().friends;
                     let array = amigos.split(',');
+                    let followme=doc.data().followme;
+                    let array_2 = followme.split(',');
+                    let following = doc.data().following;
+                    let array_3=following.split(',');
                     for(var i in array){
                         if(array[i]==uid){
                             array.splice(i,1);
                         }
                     }
+                    for(var i in array_2){
+                        if(array_2[i]==uid){
+                            array_2.splice(i,1);
+                        }
+                    }
+                    for(var i in array_3){
+                        if(array_3[i]==uid){
+                            array_3.splice(i,1);
+                        }
+                    }
                     amigos = array.join();
+                    followme=array_2.join();
+                    following = array_3.join();
                     db.collection('users').doc(user).update({
-                        friends:amigos
+                        friends:amigos,
+                        following:following,
+                        followme:followme
                     }).then((result)=>{
                         delFriend_2(uid,user);
                     }).catch((error)=>{
@@ -485,14 +673,32 @@ export default function Perfil({navigation}){
         db.collection('users').doc(uid).get().then((doc)=>{
             let amigos =doc.data().friends;
             let array= amigos.split(',');
+            let followme= doc.data().followme;
+            let array_2 = followme.split(',');
+            let following= doc.data().following;
+            let array_3=following.split(',');
             for(var i in array){
                 if(array[i]==user){
                     array.splice(i,1);
                 }
             }
+            for(var i in array_2){
+                if(array_2[i]==user){
+                    array_2.splice(i,1);
+                }
+            }
+            for(var i in array_3){
+                if(array_3[i]==user){
+                    array_3.splice(i,1);
+                }
+            }
             amigos=array.join();
+            followme=array_2.join();
+            following=array_3.join();
             db.collection('users').doc(uid).update({
-                friends:amigos
+                friends:amigos,
+                followme:followme,
+                following:following
             }).then((result)=>{
                 setState({...state,cargando:{display:'none'}});
                 loadProfile();
@@ -514,7 +720,8 @@ export default function Perfil({navigation}){
             setState({...state,display_preview:{display:'flex'}});
         }
     }
-    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color,amigo,chats)=>{
+    const previewUser=async(uid,name,url_photo,url_portada,descripcion,color,amigo,chats,following)=>{
+        console.log(following);
         if(chats!=''){
             localstorage.load({
                 key:'loginState'
@@ -530,39 +737,76 @@ export default function Perfil({navigation}){
                         }
                     }
                 }
-                setState({...state,display_preview:{
-                    display:'flex'
-                    },profile_amigo:{
-                        uid:uid,
-                        displayName:name,
-                        url_photo:url_photo,
-                        url_portada:url_portada,
-                        descripcion:descripcion,
-                        color_portada:color
-                    },amigo:(
-                        <>
-                            <View style={styles.contenedor_boton_menu}>
-                                <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo(chat,uid)}>
-                                    <View style={styles.button_menu_container}>
-                                        <AntDesign name="message1" size={35} color="skyblue"/>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.contenedor_boton_menu}>
-                                <TouchableOpacity activeOpacity={0.6}>
-                                    <View style={styles.button_menu_container}>
-                                        <AntDesign name="star" size={35} color="gold" />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.contenedor_boton_menu_del}>
-                                <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
-                                    <View style={styles.button_menu_container}>
-                                        <AntDesign name="deleteuser" size={35} color="#B3022E"/>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </>)});
+                console.log(following);
+                if(following==true){
+                    setState({...state,display_preview:{
+                        display:'flex'
+                        },profile_amigo:{
+                            uid:uid,
+                            displayName:name,
+                            url_photo:url_photo,
+                            url_portada:url_portada,
+                            descripcion:descripcion,
+                            color_portada:color
+                        },amigo:(
+                            <>
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo(chat,uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="message1" size={35} color="skyblue"/>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>unFollow(uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="star" size={35} color="gold" />
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.contenedor_boton_menu_del}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            </>)});
+                }else if(following==false){
+                    setState({...state,display_preview:{
+                        display:'flex'
+                        },profile_amigo:{
+                            uid:uid,
+                            displayName:name,
+                            url_photo:url_photo,
+                            url_portada:url_portada,
+                            descripcion:descripcion,
+                            color_portada:color
+                        },amigo:(
+                            <>
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo(chat,uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="message1" size={35} color="skyblue"/>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.contenedor_boton_menu}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>follow(uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="star" size={35} color="white" />
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.contenedor_boton_menu_del}>
+                                    <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
+                                        <View style={styles.button_menu_container}>
+                                            <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            </>)});
+                }
             }).catch((error)=>{
                 Alert.alert('Atención','Debes iniciar sesión',[{
                     text:'Ok',
@@ -570,39 +814,75 @@ export default function Perfil({navigation}){
                 }]);
             });
         }else{
-            setState({...state,display_preview:{
-                display:'flex'
-            },profile_amigo:{
-                uid:uid,
-                displayName:name,
-                url_photo:url_photo,
-                url_portada:url_portada,
-                descripcion:descripcion,
-                color_portada:color
-            },amigo:(
-                <>
-                    <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo('',uid)}>
-                            <View style={styles.button_menu_container}>
-                                <AntDesign name="message1" size={35} color="skyblue"/>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <View style={styles.button_menu_container}>
-                                <AntDesign name="star" size={35} color="gold" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu_del}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
-                            <View style={styles.button_menu_container}>
-                                <AntDesign name="deleteuser" size={35} color="#B3022E"/>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </>)});
+            if(following==true){
+                setState({...state,display_preview:{
+                    display:'flex'
+                },profile_amigo:{
+                    uid:uid,
+                    displayName:name,
+                    url_photo:url_photo,
+                    url_portada:url_portada,
+                    descripcion:descripcion,
+                    color_portada:color
+                },amigo:(
+                    <>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo('',uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="message1" size={35} color="skyblue"/>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>unFollow(uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="star" size={35} color="gold" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu_del}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </>)});
+            }else if(following==false){
+                setState({...state,display_preview:{
+                    display:'flex'
+                },profile_amigo:{
+                    uid:uid,
+                    displayName:name,
+                    url_photo:url_photo,
+                    url_portada:url_portada,
+                    descripcion:descripcion,
+                    color_portada:color
+                },amigo:(
+                    <>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>chatAmigo('',uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="message1" size={35} color="skyblue"/>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>follow(uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="star" size={35} color="white" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.contenedor_boton_menu_del}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={()=>delFriend(uid)}>
+                                <View style={styles.button_menu_container}>
+                                    <AntDesign name="deleteuser" size={35} color="#B3022E"/>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </>)});
+            }
         }
     }
     const checkSearch=(value)=>{
@@ -640,7 +920,7 @@ export default function Perfil({navigation}){
         if(item.url_portada.uri!=''){
             if(item.amigo!=false){
                 return(
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats)}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
                         <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
                             <View style={styles.contenido_caja_usu}>
                                 <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
@@ -652,7 +932,7 @@ export default function Perfil({navigation}){
                 );
             }else{
                 return(
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats)} style={{display:'none'}}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)} style={{display:'none'}}>
                         <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
                             <View style={styles.contenido_caja_usu}>
                                 <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
@@ -666,7 +946,7 @@ export default function Perfil({navigation}){
         }else{
             if(item.amigo!=false){
                 return(
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats)}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
                         <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                             <View style={styles.contenido_caja_usu}>
                                 <Image style={styles.icon_usu} source={item.url_photo}/>
@@ -678,7 +958,7 @@ export default function Perfil({navigation}){
                 );
             }else{
                 return(
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats)} style={{display:'none'}}>
+                    <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)} style={{display:'none'}}>
                         <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                             <View style={styles.contenido_caja_usu}>
                                 <Image style={styles.icon_usu} source={item.url_photo}/>
