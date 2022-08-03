@@ -1,5 +1,5 @@
-import { View, TouchableOpacity, ScrollView,Modal,TextInput,Text,ImageBackground, Alert,ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
+import { View, TouchableOpacity, ScrollView,Modal,TextInput,Text,ImageBackground,RefreshControl, Alert,ActivityIndicator } from "react-native";
+import { useState, useEffect,useRef,useCallback } from "react";
 import Styles from "./Styles";
 import { LinearGradient } from "expo-linear-gradient";
 import firebase from "./database/firebase";
@@ -33,6 +33,11 @@ export default function Publicaciones({navigation}){
         cargando:{display:'none'},
         post:[]
     });
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        leerPublic().then(() => setRefreshing(false));
+      }, []);
     function toggle_menu(){
         if(state.menu_display.display=='none'){
             setState({...state,menu_display:{display:'flex'}})
@@ -173,7 +178,7 @@ export default function Publicaciones({navigation}){
                     if(following!=''){
                         following=following.split(',');
                         let array = [];
-                        db.collection('post').where('user','==',user).onSnapshot((snapshot)=>{
+                        db.collection('post').where('user','==',user).get().then((snapshot)=>{
                             snapshot.forEach((doc) => {
                                 let id = doc.id;
                                 let post = doc.data();
@@ -181,7 +186,7 @@ export default function Publicaciones({navigation}){
                                 array.push(post);
                             });
                             for(var i in following){
-                                db.collection('post').where('user','==',following[i]).onSnapshot((snapshot)=>{
+                                db.collection('post').where('user','==',following[i]).get().then((snapshot)=>{
                                     snapshot.forEach((doc) => {
                                         let id_1 = doc.id;
                                         let post_1 = doc.data();
@@ -197,10 +202,9 @@ export default function Publicaciones({navigation}){
                                     for(var i in array){
                                         if(doc.id==array[i].user){
                                             array[i].profile=doc.data();
-                                            let users_star = doc.data().users_star;
-                                            array[i].star=false;
+                                            let users_star = array[i].users_star;
+                                            array[i].star=false;                
                                             if(users_star!=null){
-                                                console.log('Entra aqui');
                                                 users_star=users_star.split(',');
                                                 for(var j in users_star){
                                                     if(users_star[j]==user){
@@ -273,7 +277,7 @@ export default function Publicaciones({navigation}){
     return(
         <View style={styles.contenedor_publicaciones}>
             <View style={styles.contenedor_publicacion}>
-                <ScrollView>
+                <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>}>
                     {
                         post.map((p,i)=>(
                             <Publicacion key={i} post={p.id} profile={p.profile} descrip={p.descripcion} img={p.img} fecha={p.fecha} stars={p.stars} star={p.star}/>

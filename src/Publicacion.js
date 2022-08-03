@@ -42,7 +42,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
             console.log(error);
         });
     }
-    const unSatar=async(id)=>{
+    const unStar=async(id)=>{
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
@@ -51,6 +51,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                 let stars = doc.data().stars;
                 let users_star=doc.data().users_star;
                 stars-=1;
+                console.log(stars);
                 if(users_star!=null){}
                     users_star=users_star.split(',');
                     for(var i in users_star){
@@ -58,10 +59,9 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                             users_star.splice(i,1);
                         }
                 }
-                users_star.join();
                 db.collection('post').doc(id).update({
                     stars:stars,
-                    users_star:users_star
+                    users_star:users_star.join()
                 }).then((result)=>{
                     console.log('Le quitaste una estrella a una publicación');
                 }).catch((error)=>{
@@ -95,7 +95,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                 <ImageBackground style={styles.image_public} source={{uri:img}}/>
                 <View style={styles.footer_public}>
                     <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(220,197,4,0.2)'}]}>
-                        <TouchableOpacity activeOpacity={0.2} onPress={()=>unSatar(post)}>
+                        <TouchableOpacity activeOpacity={0.2} onPress={()=>unStar(post)}>
                             <View style={styles.button_menu_container}>
                                 <Text style={{position:'absolute', zIndex:3}}>{stars}</Text>
                                 <AntDesign name="star" size={35} color="gold" />
