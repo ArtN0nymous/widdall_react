@@ -1,7 +1,7 @@
 import { View,Text,ImageBackground,TouchableOpacity } from "react-native";
 import { FontAwesome5,AntDesign } from '@expo/vector-icons';
 import Styles from "./Styles";
-export default function Publicacione({usuario,profile,descrip,img,fecha}){
+export default function Publicacione({usuario,profile,descrip,img,fecha,stars}){
     const styles=Styles.styles;
     let date = new Date(fecha);
     let fulltime = date.toLocaleDateString();
@@ -19,15 +19,16 @@ export default function Publicacione({usuario,profile,descrip,img,fecha}){
             <Text style={styles.descrip_public}>{descrip}</Text>
             <ImageBackground style={styles.image_public} source={{uri:img}}/>
             <View style={styles.footer_public}>
-                <View style={[styles.contenedor_boton_menu,styles.footer_buttons]}>
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.navigate('Perfil')}>
+                <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(220,197,4,0.2)'}]}>
+                    <TouchableOpacity activeOpacity={0.2}>
                         <View style={styles.button_menu_container}>
-                            <AntDesign name="star" size={35} color="white" />
+                            <Text style={{position:'absolute', zIndex:3}}>0</Text>
+                            <AntDesign name="star" size={35} color="gold" />
                         </View>
                     </TouchableOpacity>
                 </View>
-                <View style={[styles.contenedor_boton_menu,styles.footer_buttons]}>
-                    <TouchableOpacity activeOpacity={0.6} onPress={()=>navigation.navigate('Perfil')}>
+                <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(5,155,197,0.5)'}]}>
+                    <TouchableOpacity activeOpacity={0.6}>
                         <View style={styles.button_menu_container}>
                             <FontAwesome5 name="share" size={35} color="white" />
                         </View>
