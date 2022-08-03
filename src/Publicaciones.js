@@ -150,6 +150,7 @@ export default function Publicaciones({navigation}){
                 fecha:Date.now(),
                 img:url,
                 stars:0,
+                users_star:null,
                 descripcion:desc
             }).then((result)=>{
                 setState({...state,newPost_display:false,path:'',img:{uri:''}});
@@ -174,12 +175,18 @@ export default function Publicaciones({navigation}){
                         let array = [];
                         db.collection('post').where('user','==',user).onSnapshot((snapshot)=>{
                             snapshot.forEach((doc) => {
-                                array.push(doc.data());
+                                let id = doc.id;
+                                let post = doc.data();
+                                post.id=id;
+                                array.push(post);
                             });
                             for(var i in following){
                                 db.collection('post').where('user','==',following[i]).onSnapshot((snapshot)=>{
                                     snapshot.forEach((doc) => {
-                                       array.push(doc.data());
+                                        let id_1 = doc.id;
+                                        let post_1 = doc.data();
+                                        post_1.id=id_1;
+                                       array.push(post_1);
                                     });
                                 },(error)=>{
                                     console.log(error);
@@ -190,6 +197,17 @@ export default function Publicaciones({navigation}){
                                     for(var i in array){
                                         if(doc.id==array[i].user){
                                             array[i].profile=doc.data();
+                                            let users_star = doc.data().users_star;
+                                            array[i].star=false;
+                                            if(users_star!=null){
+                                                console.log('Entra aqui');
+                                                users_star=users_star.split(',');
+                                                for(var j in users_star){
+                                                    if(users_star[j]==user){
+                                                        array[i].star=true;
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 });
@@ -258,7 +276,7 @@ export default function Publicaciones({navigation}){
                 <ScrollView>
                     {
                         post.map((p,i)=>(
-                            <Publicacion key={i} usuario={p.user} profile={p.profile} descrip={p.descripcion} img={p.img} fecha={p.fecha}/>
+                            <Publicacion key={i} post={p.id} profile={p.profile} descrip={p.descripcion} img={p.img} fecha={p.fecha} stars={p.stars} star={p.star}/>
                         ))
                     }
                 </ScrollView>
