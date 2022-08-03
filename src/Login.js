@@ -23,11 +23,13 @@ export default function Login({navigation}){
     var styles = CSS.styles;
     const [state,setState]= useState({
         password:'',
-        loading_display:{
-            display:'none'
-        },
         loginState:''
     });
+    const [loading,setLoading]=useState(
+        {
+            display:'none'
+        }
+    )
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const [email,setEmail]=useState('');
@@ -79,7 +81,7 @@ export default function Login({navigation}){
         }
     }
     const loginIn= async (email,password)=>{
-        setState({...state,loading_display:{display:'flex'}});
+        setLoading({display:'flex'});
         auth.setPersistence(firebase.firebase.auth.Auth.Persistence.LOCAL).then(()=>{
             return auth.signInWithEmailAndPassword(email,password)
             .then((result)=>{
@@ -106,12 +108,12 @@ export default function Login({navigation}){
                         Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
                     }
                 }catch(e){
-                    setState({...state,loading_display:{display:'none'}});
+                    setLoading({display:'none'});
                     alert(e);
                 }
             })
             .catch((error)=>{
-                setState({...state,loading_display:{display:'none'}});
+                setLoading({display:'none'});
                 switch(error.code){
                     case 'auth/user-not-found':
                         Alert.alert('Atención','Parece que este usuario no existe!');
@@ -160,7 +162,7 @@ export default function Login({navigation}){
                     <Text style={{color:'white',fontSize:15,marginBottom:10}}>Registrarme ?</Text>
                 </TouchableOpacity>
             </LinearGradient>
-            <View style={[styles.loading_contenedor,state.loading_display]}>
+            <View style={[styles.loading_contenedor,loading]}>
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                 <Text style={styles.loading_text}>Cargando</Text>
             </View>

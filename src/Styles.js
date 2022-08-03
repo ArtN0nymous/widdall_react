@@ -688,7 +688,7 @@ const styles = StyleSheet.create({
     },
     header_public:{
         marginTop:5,
-        flexDirection:"row",
+        flexDirection:"column",
         width:dimension('W',106),
         height:dimension('H',15)
     },
@@ -701,13 +701,15 @@ const styles = StyleSheet.create({
     contenedor_profile_public:{
         flexDirection:"column",
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        alignSelf:'flex-start'
     },
     image_profile_public:{
         width:50,
         height:50,
         backgroundColor:'green',
-        borderRadius:100
+        borderRadius:100,
+        overflow:'hidden'
     },
     text_name_profile_public:{
         fontSize:20,
