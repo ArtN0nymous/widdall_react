@@ -175,7 +175,6 @@ export default function Publicaciones({navigation}){
         });
     }
     const leerPublic=async(user=state.user)=>{
-        console.log('LLega aqui');
         db.collection('post').onSnapshot((snapshot)=>{
             if(state.user!=''){
                 user=state.user;
@@ -284,72 +283,20 @@ export default function Publicaciones({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
-    const _star=async(id)=>{
-        localstorage.load({
-            key:'loginState'
-        }).then((result)=>{
-            let uid=result.userKey;
-            db.collection('post').doc(id).get().then((doc)=>{
-                let stars = doc.data().stars;
-                let users_star=doc.data().users_star;
-                stars+=1;
-                if(users_star!=null){
-                    users_star+=','+uid;
-                }else{
-                    users_star=uid;
-                }
-                db.collection('post').doc(id).update({
-                    stars:stars,
-                    users_star:users_star
-                }).then((result)=>{
-                    console.log('Starseaste una publicación');
-                    playSound();
-                }).catch((error)=>{
-                    console.log(error.code+' '+error.message);
-                });
-            }).catch((error)=>{
-                console.log(error.code+' '+error.message);
-            });
-        }).catch((error)=>{
-            console.log(error);
-        });
-    }
-    const unStar=async(id)=>{
-        localstorage.load({
-            key:'loginState'
-        }).then((result)=>{
-            let uid=result.userKey;
-            db.collection('post').doc(id).get().then((doc)=>{
-                let stars = doc.data().stars;
-                let users_star=doc.data().users_star;
-                stars-=1;
-                if(users_star!=null){}
-                    users_star=users_star.split(',');
-                    for(var i in users_star){
-                        if(users_star[i]==uid){
-                            users_star.splice(i,1);
-                        }
-                }
-                db.collection('post').doc(id).update({
-                    stars:stars,
-                    users_star:users_star.join()
-                }).then((result)=>{
-                    console.log('Le quitaste una estrella a una publicación');
-                }).catch((error)=>{
-                    console.log(error.code+' '+error.message);
-                });
-            }).catch((error)=>{
-                console.log(error.code+' '+error.message);
-            });
-        }).catch((error)=>{
-            console.log(error);
-        });
-    }
     /*FIREBASE END */
     /*POST CONTROLS */
     const gold ={backgroundColor:'rgba(220,197,4,0.2)'};
     const skyblue={backgroundColor:'rgba(5,155,197,0.5)'};
     const [displayGallery,setDisplayGallery]=useState(false);
+    const [img,setImg]=useState('');
+    const postImg=(img)=>{
+        if(displayGallery!=true){
+            setImg(img);
+            setDisplayGallery(true);
+        }else{
+            setDisplayGallery(false);
+        }
+    }
     const footer=(
         <></>
     );
@@ -373,14 +320,18 @@ export default function Publicaciones({navigation}){
                 <View style={styles.header_public}>
                     <View style={styles.contenedor_profile_public}>
                         <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                            <ImageBackground style={styles.image_profile_public} source={{uri:item.profile.url_photo}}/>
+                            <TouchableOpacity activeOpacity={0.6}>
+                                <ImageBackground style={styles.image_profile_public} source={{uri:item.profile.url_photo}}/>
+                            </TouchableOpacity>
                             <Text style={styles.text_name_profile_public}>{item.profile.displayName}</Text>
                         </View>
                     </View>
                     <Text style={{alignSelf:'flex-end'}}>{fulltime}</Text>
                 </View>
                 <Text style={styles.descrip_public}>{item.descripcion}</Text>
-                <ImageBackground style={styles.image_public} source={{uri:item.img}}/>
+                <TouchableOpacity activeOpacity={0.6} onPress={()=>postImg(item.img)}>
+                    <ImageBackground style={styles.image_public} source={{uri:item.img}}/>
+                </TouchableOpacity>
                 <View style={styles.footer_public}>
                     <View style={[styles.contenedor_boton_menu,styles.footer_buttons,gold]}>
                         <PostButton star={item.star} stars={item.stars} id={item.id}/>
@@ -395,13 +346,6 @@ export default function Publicaciones({navigation}){
                 </View>
             </View>
         );
-    }
-    const postImg=()=>{
-        if(displayGallery!=true){
-            setDisplayGallery(true);
-        }else{
-            setDisplayGallery(false);
-        }
     }
     return(
         <View style={styles.contenedor_publicaciones}>
@@ -520,8 +464,8 @@ export default function Publicaciones({navigation}){
             </Modal>
             <Modal visible={displayGallery} transparent={true}>
                 <Gallery style={{flex:1,backgroundColor:'rgba(0,0,0,0.6)'}} images={[
-                    {source:{uri:state.img_gallery}}
-                ]} onSingleTapConfirmed={()=>postImg()}/>
+                    {source:{uri:img}}
+                ]} onSingleTapConfirmed={()=>postImg('')}/>
             </Modal>
         </View>
     );
