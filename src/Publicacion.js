@@ -43,7 +43,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
         }else{
             animation.current.play(18,0);
         }
-    },[star])
+    },[star]);
     /*Firebasde functions */
     const _star=async(id)=>{
         localstorage.load({
@@ -130,7 +130,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                     <View style={[styles.contenedor_boton_menu,styles.footer_buttons,gold]}>
                         <TouchableOpacity activeOpacity={0.2} onPress={()=>unStar(post)}>
                             <View style={styles.button_menu_container}>
-                                <Text style={{position:'absolute', zIndex:3}}>{stars}</Text>
+                                <Text style={{position:'absolute', zIndex:3,color:'black'}}>{stars}</Text>
                                 {/* <AntDesign name="star" size={35} color="gold" /> */}
                                 <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
                             </View>
@@ -164,7 +164,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                     <View style={[styles.contenedor_boton_menu,styles.footer_buttons]}>
                         <TouchableOpacity activeOpacity={0.2} onPress={()=>_star(post)}>
                             <View style={styles.button_menu_container}>
-                                <Text style={{position:'absolute', zIndex:3}}>{stars}</Text>
+                                <Text style={{position:'absolute', zIndex:3,color:'black'}}>{stars}</Text>
                                 {/* <AntDesign name="star" size={35} color="white" /> */}
                                 <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
                             </View>

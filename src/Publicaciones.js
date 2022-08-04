@@ -31,12 +31,19 @@ export default function Publicaciones({navigation}){
         img:'',
         img_gallery:'',
         cargando:{display:'none'},
-        post:[]
+        post:[],
+        user:''
     });
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        leerPublic().then(() => setRefreshing(false));
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            leerPublic(result.userKey).then(() => setRefreshing(false));
+        }).catch((error)=>{
+            console.log(error);
+        });
       }, []);
     function toggle_menu(){
         if(state.menu_display.display=='none'){
@@ -61,20 +68,20 @@ export default function Publicaciones({navigation}){
     useEffect(()=>{
         let abortController = new AbortController();
         loadProfile();
-        return()=>{
+        return function cleanup(){
             abortController.abort();
         }
-    });
-    const loadProfile=async()=>{
+    },[]);
+    const loadProfile=()=>{
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
+            setState({...state,user:result.userKey});
             if(result.verified!=true){
                 Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
                 navigation.navigate('Login');
-            }else{
-                leerPublic();
             }
+            leerPublic();
         }).catch((error)=>{
             Alert.alert('Atención','Debes iniciar sesión',[{
                 text:'Ok',
@@ -158,7 +165,7 @@ export default function Publicaciones({navigation}){
                 users_star:null,
                 descripcion:desc
             }).then((result)=>{
-                setState({...state,newPost_display:false,path:'',img:{uri:''}});
+                setState({...state,newPost_display:false,path:'',user:uid,img:{uri:''}});
                 leerPublic();
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
@@ -168,69 +175,72 @@ export default function Publicaciones({navigation}){
         });
     }
     const leerPublic=async()=>{
-        localstorage.load({
-            key:'loginState'
-        }).then((result)=>{
-            let user = result.userKey;
-            db.collection('users').doc(user).get().then((doc)=>{
-                let following=doc.data().following;
-                try{
-                    if(following!=''){
-                        following=following.split(',');
-                        let array = [];
-                        db.collection('post').where('user','==',user).get().then((snapshot)=>{
-                            snapshot.forEach((doc) => {
-                                let id = doc.id;
-                                let post = doc.data();
-                                post.id=id;
-                                array.push(post);
-                            });
-                            for(var i in following){
-                                db.collection('post').where('user','==',following[i]).get().then((snapshot)=>{
-                                    snapshot.forEach((doc) => {
-                                        let id_1 = doc.id;
-                                        let post_1 = doc.data();
-                                        post_1.id=id_1;
-                                       array.push(post_1);
-                                    });
-                                },(error)=>{
-                                    console.log(error);
+        db.collection('post').onSnapshot((snapshot)=>{
+            let user = state.user;
+            if(user!=''){
+                db.collection('users').doc(user).get().then((doc)=>{
+                    let following=doc.data().following;
+                    try{
+                        if(following!=''){
+                            following=following.split(',');
+                            let array = [];
+                            db.collection('post').where('user','==',user).get().then((snapshot)=>{
+                                snapshot.forEach((doc) => {
+                                    let id = doc.id;
+                                    let post = doc.data();
+                                    post.id=id;
+                                    array.push(post);
                                 });
-                            }
-                            db.collection('users').get().then((result)=>{
-                                result.forEach((doc) => {
-                                    for(var i in array){
-                                        if(doc.id==array[i].user){
-                                            array[i].profile=doc.data();
-                                            let users_star = array[i].users_star;
-                                            array[i].star=false;                
-                                            if(users_star!=null){
-                                                users_star=users_star.split(',');
-                                                for(var j in users_star){
-                                                    if(users_star[j]==user){
-                                                        array[i].star=true;
+                                for(var i in following){
+                                    db.collection('post').where('user','==',following[i]).get().then((snapshot)=>{
+                                        snapshot.forEach((doc) => {
+                                            let id_1 = doc.id;
+                                            let post_1 = doc.data();
+                                            post_1.id=id_1;
+                                           array.push(post_1);
+                                        });
+                                    },(error)=>{
+                                        console.log(error);
+                                    });
+                                }
+                                db.collection('users').get().then((result)=>{
+                                    result.forEach((doc) => {
+                                        for(var i in array){
+                                            if(doc.id==array[i].user){
+                                                array[i].profile=doc.data();
+                                                let users_star = array[i].users_star;
+                                                array[i].star=false;                
+                                                if(users_star!=null){
+                                                    users_star=users_star.split(',');
+                                                    console.log(users_star);
+                                                    for(var j in users_star){
+                                                        if(users_star[j]==user){
+                                                            array[i].star=true;
+                                                            console.log(array[i]);
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    }
+                                    });
+                                    let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                                    setPost(newArray);
+                                }).catch((error)=>{
+                                    console.log(error.code+' '+error.message);
                                 });
-                                setPost(array);
-                            }).catch((error)=>{
-                                console.log(error.code+' '+error.message);
+                            },(error)=>{
+                                console.log(error);
                             });
-                        },(error)=>{
-                            console.log(error);
-                        });
+                        }
+                    }catch(error){
+                        console.log(error);
                     }
-                }catch(error){
-                    console.log(error);
-                }
-            }).catch((error)=>{ 
-                console.log(error.code+' '+error.message);
-            });
-        }).catch((error)=>{
-            console.log(error);
+                }).catch((error)=>{ 
+                    console.log(error.code+' '+error.message);
+                }); 
+            }     
+        },(error)=>{
+            console.log(error.code+' '+error.message);
         });
     }
     const saveImg = async (path)=>{
