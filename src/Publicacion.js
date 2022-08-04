@@ -1,11 +1,12 @@
 import { View,Text,ImageBackground,TouchableOpacity } from "react-native";
 import { FontAwesome5,AntDesign } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import Styles from "./Styles";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
 import AnimatedLottieView from "lottie-react-native";
-import { useRef,useEffect } from "react";
+import { useRef,useEffect,useState } from "react";
 export default function Publicacione({post,profile,descrip,img,fecha,stars,star}){
     const db = firebase.db;
     var localstorage = new Storage ({
@@ -18,6 +19,24 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
     const gold ={backgroundColor:'rgba(220,197,4,0.2)'};
     const skyblue={backgroundColor:'rgba(5,155,197,0.5)'};
     const animation= useRef(null);
+    const [sound, setSound] = useState();
+    async function playSound() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync(
+           require('./assets/sounds/sound3.mp3')
+        );
+        setSound(sound);
+    
+        console.log('Playing Sound');
+        await sound.playAsync(); 
+    }
+    useEffect(() => {
+        return sound
+          ? () => {
+              console.log('Unloading Sound');
+              sound.unloadAsync(); }
+          : undefined;
+    }, [sound]);
     useEffect(()=>{
         if(star){
             animation.current.play(0,45);
@@ -45,6 +64,7 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                     users_star:users_star
                 }).then((result)=>{
                     console.log('Starseaste una publicación');
+                    playSound();
                 }).catch((error)=>{
                     console.log(error.code+' '+error.message);
                 });
