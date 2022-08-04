@@ -350,7 +350,7 @@ export default function Publicaciones({navigation}){
     return(
         <View style={styles.contenedor_publicaciones}>
             <View style={styles.contenedor_publicacion}>
-                <FlatList refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>} ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(post,numColumns)} renderItem={renderItem} numColumns={numColumns}/>
+                <FlatList refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>} ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column'}} data={formatData(post,numColumns)} renderItem={renderItem} numColumns={numColumns}/>
             </View>
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.contenedor_menu}>
                 <View style={styles.contenedor_boton_menu}>
