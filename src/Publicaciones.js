@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ScrollView,Modal,TextInput,Text,ImageBackground,RefreshControl, Alert,ActivityIndicator } from "react-native";
+import { View, TouchableOpacity,Modal,TextInput,Text,ImageBackground,RefreshControl, Alert,ActivityIndicator,FlatList } from "react-native";
 import { useState, useEffect,useRef,useCallback } from "react";
 import Styles from "./Styles";
 import { LinearGradient } from "expo-linear-gradient";
@@ -6,9 +6,9 @@ import firebase from "./database/firebase";
 import { Entypo, FontAwesome5,Ionicons,MaterialIcons,FontAwesome} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
-import Publicacion from './Publicacion';
 import * as ImagePicker from 'expo-image-picker';
 import Gallery from 'react-native-image-gallery';
+import PostButton from "./PostButton";
 export default function Publicaciones({navigation}){
     const styles = Styles.styles;
     const db=firebase.db;
@@ -81,7 +81,7 @@ export default function Publicaciones({navigation}){
                 Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
                 navigation.navigate('Login');
             }
-            leerPublic();
+            leerPublic(result.userKey);
         }).catch((error)=>{
             Alert.alert('Atención','Debes iniciar sesión',[{
                 text:'Ok',
@@ -166,7 +166,7 @@ export default function Publicaciones({navigation}){
                 descripcion:desc
             }).then((result)=>{
                 setState({...state,newPost_display:false,path:'',user:uid,img:{uri:''}});
-                leerPublic();
+                leerPublic(uid);
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
@@ -174,9 +174,12 @@ export default function Publicaciones({navigation}){
             console.log('Error al cargar el usuario');
         });
     }
-    const leerPublic=async()=>{
+    const leerPublic=async(user=state.user)=>{
+        console.log('LLega aqui');
         db.collection('post').onSnapshot((snapshot)=>{
-            let user = state.user;
+            if(state.user!=''){
+                user=state.user;
+            }
             if(user!=''){
                 db.collection('users').doc(user).get().then((doc)=>{
                     let following=doc.data().following;
@@ -212,11 +215,9 @@ export default function Publicaciones({navigation}){
                                                 array[i].star=false;                
                                                 if(users_star!=null){
                                                     users_star=users_star.split(',');
-                                                    console.log(users_star);
                                                     for(var j in users_star){
                                                         if(users_star[j]==user){
                                                             array[i].star=true;
-                                                            console.log(array[i]);
                                                         }
                                                     }
                                                 }
@@ -283,17 +284,129 @@ export default function Publicaciones({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
+    const _star=async(id)=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            let uid=result.userKey;
+            db.collection('post').doc(id).get().then((doc)=>{
+                let stars = doc.data().stars;
+                let users_star=doc.data().users_star;
+                stars+=1;
+                if(users_star!=null){
+                    users_star+=','+uid;
+                }else{
+                    users_star=uid;
+                }
+                db.collection('post').doc(id).update({
+                    stars:stars,
+                    users_star:users_star
+                }).then((result)=>{
+                    console.log('Starseaste una publicación');
+                    playSound();
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            console.log(error);
+        });
+    }
+    const unStar=async(id)=>{
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            let uid=result.userKey;
+            db.collection('post').doc(id).get().then((doc)=>{
+                let stars = doc.data().stars;
+                let users_star=doc.data().users_star;
+                stars-=1;
+                if(users_star!=null){}
+                    users_star=users_star.split(',');
+                    for(var i in users_star){
+                        if(users_star[i]==uid){
+                            users_star.splice(i,1);
+                        }
+                }
+                db.collection('post').doc(id).update({
+                    stars:stars,
+                    users_star:users_star.join()
+                }).then((result)=>{
+                    console.log('Le quitaste una estrella a una publicación');
+                }).catch((error)=>{
+                    console.log(error.code+' '+error.message);
+                });
+            }).catch((error)=>{
+                console.log(error.code+' '+error.message);
+            });
+        }).catch((error)=>{
+            console.log(error);
+        });
+    }
     /*FIREBASE END */
+    /*POST CONTROLS */
+    const gold ={backgroundColor:'rgba(220,197,4,0.2)'};
+    const skyblue={backgroundColor:'rgba(5,155,197,0.5)'};
+    const [displayGallery,setDisplayGallery]=useState(false);
+    const footer=(
+        <></>
+    );
+    const header=(
+        <></>
+    );
+    const numColumns=1;
+    const formatData=(data,numColums)=>{
+        const n_filas = Math.floor(data.length/numColums);
+
+        let n_element_lastrow = data.length - (n_filas);
+        
+        return data;
+    }
+    /*POST END */
+    const renderItem = ({item,index})=>{
+        let date = new Date(item.fecha);
+        let fulltime = date.toLocaleDateString();
+        return(
+            <View style={styles.tarjeta_public_cont}>
+                <View style={styles.header_public}>
+                    <View style={styles.contenedor_profile_public}>
+                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <ImageBackground style={styles.image_profile_public} source={{uri:item.profile.url_photo}}/>
+                            <Text style={styles.text_name_profile_public}>{item.profile.displayName}</Text>
+                        </View>
+                    </View>
+                    <Text style={{alignSelf:'flex-end'}}>{fulltime}</Text>
+                </View>
+                <Text style={styles.descrip_public}>{item.descripcion}</Text>
+                <ImageBackground style={styles.image_public} source={{uri:item.img}}/>
+                <View style={styles.footer_public}>
+                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,gold]}>
+                        <PostButton star={item.star} stars={item.stars} id={item.id}/>
+                    </View>
+                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,skyblue]}>
+                        <TouchableOpacity activeOpacity={0.6}>
+                            <View style={styles.button_menu_container}>
+                                <FontAwesome5 name="share" size={35} color="white" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+    const postImg=()=>{
+        if(displayGallery!=true){
+            setDisplayGallery(true);
+        }else{
+            setDisplayGallery(false);
+        }
+    }
     return(
         <View style={styles.contenedor_publicaciones}>
             <View style={styles.contenedor_publicacion}>
-                <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>}>
-                    {
-                        post.map((p,i)=>(
-                            <Publicacion key={i} post={p.id} profile={p.profile} descrip={p.descripcion} img={p.img} fecha={p.fecha} stars={p.stars} star={p.star}/>
-                        ))
-                    }
-                </ScrollView>
+                <FlatList refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>} ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(post,numColumns)} renderItem={renderItem} numColumns={numColumns}/>
             </View>
             <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.contenedor_menu}>
                 <View style={styles.contenedor_boton_menu}>
@@ -404,6 +517,11 @@ export default function Publicaciones({navigation}){
                     <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                     <Text style={styles.loading_text}>Cargando</Text>
                 </View>
+            </Modal>
+            <Modal visible={displayGallery} transparent={true}>
+                <Gallery style={{flex:1,backgroundColor:'rgba(0,0,0,0.6)'}} images={[
+                    {source:{uri:state.img_gallery}}
+                ]} onSingleTapConfirmed={()=>postImg()}/>
             </Modal>
         </View>
     );
