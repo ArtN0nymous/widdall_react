@@ -4,6 +4,8 @@ import Styles from "./Styles";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
+import AnimatedLottieView from "lottie-react-native";
+import { useRef,useEffect } from "react";
 export default function Publicacione({post,profile,descrip,img,fecha,stars,star}){
     const db = firebase.db;
     var localstorage = new Storage ({
@@ -12,6 +14,17 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
         defaultExpires: null,
         enableCache:false,
     });
+    const animStar = require('./assets/lottie/star-burst.json');
+    const gold ={backgroundColor:'rgba(220,197,4,0.2)'};
+    const skyblue={backgroundColor:'rgba(5,155,197,0.5)'};
+    const animation= useRef(null);
+    useEffect(()=>{
+        if(star){
+            animation.current.play(0,45);
+        }else{
+            animation.current.play(18,0);
+        }
+    },[star])
     /*Firebasde functions */
     const _star=async(id)=>{
         localstorage.load({
@@ -94,15 +107,16 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                 <Text style={styles.descrip_public}>{descrip}</Text>
                 <ImageBackground style={styles.image_public} source={{uri:img}}/>
                 <View style={styles.footer_public}>
-                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(220,197,4,0.2)'}]}>
+                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,gold]}>
                         <TouchableOpacity activeOpacity={0.2} onPress={()=>unStar(post)}>
                             <View style={styles.button_menu_container}>
                                 <Text style={{position:'absolute', zIndex:3}}>{stars}</Text>
-                                <AntDesign name="star" size={35} color="gold" />
+                                {/* <AntDesign name="star" size={35} color="gold" /> */}
+                                <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
                             </View>
                         </TouchableOpacity>
                     </View>
-                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(5,155,197,0.5)'}]}>
+                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,skyblue]}>
                         <TouchableOpacity activeOpacity={0.6}>
                             <View style={styles.button_menu_container}>
                                 <FontAwesome5 name="share" size={35} color="white" />
@@ -131,11 +145,12 @@ export default function Publicacione({post,profile,descrip,img,fecha,stars,star}
                         <TouchableOpacity activeOpacity={0.2} onPress={()=>_star(post)}>
                             <View style={styles.button_menu_container}>
                                 <Text style={{position:'absolute', zIndex:3}}>{stars}</Text>
-                                <AntDesign name="star" size={35} color="white" />
+                                {/* <AntDesign name="star" size={35} color="white" /> */}
+                                <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
                             </View>
                         </TouchableOpacity>
                     </View>
-                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,{backgroundColor:'rgba(5,155,197,0.5)'}]}>
+                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,skyblue]}>
                         <TouchableOpacity activeOpacity={0.6}>
                             <View style={styles.button_menu_container}>
                                 <FontAwesome5 name="share" size={35} color="white" />

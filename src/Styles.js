@@ -659,6 +659,10 @@ const styles = StyleSheet.create({
     },
     /*Menu lateral end */
     /*Publicaciones Begin */
+    lottie:{
+        width:200,
+        height:200
+    },
     contenedor_publicaciones:{
         flex:1,
         flexDirection:'row'
