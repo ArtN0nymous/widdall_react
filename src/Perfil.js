@@ -1,10 +1,10 @@
-import { View, ImageBackground, Image, TextInput, TouchableOpacity,ActivityIndicator, Text,FlatList, Alert } from "react-native";
+import { View, ImageBackground, Image, TextInput,RefreshControl, TouchableOpacity,ActivityIndicator, Text,FlatList, Alert } from "react-native";
 import firebase from "./database/firebase";
 import Styles from "./Styles";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import { FontAwesome5, FontAwesome,Ionicons,AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
 export default function Perfil({navigation}){
@@ -19,11 +19,6 @@ export default function Perfil({navigation}){
         enableCache:true,
     });
     global.localStorage = localstorage;
-    const portada = require('./img/sebas.jpg');
-    const data = [
-        {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
-    ];
-    var perfil = require('./img/default_profile.jpg');
     const [state,setState] = useState({
         profile:{
             displayName:'',
@@ -34,7 +29,7 @@ export default function Perfil({navigation}){
             descripcion:''
         },
         uid:'',
-        img : require('./img/default_profile.jpg'),
+        img : '',
         open_display:{display:'none'},
         open_display_2:{display:'none'},
         name:'',
@@ -52,7 +47,8 @@ export default function Perfil({navigation}){
             url_photo:'',
             url_portada:'',
             color_portada:''
-        }
+        },
+        loading_display:{display:'none'}
     });
     const uiPicker=(oper)=>{
         switch(oper){
@@ -77,6 +73,17 @@ export default function Perfil({navigation}){
     function cerrar_update(){
         setState({...state,loading_state:{display:'none'}});
     }
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            loadProfile();
+        }).catch((error)=>{
+            console.log(error);
+        });
+      }, []);
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         let options = {
@@ -106,7 +113,7 @@ export default function Perfil({navigation}){
                         console.log(error.code+' '+error.message);
                     });
                 }else{
-                    setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                    setState({...state,img:pickerResult.uri,path:pickerResult.uri, open_display:{display:'none'}});
                 }
             }
         }
@@ -141,7 +148,7 @@ export default function Perfil({navigation}){
                         console.log(error.code+' '+error.message);
                     });
                 }else{
-                    setState({...state,img:{uri:pickerResult.uri},path:pickerResult.uri, open_display:{display:'none'}});
+                    setState({...state,img:pickerResult.uri,path:pickerResult.uri, open_display:{display:'none'}});
                 }
             }
         }
@@ -157,6 +164,7 @@ export default function Perfil({navigation}){
         }
     },[]);
     const loadProfile=async()=>{
+        setState({...state,loading_display:{display:'flex'}});
         let perfil = {};
         let uid = null; 
         localstorage.load({
@@ -166,15 +174,16 @@ export default function Perfil({navigation}){
             db.collection('users').doc(uid).get().then((doc)=>{
                 state.link_image_profile = doc.data().url_photo;
                 perfil={
-                    url_photo:{uri:doc.data().url_photo},
-                    url_portada:{uri:doc.data().url_portada},
+                    url_photo:doc.data().url_photo,
+                    url_portada:doc.data().url_portada,
                     color_portada:doc.data().color_portada,
                     displayName:doc.data().displayName,
                     descripcion:doc.data().descripcion,
                     email:doc.data().email
                 }
-                leerAmigos(perfil,doc.data().url_photo,uid);
+                leerUsuarios(perfil);
             }).catch((error)=>{
+                setState({...state,loading_display:{display:'none'}});
                 Alert.alert('Aetnción','Ocurrió un error al recuperar los datos de usuario.');
             });
         }).catch((error)=>{
@@ -241,31 +250,31 @@ export default function Perfil({navigation}){
                                 profile = {
                                     displayName:state.profile.displayName,
                                     email:state.profile.email,
-                                    url_photo:{uri:url},
-                                    url_portada:{uri:state.profile.url_portada},
+                                    url_photo:url,
+                                    url_portada:state.profile.url_portada,
                                     color_portada:state.profile.color_portada
                                 }
                             }else{
                                 profile = {
                                     displayName:state.profile.displayName,
                                     email:state.profile.email,
-                                    url_photo:{uri:url},
+                                    url_photo:url,
                                     url_portada:portada,
                                     color_portada:state.profile.color_portada
                                 }
                             }
-                            setState({...state,profile:profile,img:{uri:state.url_photo}});
+                            setState({...state,profile:profile,img:state.url_photo});
                             update(user,url);
                             break;
                         case 'portada':
                             profile = {
                                 displayName:state.profile.displayName,
                                 email:state.profile.email,
-                                url_photo:{uri:state.profile.url_photo},
-                                url_portada:{uri:url},
+                                url_photo:state.profile.url_photo,
+                                url_portada:url,
                                 color_portada:state.profile.color_portada
                             }
-                            setState({...state,profile:profile,img:{uri:state.url_photo}});
+                            setState({...state,profile:profile,img:state.url_photo});
                             update(user,url);
                             break;
                     }
@@ -455,25 +464,26 @@ export default function Perfil({navigation}){
             console.log('Error al cargar los datos de usuario');
         });
     }
-    const leerAmigos=async(perfil,img,uid)=>{
+    /*const leerAmigos=async(perfil,img,uid)=>{
         leerUsuarios().then((result)=>{
             localstorage.load({
                 key:'usuarios'
             }).then((result)=>{
                let usuarios = result;
-               setState({...state,profile:perfil,img:{uri:img},user_id:uid,friends:usuarios,cargando:{display:'none'},
-               open_display:{display:'none'},
-               open_display_2:{display:'none'},
-               loading_state:{display:'none'}});
+               console.log(usuarios);
+               setState({...state,profile:perfil,img:perfil.url_photo,user_id:uid,friends:usuarios,
+                loading_display:{display:'none'}});
             }).catch((error)=>{
+                setState({...state,loading_display:{display:'none'}});
                 console.log(error);
             });
         }).catch((error)=>{
+            setState({...state,loading_display:{display:'none'}});
             console.log(error);
             console.log('No se leyeron los usuarios');
         });
-    }
-    const leerUsuarios= async () =>{
+    }*/
+    const leerUsuarios= async (perfil) =>{
         let id = '';
         await localstorage.load({
             key:'loginState'
@@ -492,8 +502,8 @@ export default function Perfil({navigation}){
                             let user = {
                                 uid:doc.id,
                                 username:doc.data().displayName,
-                                url_photo:{uri:doc.data().url_photo},
-                                url_portada:{uri:doc.data().url_portada},
+                                url_photo:doc.data().url_photo,
+                                url_portada:doc.data().url_portada,
                                 color_portada:doc.data().color_portada,
                                 descripcion:doc.data().descripcion,
                                 amigo:false,
@@ -505,13 +515,17 @@ export default function Perfil({navigation}){
                                     user.amigo=true;
                                 }
                             });
-                            if(following!=''){
+                            if(following.length>28){
                                 following=following.split(',');
                                 following.forEach(element=>{
                                     if(element==user.uid){
                                         user.following=true;
                                     }
                                 });
+                            }else{
+                                if(following==user.uid){
+                                    user.following=true;
+                                }
                             }
                             usuarios.push(user);
                         }
@@ -521,7 +535,9 @@ export default function Perfil({navigation}){
                             key:'usuarios',
                             data:usuarios
                         });
-                        //leerSolicitudes(usuarios);
+                        setRefreshing(false);
+                        setState({...state,profile:perfil,img:perfil.url_photo,user_id:id,friends:usuarios,
+                        loading_display:{display:'none'}});
                     }catch(e){
                         alert(e.message);
                     }
@@ -737,7 +753,6 @@ export default function Perfil({navigation}){
                         }
                     }
                 }
-                console.log(following);
                 if(following==true){
                     setState({...state,display_preview:{
                         display:'flex'
@@ -917,13 +932,13 @@ export default function Perfil({navigation}){
     }
     const numColums = 3;
     const renderItem = ({item,index})=>{
-        if(item.url_portada.uri!=''){
+        if(item.url_portada!=''){
             if(item.amigo!=false){
                 return(
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
-                        <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                        <ImageBackground style={styles.target_usuarios}  source={{uri:item.url_portada}}>
                             <View style={styles.contenido_caja_usu}>
-                                <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                                <ImageBackground style={styles.icon_usu} source={{uri:item.url_photo}}/>
                                 <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                                 <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                             </View>
@@ -933,9 +948,9 @@ export default function Perfil({navigation}){
             }else{
                 return(
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)} style={{display:'none'}}>
-                        <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                        <ImageBackground style={styles.target_usuarios}  source={{uri:item.url_portada}}>
                             <View style={styles.contenido_caja_usu}>
-                                <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                                <ImageBackground style={styles.icon_usu} source={{uri:item.url_photo}}/>
                                 <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                                 <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                             </View>
@@ -949,7 +964,7 @@ export default function Perfil({navigation}){
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
                         <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                             <View style={styles.contenido_caja_usu}>
-                                <Image style={styles.icon_usu} source={item.url_photo}/>
+                                <Image style={styles.icon_usu} source={{uri:item.url_photo}}/>
                                 <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                                 <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                             </View>
@@ -961,7 +976,7 @@ export default function Perfil({navigation}){
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)} style={{display:'none'}}>
                         <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                             <View style={styles.contenido_caja_usu}>
-                                <Image style={styles.icon_usu} source={item.url_photo}/>
+                                <Image style={styles.icon_usu} source={{uri:item.url_photo}}/>
                                 <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                                 <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                             </View>
@@ -974,13 +989,14 @@ export default function Perfil({navigation}){
     const header = (
         <>
             <ImageBackground style={[styles.circle_cont_usu,{backgroundColor:state.profile.color_portada}]} source={state.profile.url_portada}>
+                <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
                 <View style={styles.edit_portada}>
                     <TouchableOpacity onPress={()=>{uiPicker('portada')}}>
                         <FontAwesome size={25} name='pencil-square-o' color='white'/>
                     </TouchableOpacity>
                 </View>
                 <View style={{alignSelf:'flex-start',left:10}}>
-                    <ImageBackground style={styles.circle_usu} source={state.profile.url_photo}>
+                    <ImageBackground style={styles.circle_usu} source={{uri:state.profile.url_photo}}>
                     </ImageBackground>
                     <Text style={styles.text_1_usu}>{state.profile.displayName}</Text>
                     <Text style={styles.text_small_usu}>{state.profile.email}</Text>
@@ -1034,7 +1050,7 @@ export default function Perfil({navigation}){
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.friends,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>} ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.friends,numColums)} renderItem={renderItem} numColumns={numColums}/>
             <View style={[styles.loading_contenedor,state.cargando,{zIndex:13}]}>
                 <ActivityIndicator size={50} color='purple' animating={true} style={styles.loading}/>
                 <Text style={styles.loading_text}>Cargando</Text>
@@ -1043,7 +1059,7 @@ export default function Perfil({navigation}){
                 <View style={styles.ventana_modal}>
                     <TouchableOpacity activeOpacity={0.6} onPress={()=>{uiPicker('perfil')}}>
                         <LinearGradient animation='bounceIn' colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={styles.border_image_regist}>
-                            <Image source={state.img} style={styles.img_regist}/>
+                            <Image source={{uri:state.img}} style={styles.img_regist}/>
                         </LinearGradient>
                     </TouchableOpacity>
                     <TextInput  keyboardType="default" placeholder="Cambiar mi descripción..." placeholderTextColor={'#0B2379'} style={styles.inputs_regist} onChangeText={(value)=>handleChangeText('name',value)} maxLength={30}/>
@@ -1106,7 +1122,7 @@ export default function Perfil({navigation}){
                     </View>
                 </TouchableOpacity>
                 <View style={styles.content_preview}>
-                    <ImageBackground source={state.profile_amigo.url_photo} style={styles.image_preview}/>
+                    <ImageBackground source={{uri:state.profile_amigo.url_photo}} style={styles.image_preview}/>
                     <View style={styles.options_preview}>
                         <View style={{flexDirection:'column'}}>
                             <Text style={{alignSelf:'center',fontSize:17,fontWeight:'bold'}}>{state.profile_amigo.displayName}</Text>

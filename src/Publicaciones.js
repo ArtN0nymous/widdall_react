@@ -32,18 +32,13 @@ export default function Publicaciones({navigation}){
         img_gallery:'',
         cargando:{display:'none'},
         post:[],
-        user:''
+        user:'',
+        loading_display:{display:'none'}
     });
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        localstorage.load({
-            key:'loginState'
-        }).then((result)=>{
-            leerPublic(result.userKey).then(() => setRefreshing(false));
-        }).catch((error)=>{
-            console.log(error);
-        });
+        loadProfile();
       }, []);
     function toggle_menu(){
         if(state.menu_display.display=='none'){
@@ -72,10 +67,11 @@ export default function Publicaciones({navigation}){
             abortController.abort();
         }
     },[]);
-    const loadProfile=()=>{
+    const loadProfile= async()=>{
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
+            setRefreshing(false);
             setState({...state,user:result.userKey});
             if(result.verified!=true){
                 Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
@@ -174,16 +170,16 @@ export default function Publicaciones({navigation}){
             console.log('Error al cargar el usuario');
         });
     }
-    const leerPublic=async(user=state.user)=>{
+    const leerPublic=async(user='')=>{
+        console.log('Comienza');
+        setState({...state,loading_display:{display:'flex'}});
         db.collection('post').onSnapshot((snapshot)=>{
-            if(state.user!=''){
-                user=state.user;
-            }
             if(user!=''){
                 db.collection('users').doc(user).get().then((doc)=>{
                     let following=doc.data().following;
                     try{
-                        if(following!=''){
+                        if(following.length>28){
+                            console.log('Entra al following');
                             following=following.split(',');
                             let array = [];
                             db.collection('post').where('user','==',user).get().then((snapshot)=>{
@@ -224,24 +220,208 @@ export default function Publicaciones({navigation}){
                                         }
                                     });
                                     let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                                    console.log(newArray);
+                                    loadingStop();
                                     setPost(newArray);
                                 }).catch((error)=>{
+                                    setState({...state,loading_display:{display:'none'}});
                                     console.log(error.code+' '+error.message);
                                 });
                             },(error)=>{
+                                setState({...state,loading_display:{display:'none'}});
+                                console.log(error);
+                            });
+                        }else{
+                            let array = [];
+                            console.log('No entra al following');
+                            db.collection('post').where('user','==',user).get().then((snapshot)=>{
+                                snapshot.forEach((doc) => {
+                                    let id = doc.id;
+                                    let post = doc.data();
+                                    post.id=id;
+                                    array.push(post);
+                                });
+                                db.collection('post').where('user','==',following).get().then((snapshot)=>{
+                                    snapshot.forEach((doc) => {
+                                        let id_1 = doc.id;
+                                        let post_1 = doc.data();
+                                        post_1.id=id_1;
+                                       array.push(post_1);
+                                    });
+                                    db.collection('users').get().then((result)=>{
+                                        result.forEach((doc) => {
+                                            for(var i in array){
+                                                if(doc.id==array[i].user){
+                                                    array[i].profile=doc.data();
+                                                    let users_star = array[i].users_star;
+                                                    array[i].star=false;                
+                                                    if(users_star!=null){
+                                                        users_star=users_star.split(',');
+                                                        for(var j in users_star){
+                                                            if(users_star[j]==user){
+                                                                array[i].star=true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                                        loadingStop();
+                                        setPost(newArray);
+                                        console.log(newArray);
+                                    }).catch((error)=>{
+                                        loadingStop();
+                                        console.log(error.code+' '+error.message);
+                                    });
+                                },(error)=>{
+                                    console.log(error);
+                                });
+                            },(error)=>{
+                                loadingStop();
                                 console.log(error);
                             });
                         }
                     }catch(error){
+                        loadingStop();
                         console.log(error);
                     }
                 }).catch((error)=>{ 
+                    loadingStop();
                     console.log(error.code+' '+error.message);
                 }); 
+            }else{
+                console.log('Entra al else leerPublic');
+                localstorage.load({
+                    key:'losginState'
+                }).then((result)=>{
+                    let user = result.userKey;
+                    db.collection('users').doc(user).get().then((doc)=>{
+                        let following=doc.data().following;
+                        try{
+                            if(following.length>28){
+                                console.log('Entra al following');
+                                following=following.split(',');
+                                let array = [];
+                                db.collection('post').where('user','==',user).get().then((snapshot)=>{
+                                    snapshot.forEach((doc) => {
+                                        let id = doc.id;
+                                        let post = doc.data();
+                                        post.id=id;
+                                        array.push(post);
+                                    });
+                                    for(var i in following){
+                                        db.collection('post').where('user','==',following[i]).get().then((snapshot)=>{
+                                            snapshot.forEach((doc) => {
+                                                let id_1 = doc.id;
+                                                let post_1 = doc.data();
+                                                post_1.id=id_1;
+                                               array.push(post_1);
+                                            });
+                                        },(error)=>{
+                                            console.log(error);
+                                        });
+                                    }
+                                    db.collection('users').get().then((result)=>{
+                                        result.forEach((doc) => {
+                                            for(var i in array){
+                                                if(doc.id==array[i].user){
+                                                    array[i].profile=doc.data();
+                                                    let users_star = array[i].users_star;
+                                                    array[i].star=false;                
+                                                    if(users_star!=null){
+                                                        users_star=users_star.split(',');
+                                                        for(var j in users_star){
+                                                            if(users_star[j]==user){
+                                                                array[i].star=true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                                        console.log(newArray);
+                                        loadingStop();
+                                        setPost(newArray);
+                                    }).catch((error)=>{
+                                        setState({...state,loading_display:{display:'none'}});
+                                        console.log(error.code+' '+error.message);
+                                    });
+                                },(error)=>{
+                                    setState({...state,loading_display:{display:'none'}});
+                                    console.log(error);
+                                });
+                            }else{
+                                let array = [];
+                                console.log('No entra al following');
+                                db.collection('post').where('user','==',user).get().then((snapshot)=>{
+                                    snapshot.forEach((doc) => {
+                                        let id = doc.id;
+                                        let post = doc.data();
+                                        post.id=id;
+                                        array.push(post);
+                                    });
+                                    db.collection('post').where('user','==',following).get().then((snapshot)=>{
+                                        snapshot.forEach((doc) => {
+                                            let id_1 = doc.id;
+                                            let post_1 = doc.data();
+                                            post_1.id=id_1;
+                                           array.push(post_1);
+                                        });
+                                        db.collection('users').get().then((result)=>{
+                                            result.forEach((doc) => {
+                                                for(var i in array){
+                                                    if(doc.id==array[i].user){
+                                                        array[i].profile=doc.data();
+                                                        let users_star = array[i].users_star;
+                                                        array[i].star=false;                
+                                                        if(users_star!=null){
+                                                            users_star=users_star.split(',');
+                                                            for(var j in users_star){
+                                                                if(users_star[j]==user){
+                                                                    array[i].star=true;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                            let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                                            loadingStop();
+                                            setPost(newArray);
+                                            console.log(newArray);
+                                        }).catch((error)=>{
+                                            loadingStop();
+                                            console.log(error.code+' '+error.message);
+                                        });
+                                    },(error)=>{
+                                        console.log(error);
+                                    });
+                                },(error)=>{
+                                    loadingStop();
+                                    console.log(error);
+                                });
+                            }
+                        }catch(error){
+                            loadingStop();
+                            console.log(error);
+                        }
+                    }).catch((error)=>{ 
+                        loadingStop();
+                        console.log(error.code+' '+error.message);
+                    });
+                }).catch((error)=>{
+                    console.log(error);
+                })
             }     
         },(error)=>{
+            loadingStop();
             console.log(error.code+' '+error.message);
         });
+    }
+    function loadingStop(){
+        setState({...state,loading_display:{display:'none'}});
     }
     const saveImg = async (path)=>{
         if(path!=''){
@@ -301,7 +481,9 @@ export default function Publicaciones({navigation}){
         <></>
     );
     const header=(
-        <></>
+        <>
+            <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
+        </>
     );
     const numColumns=1;
     const formatData=(data,numColums)=>{
@@ -315,6 +497,8 @@ export default function Publicaciones({navigation}){
     const renderItem = ({item,index})=>{
         let date = new Date(item.fecha);
         let fulltime = date.toLocaleDateString();
+        console.log(item);
+        console.log(item.profile.url_photo)
         return(
             <View style={styles.tarjeta_public_cont}>
                 <View style={styles.header_public}>

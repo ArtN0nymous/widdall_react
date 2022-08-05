@@ -1,11 +1,11 @@
-import { View, Text,ScrollView, ImageBackground, FlatList, TextInput, Alert,Image,TouchableOpacity, ActivityIndicator} from "react-native";
+import { View, Text,ScrollView, ImageBackground,RefreshControl, FlatList, TextInput, Alert,Image,TouchableOpacity, ActivityIndicator} from "react-native";
 import { SearchBar } from "react-native-screens";
 import { AntDesign, FontAwesome5,Ionicons,Foundation } from '@expo/vector-icons'; 
 import CSS from "./Styles";
 import firebase from "./database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 export default function Usuarios({navigation}){
     const styles = CSS.styles;
@@ -19,9 +19,6 @@ export default function Usuarios({navigation}){
     });
     global.localStorage = localstorage;
     const auth = firebase.get_auth;
-    const data = [
-        {username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},{username:'Usuario',url_photo:'url',url_portada:'url_2'},
-    ];
     const [state,setState]=useState({
         usuarios:[],
         uid:'',
@@ -30,6 +27,7 @@ export default function Usuarios({navigation}){
         img:require('./img/default_profile.jpg'),
         display_preview:{display:'none'},
         loading_display:{display:'none'},
+        loading_display_1:{display:'none'},
         profile:{
             uid:'',
             name:'',
@@ -65,6 +63,17 @@ export default function Usuarios({navigation}){
             abortController.abort();
         }
     },[]);
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            leerUsuarios().then(() => setRefreshing(false));
+        }).catch((error)=>{
+            console.log(error);
+        });
+      }, []);
     const formatData=(data,numColums)=>{
         const n_filas = Math.floor(data.length/numColums);
 
@@ -77,6 +86,7 @@ export default function Usuarios({navigation}){
     }
     /*FIREBASE FUNCTIONS */
     const leerUsuarios= async () =>{
+        setState({...state,loading_display_1:{display:'flex'}});
         let id = '';
         await localstorage.load({
             key:'loginState'
@@ -95,8 +105,8 @@ export default function Usuarios({navigation}){
                             let user = {
                                 uid:doc.id,
                                 username:doc.data().displayName,
-                                url_photo:{uri:doc.data().url_photo},
-                                url_portada:{uri:doc.data().url_portada},
+                                url_photo:doc.data().url_photo,
+                                url_portada:doc.data().url_portada,
                                 color_portada:doc.data().color_portada,
                                 descripcion:doc.data().descripcion,
                                 amigo:false,
@@ -108,13 +118,18 @@ export default function Usuarios({navigation}){
                                     user.amigo=true;
                                 }
                             });
-                            if(following!=''){
+                            console.log(following);
+                            if(following.length>28){
                                 following=following.split(',');
                                 following.forEach(element=>{
                                     if(element==user.uid){
                                         user.following=true;
                                     }
                                 });
+                            }else if(following!=''){
+                                if(following==user.uid){
+                                    user.following=true;
+                                }
                             }
                             usuarios.push(user);
                         }
@@ -130,9 +145,11 @@ export default function Usuarios({navigation}){
                     }
                     //setState({...state,usuarios:usuarios});
                 }).catch((error)=>{
+                    setState({...state,loading_display_1:{display:'none'}});
                     console.log(error.code+' '+error.message);
                 });
             }, (error) => {
+                setState({...state,loading_display_1:{display:'none'}});
                 Alert.alert('Vaya', 'Parece que ha ocurrido un error inesperado.');
             });
         }).catch((error)=>{
@@ -417,12 +434,13 @@ export default function Usuarios({navigation}){
                             }
                         }
                     });
-                    setState({...state,usuarios:usuarios,solicitudes_profiles:solicitudes_profiles});
+                    setState({...state,usuarios:usuarios,solicitudes_profiles:solicitudes_profiles,loading_display_1:{display:'none'}});
                 }else{
-                    setState({...state,usuarios:usuarios});
+                    setState({...state,usuarios:usuarios,loading_display_1:{display:'none'}});
                     console.log('No tienes solicitudes');
                 }
-            }).catch((error)=>{ 
+            }).catch((error)=>{
+                setState({...state,loading_display_1:{display:'none'}});
                 console.log(error.code+' '+error.message);
             });
         }).catch((error)=>{
@@ -851,12 +869,12 @@ export default function Usuarios({navigation}){
     }
     const numColums = 2;
     const renderItem = ({item,index})=>{
-        if(item.url_portada.uri!=''){
+        if(item.url_portada!=''){
             return(
                 <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
-                    <ImageBackground style={styles.target_usuarios}  source={item.url_portada}>
+                    <ImageBackground style={styles.target_usuarios}  source={{uri:item.url_portada}}>
                         <View style={styles.contenido_caja_usu}>
-                            <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                            <ImageBackground style={styles.icon_usu} source={{uri:item.url_photo}}/>
                             <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                             <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                         </View>
@@ -868,7 +886,7 @@ export default function Usuarios({navigation}){
                 <TouchableOpacity activeOpacity={0.6} onPress={()=>previewUser(item.uid,item.username,item.url_photo,item.url_portada,item.descripcion,item.color_portada,item.amigo,item.chats,item.following)}>
                     <View style={[styles.target_usuarios,{backgroundColor:item.color_portada}]}>
                         <View style={styles.contenido_caja_usu}>
-                            <ImageBackground style={styles.icon_usu} source={item.url_photo}/>
+                            <ImageBackground style={styles.icon_usu} source={{uri:item.url_photo}}/>
                             <Text style={[styles.limpiador_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.username}</Text>
                             <Text style={[styles.det_lim_usu,{backgroundColor:'rgba(255,255,255,0.15)',borderRadius:40}]}>{item.descripcion}</Text>
                         </View>
@@ -881,6 +899,7 @@ export default function Usuarios({navigation}){
         <>
         <LinearGradient colors={['#0364A3','#0695F3','#68BFF7','#0364A3']}>
             <Text style={styles.texto_solicitudes}>Solicitudes</Text>
+            <ActivityIndicator size="large" color="skyblue" style={state.loading_display_1} />
             <ScrollView style={styles.scrollview_solicitudes}>
                 { 
                     state.solicitudes_profiles.map((p)=>(
@@ -889,7 +908,7 @@ export default function Usuarios({navigation}){
                                 <View style={styles.target_cont_b_usu}>
                                     <View style={{flexDirection:'row'}}>
                                         <View style={styles.icon_target_b_cont_1_usu}>
-                                            <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={p.url_photo}/>
+                                            <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={{uri:p.url_photo}}/>
                                         </View>
                                         <View style={styles.row_b_usu}>
                                             <View style={styles.det_atg_b_usu}>
@@ -936,7 +955,7 @@ export default function Usuarios({navigation}){
     );
     return(
         <>
-            <FlatList ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
+            <FlatList refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>onRefresh()}/>} ListHeaderComponent={header} ListFooterComponent={footer} style={{flex:1, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(state.usuarios,numColums)} renderItem={renderItem} numColumns={numColums}/>
             <ImageBackground style={[styles.contenedor_preview,state.display_preview,{backgroundColor:state.profile.color_portada}]} source={state.profile.url_portada}>
                 <TouchableOpacity onPress={()=>display_preview()}>
                     <View style={[styles.btn_cancel_regist, styles.cancel_preview]}>
@@ -944,7 +963,7 @@ export default function Usuarios({navigation}){
                     </View>
                 </TouchableOpacity>
                 <View style={styles.content_preview}>
-                    <ImageBackground source={state.profile.url_photo} style={styles.image_preview}/>
+                    <ImageBackground source={{uri:state.profile.url_photo}} style={styles.image_preview}/>
                     <View style={styles.options_preview}>
                         <View style={{flexDirection:'column'}}>
                             <Text style={{alignSelf:'center',fontSize:17,fontWeight:'bold'}}>{state.profile.name}</Text>
