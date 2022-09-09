@@ -373,7 +373,18 @@ export default function Perfil({navigation}){
             db.collection('users').doc(user).get().then((doc)=>{
                 let following = doc.data().following;
                 if(following!=''){
-                    following+=','+uid;
+                    let array = following.split(',');
+                    let exist = false;
+                    for(var i in array){
+                        if(array[i]==uid){
+                            return exist = true;
+                        }
+                    }
+                    if(exist!=true){
+                        following+=','+uid;
+                    }else{
+                        Alert.alert('Ups!','Esto no debería pasar parece que ya sigues a este usuario 🤔');
+                    }
                 }else{
                     following=uid;
                 }
@@ -384,7 +395,18 @@ export default function Perfil({navigation}){
                         let followme = result.data().followme;
                         let displayName = result.data().displayName;
                         if(followme!=''){
-                            followme+=','+user;
+                            let array = followme.split(',');
+                            let exist = false;
+                            for(var i in array){
+                                if(array[i]==user){
+                                    return exist = true;
+                                }
+                            }
+                            if(exist!=true){
+                                followme+=','+user;
+                            }else{
+                                Alert.alert('Ups!','Parece que ya te sigue');
+                            }
                         }else{
                             followme=user;
                         }

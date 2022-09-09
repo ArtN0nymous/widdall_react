@@ -45,6 +45,7 @@ export default function PostButton({star,stars,id}){
     },[star]);
     /*Firebasde functions */
     const _star=async(id)=>{
+        // animation.current.play(0,45);
         localstorage.load({
             key:'loginState'
         }).then((result)=>{
@@ -75,6 +76,7 @@ export default function PostButton({star,stars,id}){
         });
     }
     const unStar=async(id)=>{
+        // animation.current.play(18,0);
         localstorage.load({
             key:'loginState'
         }).then((result)=>{

@@ -174,7 +174,9 @@ export default function Publicaciones({navigation}){
         console.log('Comienza');
         setState({...state,loading_display:{display:'flex'}});
         db.collection('post').onSnapshot((snapshot)=>{
+            console.log(user);
             if(user!=''){
+                console.log('CASE 1');
                 db.collection('users').doc(user).get().then((doc)=>{
                     let following=doc.data().following;
                     try{
@@ -291,6 +293,7 @@ export default function Publicaciones({navigation}){
                     console.log(error.code+' '+error.message);
                 }); 
             }else{
+                console.log('CASE 2');
                 console.log('Entra al else leerPublic');
                 localstorage.load({
                     key:'losginState'
@@ -497,8 +500,6 @@ export default function Publicaciones({navigation}){
     const renderItem = ({item,index})=>{
         let date = new Date(item.fecha);
         let fulltime = date.toLocaleDateString();
-        console.log(item);
-        console.log(item.profile.url_photo)
         return(
             <View style={styles.tarjeta_public_cont}>
                 <View style={styles.header_public}>

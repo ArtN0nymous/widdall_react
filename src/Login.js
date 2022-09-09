@@ -49,7 +49,7 @@ export default function Login({navigation}){
         return ()=>{
             abortController.abort();
         }
-    });
+    },[]);
     function verify_user_logedIn(){
         var user = '';
         localstorage.load({
