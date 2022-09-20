@@ -53,21 +53,33 @@ export default function PostButton({star,stars,id}){
             db.collection('post').doc(id).get().then((doc)=>{
                 let stars = doc.data().stars;
                 let users_star=doc.data().users_star;
-                stars+=1;
-                if(users_star!=null){
-                    users_star+=','+uid;
+                let existe = false;
+                if(users_star!=null&&users_star!=''){
+                    var array=users_star.split(',');
+                    for(var i in array){
+                        if(array[i]==uid){
+                            existe = true;
+                        }
+                    }
+                    if(existe!=true){
+                        users_star+=','+uid;
+                    }
                 }else{
                     users_star=uid;
                 }
-                db.collection('post').doc(id).update({
-                    stars:stars,
-                    users_star:users_star
-                }).then((result)=>{
-                    console.log('Starseaste una publicación');
-                    playSound();
-                }).catch((error)=>{
-                    console.log(error.code+' '+error.message);
-                });
+                stars = users_star.split(',').length;
+                console.log(stars);
+                if(existe!=true){
+                    db.collection('post').doc(id).update({
+                        stars:stars,
+                        users_star:users_star
+                    }).then((result)=>{
+                        console.log('Starseaste una publicación');
+                        playSound();
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
@@ -84,23 +96,27 @@ export default function PostButton({star,stars,id}){
             db.collection('post').doc(id).get().then((doc)=>{
                 let stars = doc.data().stars;
                 let users_star=doc.data().users_star;
-                stars-=1;
-                console.log(stars);
+                let existe = true;
                 if(users_star!=null){}
                     users_star=users_star.split(',');
                     for(var i in users_star){
                         if(users_star[i]==uid){
                             users_star.splice(i,1);
+                            existe=false;
                         }
                 }
-                db.collection('post').doc(id).update({
-                    stars:stars,
-                    users_star:users_star.join()
-                }).then((result)=>{
-                    console.log('Le quitaste una estrella a una publicación');
-                }).catch((error)=>{
-                    console.log(error.code+' '+error.message);
-                });
+                stars=users_star.length;
+                console.log(stars);
+                if(existe!=true){
+                    db.collection('post').doc(id).update({
+                        stars:stars,
+                        users_star:users_star.join()
+                    }).then((result)=>{
+                        console.log('Le quitaste una estrella a una publicación');
+                    }).catch((error)=>{
+                        console.log(error.code+' '+error.message);
+                    });
+                }
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });

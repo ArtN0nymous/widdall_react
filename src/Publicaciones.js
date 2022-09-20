@@ -222,7 +222,7 @@ export default function Publicaciones({navigation}){
                                         }
                                     });
                                     let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
-                                    console.log(newArray);
+                                    //console.log(newArray);
                                     loadingStop();
                                     setPost(newArray);
                                 }).catch((error)=>{
@@ -271,7 +271,7 @@ export default function Publicaciones({navigation}){
                                         let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
                                         loadingStop();
                                         setPost(newArray);
-                                        console.log(newArray);
+                                        //console.log(newArray);
                                     }).catch((error)=>{
                                         loadingStop();
                                         console.log(error.code+' '+error.message);
@@ -344,7 +344,7 @@ export default function Publicaciones({navigation}){
                                             }
                                         });
                                         let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
-                                        console.log(newArray);
+                                        //console.log(newArray);
                                         loadingStop();
                                         setPost(newArray);
                                     }).catch((error)=>{
@@ -393,7 +393,7 @@ export default function Publicaciones({navigation}){
                                             let newArray = array.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
                                             loadingStop();
                                             setPost(newArray);
-                                            console.log(newArray);
+                                            //console.log(newArray);
                                         }).catch((error)=>{
                                             loadingStop();
                                             console.log(error.code+' '+error.message);
