@@ -38,7 +38,7 @@ export default function Login({navigation}){
     useEffect(()=>{
         let abortController = new AbortController();
         verify_user_logedIn();
-        navigation.addListener('beforeRemove', (e) => {
+        /*navigation.addListener('beforeRemove', (e) => {
             if(state.loginState==''){
                 console.log('Entra aqui');
                 e.preventDefault();   
@@ -48,7 +48,7 @@ export default function Login({navigation}){
         });
         return ()=>{
             abortController.abort();
-        }
+        }*/
     },[]);
     function verify_user_logedIn(){
         var user = '';
@@ -58,13 +58,13 @@ export default function Login({navigation}){
             user = result.userKey;
             if(user!=''){
                 setState({...state,loginState:result});
+                navigation.goBack();
             }
         }).catch((err)=>{
             console.log(err.message);
         });
     }
     function checarDatos(){
-        console.log(email+pass);
         if(email!=""){
             if(pass!=""){
                 var valido = App.validarEmail(email);

@@ -13,18 +13,18 @@ import * as Device from 'expo-device';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-});
 var localstorage = new Storage ({
     size:1000,
     storageBackend: AsyncStorage,
     defaultExpires: null,
     enableCache:false,
+});
+/*Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
 });
 function startTask(){
     try{
@@ -115,7 +115,7 @@ async function registerForPushNotificationsAsync() {
     }
   
     return token;
-}
+}*/
 export default function Publicaciones({navigation}){
     const styles = Styles.styles;
     const db=firebase.db;
@@ -137,6 +137,7 @@ export default function Publicaciones({navigation}){
         loading_display:{display:'none'}
     });
     //notificaciones
+    /*
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
@@ -157,6 +158,7 @@ export default function Publicaciones({navigation}){
           Notifications.removeNotificationSubscription(responseListener.current);
         };
       }, []);
+      */
     //notificaciones end
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
@@ -185,11 +187,27 @@ export default function Publicaciones({navigation}){
     }
     useEffect(()=>{
         let abortController = new AbortController();
+        verify_user_logedIn();
         loadProfile();
         return function cleanup(){
             abortController.abort();
         }
     },[]);
+    function verify_user_logedIn(){
+        var user = '';
+        localstorage.load({
+            key:'loginState'
+        }).then((result)=>{
+            user = result.userKey;
+            if(user!=''){
+                console.log('Logueado');
+            }else{
+                navigation.navigate('Login');
+            }
+        }).catch((err)=>{
+            console.log(err.message);
+        });
+    }
     const loadProfile= async()=>{
         localstorage.load({
             key:'loginState'
@@ -702,20 +720,6 @@ export default function Publicaciones({navigation}){
                         <TouchableOpacity activeOpacity={0.6} onPress={()=>cerrarSesion()}>
                             <View style={styles.button_menu_container}>
                                 <Ionicons name="ios-log-out" size={35} color="white" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>notificar('HOLA')}>
-                            <View style={styles.button_menu_container}>
-                                <Ionicons name="play-circle-sharp" size={35} color="white" />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.contenedor_boton_menu}>
-                        <TouchableOpacity activeOpacity={0.6} onPress={()=>stopTask()}>
-                            <View style={styles.button_menu_container}>
-                                <Ionicons name="ios-stop-circle-sharp" size={35} color="white" />
                             </View>
                         </TouchableOpacity>
                     </View>

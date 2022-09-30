@@ -2,14 +2,14 @@
   "expo": {
     "name": "widdall",
     "slug": "widdall",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation":"portrait",
     "icon":"./src/img/icon.png",
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
-      "package": "ramsus.widdall.app",
+      "package": "com.widdall",
       "versionCode":1
     }
   },
