@@ -181,6 +181,7 @@ export default function Perfil({navigation}){
                     descripcion:doc.data().descripcion,
                     email:doc.data().email
                 }
+                console.log('portada'+perfil.url_portada);
                 leerUsuarios(perfil);
             }).catch((error)=>{
                 setState({...state,loading_display:{display:'none'}});
@@ -1010,7 +1011,7 @@ export default function Perfil({navigation}){
     }
     const header = (
         <>
-            <ImageBackground style={[styles.circle_cont_usu,{backgroundColor:state.profile.color_portada}]} source={state.profile.url_portada}>
+            <ImageBackground style={[styles.circle_cont_usu,{backgroundColor:state.profile.color_portada}]} source={{uri:state.profile.url_portada}}>
                 <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
                 <View style={styles.edit_portada}>
                     <TouchableOpacity onPress={()=>{uiPicker('portada')}}>

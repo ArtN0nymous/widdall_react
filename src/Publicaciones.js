@@ -19,7 +19,7 @@ var localstorage = new Storage ({
     defaultExpires: null,
     enableCache:false,
 });
-/*Notifications.setNotificationHandler({
+Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
@@ -85,37 +85,6 @@ async function notificar(data) {
         trigger: { seconds: 1 },
     });
 }
-async function registerForPushNotificationsAsync() {
-    let token;
-    if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
-    } else {
-      alert('Must use physical device for Push Notifications');
-    }
-  
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-        sound:require('./assets/sounds/notification.wav'),
-      });
-    }
-  
-    return token;
-}*/
 export default function Publicaciones({navigation}){
     const styles = Styles.styles;
     const db=firebase.db;
@@ -137,29 +106,43 @@ export default function Publicaciones({navigation}){
         loading_display:{display:'none'}
     });
     //notificaciones
-    /*
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
-    useEffect(() => {
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-          setNotification(notification);
-        });
-    
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-          console.log(response);
-        });
-    
-        return () => {
-          Notifications.removeNotificationSubscription(notificationListener.current);
-          Notifications.removeNotificationSubscription(responseListener.current);
-        };
-      }, []);
-      */
-    //notificaciones end
+    async function registerForPushNotificationsAsync() {
+        console.log('entra a anotificación');
+        let token;
+        if (Device.isDevice) {
+          const { status: existingStatus } = await Notifications.getPermissionsAsync();
+          let finalStatus = existingStatus;
+          console.log(finalStatus);
+          if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+          if (finalStatus !== 'granted') {
+            console.log('Failed to get push token for push notification!');
+            return;
+          }
+          token = (await Notifications.getExpoPushTokenAsync()).data;
+          console.log('Token de notificacion'+token);
+        } else {
+          console.log('Must use physical device for Push Notifications');
+        }
+      
+        if (Platform.OS === 'android') {
+          Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+            sound:require('./assets/sounds/notification.wav'),
+          });
+        }
+        
+        return token;
+    }
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -189,9 +172,23 @@ export default function Publicaciones({navigation}){
         let abortController = new AbortController();
         verify_user_logedIn();
         loadProfile();
-        return function cleanup(){
-            abortController.abort();
-        }
+        registerForPushNotificationsAsync().then(token => {
+            setExpoPushToken(token);
+        });
+    
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+          setNotification(notification);
+        });
+    
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+          console.log(response);
+        });
+    
+        return () => {
+          Notifications.removeNotificationSubscription(notificationListener.current);
+          Notifications.removeNotificationSubscription(responseListener.current);
+          abortController.abort();
+        };
     },[]);
     function verify_user_logedIn(){
         var user = '';
@@ -218,12 +215,10 @@ export default function Publicaciones({navigation}){
                 Alert.alert('Atención','Debes verificar tu usuario, enviamos un correo electrónico a la dirección: ⭐ '+auth.currentUser.email+' ⭐');
                 navigation.navigate('Login');
             }
+            console.log('usuario: '+result.userKey);
             leerPublic(result.userKey);
         }).catch((error)=>{
-            Alert.alert('Atención','Debes iniciar sesión',[{
-                text:'Ok',
-                onPress:()=>{navigation.navigate('Login');}
-            }]);
+            console.log(error);
         });
     }
     let openImagePickerAsync = async () => {
@@ -316,11 +311,12 @@ export default function Publicaciones({navigation}){
         console.log('Comienza');
         setState({...state,loading_display:{display:'flex'}});
         db.collection('post').onSnapshot((snapshot)=>{
-            console.log(user);
+            console.log('usuario 1: '+user);
             if(user!=''){
                 console.log('CASE 1');
                 db.collection('users').doc(user).get().then((doc)=>{
                     let following=doc.data().following;
+                    console.log(following);
                     try{
                         if(following.length>28){
                             console.log('Entra al following');

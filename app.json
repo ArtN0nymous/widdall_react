@@ -10,7 +10,8 @@
     ],
     "android": {
       "package": "com.widdall",
-      "versionCode":1
+      "versionCode":1,
+      "useNextNotificationsApi": true
     }
   },
   "plugins": [
@@ -18,10 +19,12 @@
       "expo-notifications",
       {
         "icon": "./src/img/icon.png",
+        "androidMode": "default",
         "color": "#ffffff",
         "sounds": [
           "./src/assets/sounds/notification.wav"
-        ]
+        ],
+        "androidCollapsedTitle": "Widdall"
       }
     ]
   ]
