@@ -127,21 +127,25 @@ export default function PostButton({star,stars,id}){
     /**firebase end */
     if(star){
         return(
+        <>
             <TouchableOpacity activeOpacity={0.2} onPress={()=>unStar(id)}>
                 <View style={styles.button_menu_container}>
                     <Text style={{position:'absolute', zIndex:3,color:'black'}}>{stars}</Text>
                     <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
                 </View>
             </TouchableOpacity>
+        </>
         )
     }else{
         return(
-            <TouchableOpacity activeOpacity={0.2} onPress={()=>_star(id)}>
-                <View style={styles.button_menu_container}>
-                    <Text style={{position:'absolute', zIndex:3,color:'black'}}>{stars}</Text>
-                    <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
-                </View>
-            </TouchableOpacity>
+            <>
+                <TouchableOpacity activeOpacity={0.2} onPress={()=>_star(id)}>
+                    <View style={styles.button_menu_container}>
+                        <Text style={{position:'absolute', zIndex:3,color:'black'}}>{stars}</Text>
+                        <AnimatedLottieView ref={animation} source={animStar} style={styles.lottie} autoPlay={false} loop={false}/>
+                    </View>
+                </TouchableOpacity>
+            </>
         )
     }
 }

@@ -13,13 +13,8 @@ import * as Device from 'expo-device';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
-var localstorage = new Storage ({
-    size:1000,
-    storageBackend: AsyncStorage,
-    defaultExpires: null,
-    enableCache:false,
-});
-Notifications.setNotificationHandler({
+import AnimatedLottieView from "lottie-react-native";
+/*Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
@@ -84,11 +79,17 @@ async function notificar(data) {
         },
         trigger: { seconds: 1 },
     });
-}
+}*/
 export default function Publicaciones({navigation}){
     const styles = Styles.styles;
     const db=firebase.db;
     const storage = firebase.firebase.storage();
+    var localstorage = new Storage ({
+        size:1000,
+        storageBackend: AsyncStorage,
+        defaultExpires: null,
+        enableCache:false,
+    });
     global.localStorage = localstorage;
     const auth = firebase.auth;
     const [state,setState]=useState({
@@ -101,12 +102,14 @@ export default function Publicaciones({navigation}){
         img:'',
         img_gallery:'',
         cargando:{display:'none'},
+        cargando_comentarios:{display:'none'},
         post:[],
         user:'',
         loading_display:{display:'none'}
     });
+    const comments = require('./assets/lottie/comments.json'); //comment button
     //notificaciones
-    const [expoPushToken, setExpoPushToken] = useState('');
+    /*const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
@@ -142,12 +145,13 @@ export default function Publicaciones({navigation}){
         }
         
         return token;
-    }
+    }*/
+    //end notificaciones
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         loadProfile();
-      }, []);
+    }, []);
     function toggle_menu(){
         if(state.menu_display.display=='none'){
             setState({...state,menu_display:{display:'flex'}})
@@ -172,7 +176,7 @@ export default function Publicaciones({navigation}){
         let abortController = new AbortController();
         verify_user_logedIn();
         loadProfile();
-        registerForPushNotificationsAsync().then(token => {
+        /*registerForPushNotificationsAsync().then(token => {
             setExpoPushToken(token);
         });
     
@@ -182,11 +186,11 @@ export default function Publicaciones({navigation}){
     
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
           console.log(response);
-        });
+        });*/
     
         return () => {
-          Notifications.removeNotificationSubscription(notificationListener.current);
-          Notifications.removeNotificationSubscription(responseListener.current);
+          /*Notifications.removeNotificationSubscription(notificationListener.current);
+          Notifications.removeNotificationSubscription(responseListener.current);*/
           abortController.abort();
         };
     },[]);
@@ -264,7 +268,7 @@ export default function Publicaciones({navigation}){
             }
         }
     }
-    const data =[{usuario:'Usuario',url_photo:'',descripcion:'Hola :3',img:''},{usuario:'Usuario',url_photo:'',descripcion:'El oeste de Texas divide la frontera entre S',img:''}]
+    const data =[{usuario:'Juan',url_photo:'https://firebasestorage.googleapis.com/v0/b/widdall.appspot.com/o/Perfiles%2FImagenes%2Fdbe46494-1a9f-4c8e-bc11-0f940bd294fd.jpg?alt=media&token=aa9ad825-e3ad-42ba-aafe-e37fb8224d6c',comment:'Hola :3 asjbdjlabsd asd asgdñuig as dhñ gashsd asgd ñagsdgasdñgasdñgasdyñg'},{usuario:'Usuario',url_photo:'https://firebasestorage.googleapis.com/v0/b/widdall.appspot.com/o/Perfiles%2FImagenes%2Fdbe46494-1a9f-4c8e-bc11-0f940bd294fd.jpg?alt=media&token=aa9ad825-e3ad-42ba-aafe-e37fb8224d6c',comment:'El oeste de Texas divide la frontera entre S vvEl oeste de Texas divide la frontera entre SEl oeste de Texas divide la frontera entre SEl oeste de Texas divide la frontera entre asdgasdhjkgaskjhdgljhh'}]
     function checarDatos(){
         if(state.path!=''||state.descripcion!=''){
             if(state.path!=''){
@@ -283,7 +287,6 @@ export default function Publicaciones({navigation}){
             setState({...state,display_gallery:{display:'flex'},img_gallery:path});
         }
     }
-
     /*FUNCIONES FIREBASE */
     const publicar = async(desc,url)=>{
         localstorage.load({
@@ -296,10 +299,11 @@ export default function Publicaciones({navigation}){
                 img:url,
                 stars:0,
                 users_star:null,
-                descripcion:desc
+                descripcion:desc,
+                comentarios:[]
             }).then((result)=>{
                 setState({...state,newPost_display:false,path:'',user:uid,img:{uri:''}});
-                leerPublic(uid);
+                //leerPublic(uid);
             }).catch((error)=>{
                 console.log(error.code+' '+error.message);
             });
@@ -595,7 +599,7 @@ export default function Publicaciones({navigation}){
                     key:'usuarios'
                 }).then((result)=>{
                     navigation.navigate('Login');
-                });
+                });coments
             }).catch((error)=>{
                 console.log(error);
             });
@@ -604,11 +608,82 @@ export default function Publicaciones({navigation}){
             console.log(error.code+' '+error.message);
         });
     }
+    const [text,setText]=useState("");
+    const [coments,setComents]=useState([]);
+    const [id_post,setId_post]=useState("");
+    const sendComent=()=>{
+        if(text!=''){
+            let comentarios = coments;
+            if(comentarios!=null&&comentarios!=undefined){
+                localstorage.load({
+                    key:'loginState'
+                }).then((result)=>{
+                    let user = result.userKey;
+                    let comentario = {
+                        comentario:text,
+                        fecha:Date.now(),
+                        user:user
+                    }
+                    comentarios.push(comentario);
+                    db.collection('post').doc(id_post).update({
+                        comentarios:comentarios
+                    }).then((result)=>{
+                        setText("");
+                        Keyboard.dismiss()
+                    }).catch((err)=>{
+                        console.log(err.message);
+                    });
+                }).catch((error)=>{
+                    console.log(error.message);
+                    alert('Error al recuperar la información del usuario.');
+                });
+            }else{
+                console.log('Comentarios undefined.');
+            }
+        }else{
+            Alert.alert('Ups!!','No puedes enviar un comentario vacío.');
+        }
+    }
+    const leerComents=(id)=>{
+        if(id==''||id==null||id==undefined){
+            id=id_post;
+        }
+        db.collection('post').doc(id).onSnapshot((result)=>{
+            let comentarios = result.data().comentarios;
+            let data = []
+            if(comentarios.length>0){
+                setState({...state,cargando:{display:'flex'}});
+                comentarios.forEach((item)=>{
+                    db.collection('users').doc(item.user).get().then((result)=>{
+                        data.push({
+                            comentario:item.comentario,
+                            user:item.user,
+                            url_photo:result.data().url_photo,
+                            name:result.data().displayName,
+                            fecha:item.fecha
+                        });
+                    }).catch((err)=>{
+                        console.log(err.message);
+                    });
+                });
+                //let newArray = data.sort((a, b) => new Date(a.fecha).getTime() < new Date(b.fecha).getTime());
+                console.log(data);
+                setComents(data);
+                setDisplayComments(true);
+                setState({...state,cargando:{display:'none'}});
+            }else{
+                setDisplayComments(true);
+            }
+        },(error)=>{
+            console.log(error.message);
+        });
+    }
     /*FIREBASE END */
     /*POST CONTROLS */
-    const gold ={backgroundColor:'rgba(220,197,4,0.2)'};
+    const gold ={backgroundColor:'rgba(12,176,243,0.2)'};
     const skyblue={backgroundColor:'rgba(5,155,197,0.5)'};
     const [displayGallery,setDisplayGallery]=useState(false);
+    const [displayComments,setDisplayComments]=useState(false);
     const [img,setImg]=useState('');
     const postImg=(img)=>{
         if(displayGallery!=true){
@@ -618,12 +693,31 @@ export default function Publicaciones({navigation}){
             setDisplayGallery(false);
         }
     }
+    const postComment=(id)=>{
+        if(displayComments!=true){
+            setId_post(id);
+            leerComents(id);
+        }else{
+            setId_post('');
+            setComents([]);
+            setDisplayGallery(false);
+        }
+    }
     const footer=(
         <></>
     );
     const header=(
         <>
             <ActivityIndicator size="large" color="skyblue" style={state.loading_display} />
+        </>
+    );
+    const header_coment=(
+        <>
+            <View style={{width:50,height:50,alignSelf:'center'}}>
+                <TouchableOpacity onPress={()=>leerComents('')}>
+                    <FontAwesome size={50} name="refresh" color={'purple'}/>
+                </TouchableOpacity>
+            </View>
         </>
     );
     const numColumns=1;
@@ -658,17 +752,60 @@ export default function Publicaciones({navigation}){
                 <View style={styles.footer_public}>
                     <View style={[styles.contenedor_boton_menu,styles.footer_buttons,gold]}>
                         <PostButton star={item.star} stars={item.stars} id={item.id}/>
-                    </View>
-                    <View style={[styles.contenedor_boton_menu,styles.footer_buttons,skyblue]}>
-                        <TouchableOpacity activeOpacity={0.6}>
+                        <TouchableOpacity activeOpacity={0.6} onPress={()=>postComment(item.id)}>
                             <View style={styles.button_menu_container}>
-                                <FontAwesome5 name="share" size={35} color="white" />
+                                <AnimatedLottieView source={comments} style={styles.lottie} autoPlay={true} loop={true}/>
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
         );
+    }
+    const renderComment = ({item,index})=>{
+        let date = new Date(item.fecha);
+        let fulltime = date.toLocaleDateString();
+        if(item.comentario.length>74){
+            return(
+                <View style={[styles.contenedor_comentario_grande,{backgroundColor:'rgba(0,0,0,0)'}]}>
+                    <View style={styles.target_comentario}>
+                        <View style={styles.target_cont_b_usu}>
+                            <View style={{flexDirection:'row'}}>
+                                <View style={styles.icon_comment}>
+                                    <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={{uri:item.url_photo}}/>
+                                </View>
+                                <View style={styles.row_comment}>
+                                    <View style={styles.contenedor_comentario}>
+                                        <Text style={styles.user_comment}>{item.name}</Text>
+                                        <Text style={styles.comment_text}>{item.comentario}</Text>
+                                    </View>                                  
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            );
+        }else{
+            return(
+                <View style={[styles.cont_target_b_usu,{backgroundColor:'rgba(0,0,0,0)'}]}>
+                    <View style={styles.target_comentario}>
+                        <View style={styles.target_cont_b_usu}>
+                            <View style={{flexDirection:'row'}}>
+                                <View style={styles.icon_target_b_cont_1_usu}>
+                                    <ImageBackground style={[styles.fondo_icon_target_b_usu,{backgroundColor:'orange'}]} source={{uri:item.url_photo}}/>
+                                </View>
+                                <View style={styles.row_comment}>
+                                    <View style={styles.contenedor_comentario}>
+                                        <Text style={styles.user_comment}>{item.name}</Text>
+                                        <Text style={styles.comment_text}>{item.comentario}</Text>
+                                    </View>                                  
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            );
+        }
     }
     return(
         <View style={styles.contenedor_publicaciones}>
@@ -789,6 +926,33 @@ export default function Publicaciones({navigation}){
                 <Gallery style={{flex:1,backgroundColor:'rgba(0,0,0,0.6)'}} images={[
                     {source:{uri:img}}
                 ]} onSingleTapConfirmed={()=>postImg('')}/>
+            </Modal>
+            <Modal animationType="fade" visible={displayComments} transparent={true}>
+                <View style={styles.newComment}>
+                    <View style={styles.form_newcomment}>
+                        <View style={styles.header_newcomment}>
+                            <Text style={styles.texto_header_newpost}>Comentarios</Text>
+                        </View>
+                        <View style={styles.body_newcomment}>
+                            <FlatList ListHeaderComponent={header_coment} ListFooterComponent={footer} style={{flex:0.5, flexDirection:'column',backgroundColor:'#EEF1F3'}} data={formatData(coments,numColumns)} renderItem={renderComment} numColumns={numColumns}/>
+                            <TextInput placeholder="Escribe un comentario..." maxLength={200} style={styles.input_newcomment} onChangeText={(value)=>setText(value)} value={text}/>
+                        </View>
+                        <View style={styles.footer_newcomment}>
+                            <View style={[styles.contenedor_boton_menu,{flexDirection:'row'}]}>
+                                <TouchableOpacity activeOpacity={0.6} onPress={()=>setDisplayComments(false)}>
+                                    <View style={styles.button_menu_container}>
+                                        <FontAwesome name="close" size={35} color="pink" />
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.6} onPress={()=>sendComent()}>
+                                    <LinearGradient colors={['#00FFFF', '#17C8FF', '#329BFF', '#4C64FF', '#6536FF', '#8000FF']} start={{ x: 0.0, y: 1.0 }} end={{ x: 1.0, y: 1.0 }} style={[styles.login_btn_regist,{marginTop:0}]}>
+                                        <Text style={styles.texts_regist}>Enviar</Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </View>
             </Modal>
         </View>
     );

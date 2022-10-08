@@ -647,6 +647,7 @@ const styles = StyleSheet.create({
     },
     contenedor_boton_menu:{
         backgroundColor:'rgba(0,0,0,0.25)',
+        flexDirection:'row',
         borderRadius:15,
         margin:5,
         justifyContent:'center'
@@ -659,6 +660,11 @@ const styles = StyleSheet.create({
     },
     /*Menu lateral end */
     /*Publicaciones Begin */
+    contenedor_comments:{
+        backgroundColor:'blue',
+        width:dimension('W',100),
+        height:dimension('H',100)
+    },
     lottie:{
         width:200,
         height:200
@@ -676,7 +682,7 @@ const styles = StyleSheet.create({
     },
     tarjeta_public_cont:{
         width:dimension('W',115),
-        height:dimension('H',230),
+        height:dimension('H',240),
         backgroundColor:'white',
         marginTop:5,
         alignItems:'center',
@@ -684,7 +690,7 @@ const styles = StyleSheet.create({
         flexDirection:'column'
     },
     image_public:{
-        marginTop:5,
+        marginTop:0,
         flexDirection:"column",
         backgroundColor:'skyblue',
         width:dimension('W',90),
@@ -721,10 +727,10 @@ const styles = StyleSheet.create({
         marginLeft:5
     },
     footer_buttons:{
-        width:50,
+        width:dimension('W',100),
         height:50,
         borderRadius:100,
-        justifyContent:'center',
+        justifyContent:'space-around',
         alignItems:'center'
     },
     descrip_public:{
@@ -740,6 +746,12 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'rgba(0,0,0,0.2)'
     },
+    newComment:{
+        justifyContent:'center',
+        alignItems:'center',
+        flex:1,
+        backgroundColor:'rgba(0,0,0,0.2)'
+    },
     form_newpost:{
         width:dimension('W',100),
         height:dimension('H',800),
@@ -748,14 +760,32 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         overflow:'hidden'
     },
+    form_newcomment:{
+        height:dimension('H',100),
+        width:dimension('W',100),
+        backgroundColor:'white',
+        borderRadius:10,
+        overflow:'hidden'
+    },
     header_newpost:{
         backgroundColor:'#0B2379',
         height:dimension('H',25)
     },
+    header_newcomment:{
+        backgroundColor:'#0B2379',
+        height:dimension('H',25)
+    },
     body_newpost:{
+        height:dimension('H',525)
+    },
+    body_newcomment:{
         height:dimension('H',255)
     },
     footer_newpost:{
+        backgroundColor:'#0B2379',
+        top:160
+    },
+    footer_newcomment:{
         backgroundColor:'#0B2379'
     },
     image_newpost:{
@@ -775,6 +805,47 @@ const styles = StyleSheet.create({
         width:dimension('W',100),
         height:dimension('H',30),
         backgroundColor:'white'
+    },
+    user_comment:{
+        fontWeight:'bold',
+        fontSize:18
+    },
+    comment_text:{
+        fontSize:15,
+        textAlign:'justify'
+    },
+    row_comment:{
+        flexDirection:'row',
+        marginTop:5,
+        marginLeft:15,
+        width:dimension('W',75)
+    },
+    contenedor_comentario:{
+        flexDirection:'column',
+        alignItems:'stretch',
+        width:dimension('W',100)
+    },
+    contenedor_comentario_grande:{
+        flex:0.1,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#EEF1F3',
+        marginTop:10
+    },
+    target_comentario:{
+        width:dimension('W',130),
+        backgroundColor: 'white',
+        flexDirection:'column',
+        justifyContent:'flex-start',
+        borderRadius:10
+    },
+    icon_comment:{
+        marginTop:10,
+        flexDirection:'column',
+        justifyContent:'flex-start'
+    },
+    input_newcomment:{
+        height:dimension('H',50)
     }
     /*Publicaciones end */
 });
