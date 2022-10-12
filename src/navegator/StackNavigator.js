@@ -16,6 +16,7 @@ import BandejaMessages from '../BandejaMessages';
 import Usuarios from '../Usuarios';
 import Perfil from '../Perfil';
 import Publicaciones from '../Publicaciones';
+import Comentarios from '../Comentarios';
 const Stack = createNativeStackNavigator();
 function StackNavigator() {
   return (
@@ -38,6 +39,7 @@ function StackNavigator() {
         <Stack.Screen name='Messages' component={BandejaMessages}/>
         <Stack.Screen name='Usuario' options={{title:'Amigos'}} component={Usuarios}/>
         <Stack.Screen name='Perfil' component={Perfil}/>
+        <Stack.Screen name='Comentarios' component={Comentarios} options={{title:'Comentarios'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

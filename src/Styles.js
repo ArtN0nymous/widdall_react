@@ -746,12 +746,6 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'rgba(0,0,0,0.2)'
     },
-    newComment:{
-        justifyContent:'center',
-        alignItems:'center',
-        flex:1,
-        backgroundColor:'rgba(0,0,0,0.2)'
-    },
     form_newpost:{
         width:dimension('W',100),
         height:dimension('H',800),
@@ -760,33 +754,16 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         overflow:'hidden'
     },
-    form_newcomment:{
-        height:dimension('H',100),
-        width:dimension('W',100),
-        backgroundColor:'white',
-        borderRadius:10,
-        overflow:'hidden'
-    },
     header_newpost:{
-        backgroundColor:'#0B2379',
-        height:dimension('H',25)
-    },
-    header_newcomment:{
         backgroundColor:'#0B2379',
         height:dimension('H',25)
     },
     body_newpost:{
         height:dimension('H',525)
     },
-    body_newcomment:{
-        height:dimension('H',255)
-    },
     footer_newpost:{
         backgroundColor:'#0B2379',
         top:160
-    },
-    footer_newcomment:{
-        backgroundColor:'#0B2379'
     },
     image_newpost:{
         width:dimension('W',100),
@@ -839,13 +816,43 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start',
         borderRadius:10
     },
-    icon_comment:{
+    input_comment:{
+        borderColor:'blue',
+        borderWidth:2,
+        borderRadius:10,
+        textAlign:'center',
+        width:dimension('W',85),
         marginTop:10,
-        flexDirection:'column',
-        justifyContent:'flex-start'
+        backgroundColor:'#94CAF9',
+        color:'#532FF1',
+        fontWeight:'bold',
+        fontSize:20,
+        marginBottom:10
     },
-    input_newcomment:{
-        height:dimension('H',50)
+    contenedor_input_comment:{
+        flexDirection:'row',
+        backgroundColor:'rgba(0,0,0,0.1)',
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10
+    },
+    contenedor_header_coment:{
+        flexDirection:'row',
+        width:dimension('W',87),
+        justifyContent:'space-between'
+    },
+    sendButton:{
+        backgroundColor:'white',
+        width:40,
+        height:40,
+        borderRadius:100,
+        justifyContent:'center',
+        alignItems:'center',
+        borderColor:'blue',
+        borderWidth:1,
+        marginLeft:3
+    },
+    sendComent:{
+        width:100
     }
     /*Publicaciones end */
 });
