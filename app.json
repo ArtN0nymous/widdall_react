@@ -2,7 +2,7 @@
   "expo": {
     "name": "widdall",
     "slug": "widdall",
-    "version": "1.1.2",
+    "version": "1.2.0",
     "orientation":"portrait",
     "icon":"./src/img/icon.png",
     "assetBundlePatterns": [

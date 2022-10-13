@@ -746,6 +746,12 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'rgba(0,0,0,0.2)'
     },
+    newComment:{
+        justifyContent:'center',
+        alignItems:'center',
+        flex:1,
+        backgroundColor:'rgba(0,0,0,0.2)'
+    },
     form_newpost:{
         width:dimension('W',100),
         height:dimension('H',800),
@@ -754,16 +760,33 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         overflow:'hidden'
     },
+    form_newcomment:{
+        height:dimension('H',100),
+        width:dimension('W',100),
+        backgroundColor:'white',
+        borderRadius:10,
+        overflow:'hidden'
+    },
     header_newpost:{
+        backgroundColor:'#0B2379',
+        height:dimension('H',25)
+    },
+    header_newcomment:{
         backgroundColor:'#0B2379',
         height:dimension('H',25)
     },
     body_newpost:{
         height:dimension('H',525)
     },
+    body_newcomment:{
+        height:dimension('H',255)
+    },
     footer_newpost:{
         backgroundColor:'#0B2379',
         top:160
+    },
+    footer_newcomment:{
+        backgroundColor:'#0B2379'
     },
     image_newpost:{
         width:dimension('W',100),
@@ -815,6 +838,14 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         justifyContent:'flex-start',
         borderRadius:10
+    },
+    icon_comment:{
+        marginTop:10,
+        flexDirection:'column',
+        justifyContent:'flex-start'
+    },
+    input_newcomment:{
+        height:dimension('H',50)
     },
     input_comment:{
         borderColor:'blue',
