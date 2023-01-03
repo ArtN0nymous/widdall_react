@@ -3,6 +3,7 @@ import { useState, useEffect,useRef,useCallback } from "react";
 import Styles from "./Styles";
 import { LinearGradient } from "expo-linear-gradient";
 import firebase from "./database/firebase";
+import messaging from '@react-native-firebase/messaging';
 import { Entypo, FontAwesome5,Ionicons,MaterialIcons,FontAwesome} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Storage from 'react-native-storage';
@@ -171,10 +172,54 @@ export default function Publicaciones({navigation}){
     const dimiss=()=>{
         setState({...state,display_gallery:{display:'none'}});
     }
+    const requestUserPermission=async()=>{
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    
+        if (enabled) {
+          console.log('Authorization status:', authStatus);
+        }
+      }
     useEffect(()=>{
         let abortController = new AbortController();
         verify_user_logedIn();
         loadProfile();
+        if(requestUserPermission()){
+            messaging().getToken().then(token=>{
+                console.log(token);
+            });
+        }
+        else{
+            console.log('Failed get token');
+        }
+        messaging()
+        .getInitialNotification()
+        .then(async(remoteMessage) => {
+            if (remoteMessage) {
+                console.log(
+                'Notification caused app to open from quit state:',
+                remoteMessage.notification,
+                );
+            }
+        });
+        messaging().onNotificationOpenedApp(async(remoteMessage) => {
+            console.log(
+              'Notification caused app to open from background state:',
+              remoteMessage.notification,
+            );
+            //navigation.navigate(remoteMessage.data.type);
+        });
+        messaging().setBackgroundMessageHandler(async remoteMessage => {
+            console.log('Message handled in the background!', remoteMessage);
+        });
+
+        const unsubscribe = messaging().onMessage(async remoteMessage => {
+            Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+        });
+      
+        return unsubscribe;
         /*registerForPushNotificationsAsync().then(token => {
             setExpoPushToken(token);
         });

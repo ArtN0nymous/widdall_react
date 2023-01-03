@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1079934915434",
+    "project_id": "widdall",
+    "storage_bucket": "widdall.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079934915434:android:c63e30937ba74e29188b13",
+        "android_client_info": {
+          "package_name": "com.widdall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079934915434-io71vl54tr7feu3ds7tk1vu3e9jaso54.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.widdall",
+            "certificate_hash": "57554b19cc9f6138e23fefb2a1d203277722832b"
+          }
+        },
+        {
+          "client_id": "1079934915434-o0m29ot9osbqok8g6t2s8045u97d6n06.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.widdall",
+            "certificate_hash": "b0dd5d525a0e44eca268fac29daee497c41fc94c"
+          }
+        },
+        {
+          "client_id": "1079934915434-j1uqbe952gldnchu1a0kqrd4qcdce5rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN0NaUJ2X358isl-_5iFxrPXTxs5B5ivM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1079934915434-j1uqbe952gldnchu1a0kqrd4qcdce5rg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

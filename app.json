@@ -3,15 +3,21 @@
     "name": "widdall",
     "slug": "widdall",
     "version": "1.2.0",
-    "orientation":"portrait",
-    "icon":"./src/img/icon.png",
+    "orientation": "portrait",
+    "icon": "./src/img/icon.png",
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
+      "googleServicesFile":"./google-services.json",
       "package": "com.widdall",
-      "versionCode":1,
+      "versionCode": 1,
       "useNextNotificationsApi": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "50d56be2-dbf8-48bf-bcb1-cd32814d846d"
+      }
     }
   },
   "plugins": [
